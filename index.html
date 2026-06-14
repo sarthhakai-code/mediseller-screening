@@ -3,176 +3,199 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mediseller Screening</title>
+<title>Compass · Mediseller</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root{
-    --ink:#0E1A1C;--surface:#14282B;--surface-2:#102224;--line:#21413F;
-    --jade:#2FB39B;--jade-soft:#1f6f63;--gold:#C9A867;h
-    --text:#E8F0EE;--muted:#8FA8A4;--danger:#E0796B;--ok:#5FBF8E;--warn:#D8B25E;
-    --radius:14px;--maxw:700px;
+    --paper:#F4F7FC;--white:#FFFFFF;--soft:#EEF3FB;
+    --navy:#15294B;--blue:#1F57B5;--blue-deep:#12386F;--blue-bright:#2E6BC6;
+    --red:#C8102E;--red-soft:#FBE9EC;
+    --ink:#1B2A44;--muted:#5E6E88;--muted-2:#42526E;--line:#E1E8F2;
+    --radius:14px;--maxw:760px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(1200px 600px at 70% -10%, rgba(47,179,155,.10), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(201,168,103,.06), transparent 55%),
-      var(--ink);
-    color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55;
+      radial-gradient(1100px 600px at 80% -10%, rgba(31,87,181,.07), transparent 60%),
+      radial-gradient(800px 500px at -10% 112%, rgba(200,16,46,.05), transparent 55%),
+      var(--paper);
+    color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55;
     -webkit-font-smoothing:antialiased;min-height:100vh;
   }
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:28px 20px 90px;}
-  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--jade);margin:0 0 14px;font-weight:500;}
-  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.1;margin:0;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:24px 22px 90px;}
+  h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.1;margin:0;color:var(--navy);}
   .mono{font-family:"IBM Plex Mono",monospace;}
   .muted{color:var(--muted);}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--blue);margin:0 0 14px;font-weight:500;}
 
-  .brand{display:flex;align-items:center;gap:11px;margin-bottom:34px;}
-  .capsule{width:30px;height:14px;border-radius:14px;
-    background:linear-gradient(90deg,var(--jade) 0 50%, var(--gold) 50% 100%);
-    box-shadow:0 0 0 3px rgba(47,179,155,.10);flex:none;}
-  .brand-name{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--text);}
-  .brand-name b{color:var(--jade);font-weight:600;}
+  /* top bar */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:6px;}
+  .brand{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+  .capsule{width:32px;height:14px;border-radius:14px;flex:none;
+    background:linear-gradient(90deg,var(--blue) 0 50%, var(--red) 50% 100%);
+    box-shadow:0 0 0 3px rgba(31,87,181,.10);}
+  .wordmark{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;
+    letter-spacing:.28em;color:var(--navy);text-transform:uppercase;}
+  .byline{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);padding-left:11px;border-left:1px solid var(--line);}
+  .ai-chip{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.14em;font-weight:600;
+    text-transform:uppercase;color:var(--red);border:1px solid rgba(200,16,46,.35);
+    border-radius:20px;padding:3px 9px;}
+  .admin-link{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;color:var(--muted);
+    text-transform:uppercase;background:none;border:none;cursor:pointer;transition:color .18s;}
+  .admin-link:hover{color:var(--blue);}
 
-  .btn{appearance:none;cursor:pointer;border:none;border-radius:11px;
-    font-family:"IBM Plex Sans",sans-serif;font-size:15px;font-weight:600;padding:13px 22px;
-    transition:transform .12s ease, background .18s ease, opacity .18s ease;}
+  /* buttons */
+  .btn{appearance:none;cursor:pointer;border:none;border-radius:11px;font-family:"IBM Plex Sans",sans-serif;
+    font-size:15px;font-weight:600;padding:14px 26px;transition:transform .12s, background .18s, box-shadow .18s;}
   .btn:active{transform:translateY(1px);}
-  .btn-primary{background:var(--jade);color:#06201b;}
-  .btn-primary:hover{background:#41c5ac;}
-  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line);}
-  .btn-ghost:hover{border-color:var(--jade);color:var(--jade);}
-  .btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 8px 22px -10px rgba(31,87,181,.55);}
+  .btn-primary:hover{background:var(--blue-bright);}
+  .btn-ghost{background:var(--white);color:var(--blue);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--blue);}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
   .btn[disabled]{opacity:.4;cursor:not-allowed;}
   .btn-sm{padding:8px 14px;font-size:13px;border-radius:9px;}
-  .btn-danger{background:transparent;color:var(--danger);border:1px solid rgba(224,121,107,.4);}
-  .btn-danger:hover{background:rgba(224,121,107,.12);}
+  .btn-danger{background:var(--white);color:var(--red);border:1px solid rgba(200,16,46,.4);}
+  .btn-danger:hover{background:var(--red-soft);}
 
-  .hero{margin-top:18px;}
-  .hero h1{font-size:clamp(34px,7vw,52px);letter-spacing:-.01em;}
-  .hero h1 .em{font-style:italic;color:var(--gold);}
-  .hero p{color:var(--muted);font-size:17px;max-width:50ch;margin:18px 0 30px;}
-  .meta-strip{display:flex;gap:26px;flex-wrap:wrap;margin-top:46px;padding-top:22px;border-top:1px solid var(--line);}
-  .meta-strip div{font-size:13px;color:var(--muted);}
-  .meta-strip b{display:block;font-family:"IBM Plex Mono",monospace;color:var(--text);font-size:20px;font-weight:500;margin-bottom:2px;}
-
+  /* forms / cards */
   .field{margin-bottom:18px;}
-  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--text);}
-  .field input,.field select{width:100%;background:var(--surface-2);border:1px solid var(--line);
-    color:var(--text);border-radius:10px;padding:12px 14px;font-size:15px;font-family:"IBM Plex Sans",sans-serif;}
-  .field input:focus,.field select:focus{outline:none;border-color:var(--jade);box-shadow:0 0 0 3px rgba(47,179,155,.16);}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--navy);}
+  .field input,.field select{width:100%;background:var(--white);border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:12px 14px;font-size:15px;font-family:"IBM Plex Sans",sans-serif;}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,87,181,.15);}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px;
+    box-shadow:0 14px 40px -28px rgba(21,41,75,.35);}
 
-  .progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px;}
-  .progress-head .qn{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;color:var(--jade);text-transform:uppercase;}
+  /* landing */
+  .hero{margin-top:34px;animation:rise .7s cubic-bezier(.2,.7,.2,1) both;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+  .hero h1.quote{font-size:clamp(30px,5.4vw,46px);letter-spacing:-.01em;line-height:1.18;max-width:16ch;}
+  .hero h1 .em{font-style:italic;color:var(--red);}
+  .quote-attr{font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.04em;color:var(--muted);margin:16px 0 0;}
+  .motivation{margin:26px 0 6px;max-width:54ch;}
+  .motivation p{margin:0;font-size:16px;line-height:1.65;color:var(--muted-2);}
+  .motivation .lead{color:var(--navy);font-weight:600;margin-bottom:2px;}
+
+  .values{margin:40px 0 36px;}
+  .values .vh{font-size:20px;margin-bottom:18px;}
+  .qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .qitem{display:flex;gap:12px;align-items:flex-start;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:15px;transition:transform .15s, box-shadow .15s;}
+  .qitem:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(21,41,75,.4);}
+  .qic{flex:none;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--soft);}
+  .qic svg{width:18px;height:18px;fill:none;stroke:var(--blue);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .qitem:nth-child(even) .qic{background:var(--red-soft);}
+  .qitem:nth-child(even) .qic svg{stroke:var(--red);}
+  .qitem h4{font-family:"IBM Plex Sans",sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin:0 0 3px;}
+  .qitem p{margin:0;font-size:12.5px;line-height:1.45;color:var(--muted);}
+  @media (max-width:760px){.qgrid{grid-template-columns:1fr 1fr;}}
+
+  .start-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px;}
+  .start-row .note{font-size:13px;color:var(--muted);}
+  .foot{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);opacity:.85;}
+
+  /* quiz */
+  .progress-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:18px 0 10px;}
+  .progress-head .qn{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;color:var(--blue);text-transform:uppercase;}
   .progress-head .sec{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;text-align:right;}
-  .track{height:4px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin-bottom:28px;}
-  .track > i{display:block;height:100%;background:linear-gradient(90deg,var(--jade-soft),var(--jade));width:0;transition:width .4s ease;}
-  .scenario{font-family:"Fraunces",serif;font-size:22px;line-height:1.34;margin-bottom:22px;}
+  .track{height:5px;background:var(--line);border-radius:5px;overflow:hidden;margin-bottom:28px;}
+  .track > i{display:block;height:100%;background:linear-gradient(90deg,var(--blue-deep),var(--blue));width:0;transition:width .4s ease;}
+  .scenario{font-family:"Fraunces",serif;font-size:22px;line-height:1.34;margin-bottom:22px;color:var(--navy);}
   .options{display:flex;flex-direction:column;gap:11px;}
-  .opt{text-align:left;background:var(--surface-2);border:1px solid var(--line);color:var(--text);
-    border-radius:11px;padding:15px 16px;font-size:15px;cursor:pointer;display:flex;gap:13px;align-items:flex-start;
-    transition:border-color .15s ease, background .15s ease;font-family:"IBM Plex Sans",sans-serif;line-height:1.4;}
-  .opt:hover{border-color:var(--jade-soft);}
-  .opt .tick{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;transition:.15s ease;position:relative;}
-  .opt.sel{border-color:var(--jade);background:rgba(47,179,155,.10);}
-  .opt.sel .tick{border-color:var(--jade);background:var(--jade);}
-  .opt.sel .tick::after{content:"";position:absolute;inset:4px;border-radius:50%;background:#06201b;}
-
-  /* likert */
+  .opt{text-align:left;background:var(--white);border:1px solid var(--line);color:var(--ink);border-radius:11px;
+    padding:15px 16px;font-size:15px;cursor:pointer;display:flex;gap:13px;align-items:flex-start;
+    transition:border-color .15s, background .15s;font-family:"IBM Plex Sans",sans-serif;line-height:1.4;}
+  .opt:hover{border-color:var(--blue-bright);}
+  .opt .tick{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;transition:.15s;position:relative;}
+  .opt.sel{border-color:var(--blue);background:var(--soft);}
+  .opt.sel .tick{border-color:var(--blue);background:var(--blue);}
+  .opt.sel .tick::after{content:"";position:absolute;inset:4px;border-radius:50%;background:#fff;}
   .likert{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-  .lk{background:var(--surface-2);border:1px solid var(--line);color:var(--muted);border-radius:10px;
-    padding:14px 6px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;line-height:1.25;
-    transition:.15s ease;font-family:"IBM Plex Sans",sans-serif;}
-  .lk:hover{border-color:var(--jade-soft);}
-  .lk.sel{border-color:var(--jade);background:rgba(47,179,155,.14);color:var(--text);}
+  .lk{background:var(--white);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:14px 6px;
+    font-size:12px;font-weight:600;cursor:pointer;text-align:center;line-height:1.25;transition:.15s;font-family:"IBM Plex Sans",sans-serif;}
+  .lk:hover{border-color:var(--blue-bright);}
+  .lk.sel{border-color:var(--blue);background:var(--soft);color:var(--navy);}
   .lk .dot{display:block;width:12px;height:12px;border-radius:50%;border:2px solid currentColor;margin:0 auto 8px;}
-  .lk.sel .dot{background:var(--jade);border-color:var(--jade);}
-
+  .lk.sel .dot{background:var(--blue);border-color:var(--blue);}
   .nav{display:flex;justify-content:space-between;margin-top:28px;}
 
-  .done-wrap{text-align:center;max-width:460px;margin:50px auto 0;}
-  .done-wrap .big-tick{width:64px;height:64px;border-radius:50%;background:rgba(47,179,155,.14);
-    border:2px solid var(--jade);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;}
-  .done-wrap .big-tick svg{width:30px;height:30px;}
+  /* done */
+  .done-wrap{text-align:center;max-width:470px;margin:50px auto 0;}
+  .done-wrap .big-tick{width:64px;height:64px;border-radius:50%;background:var(--soft);border:2px solid var(--blue);
+    margin:0 auto 22px;display:flex;align-items:center;justify-content:center;}
   .done-wrap h1{font-size:30px;margin-bottom:12px;}
   .done-wrap p{color:var(--muted);font-size:16px;}
 
-  /* REPORT */
-  .report{background:#FBFAF6;color:#1B2A2C;border-radius:var(--radius);overflow:hidden;border:1px solid #E6E1D6;}
+  /* report */
+  .report{background:var(--white);color:var(--ink);border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);}
   .report-inner{padding:40px 40px 34px;}
-  .rep-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid #1B2A2C;padding-bottom:18px;margin-bottom:26px;}
-  .rep-brand{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#3a4f50;display:flex;align-items:center;}
-  .rep-brand b{color:#138a73;}
-  .rep-top h2{font-family:"Fraunces",serif;font-size:25px;color:#10211f;margin-top:6px;}
-  .rep-cap{width:30px;height:14px;border-radius:14px;background:linear-gradient(90deg,#1ba189 0 50%, #b9923f 50% 100%);flex:none;margin-right:10px;}
-  .rep-id{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#6a7b7a;text-align:right;}
+  .rep-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--navy);padding-bottom:18px;margin-bottom:26px;}
+  .rep-brand{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;}
+  .rep-brand b{color:var(--blue);}
+  .rep-top h2{font-family:"Fraunces",serif;font-size:25px;color:var(--navy);margin-top:6px;}
+  .rep-cap{width:30px;height:14px;border-radius:14px;background:linear-gradient(90deg,var(--blue) 0 50%, var(--red) 50% 100%);flex:none;margin-right:10px;}
+  .rep-id{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);text-align:right;}
   .rep-person{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
-  .rep-person .cell{background:#F1EEE4;border-radius:10px;padding:12px 14px;}
-  .rep-person .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#7d8c8a;margin-bottom:3px;}
-  .rep-person .v{font-size:15px;font-weight:600;color:#15302d;}
+  .rep-person .cell{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .rep-person .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+  .rep-person .v{font-size:15px;font-weight:600;color:var(--navy);}
 
-  .verdict{display:flex;gap:24px;align-items:center;background:#10211f;border-radius:12px;padding:24px 26px;margin-bottom:26px;}
-  .verdict .vtext{color:#EAF1EF;}
-  .verdict .band{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
-  .verdict .rec{font-family:"Fraunces",serif;font-size:18px;line-height:1.35;color:#fff;}
+  .verdict{display:flex;gap:24px;align-items:center;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:26px;}
+  .verdict .band{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:6px;color:var(--blue);}
+  .verdict .rec{font-family:"Fraunces",serif;font-size:18px;line-height:1.35;color:var(--navy);}
 
-  .sec-label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#138a73;margin:0 0 14px;font-weight:600;}
+  .sec-label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin:0 0 14px;font-weight:600;}
   .block{margin-bottom:30px;}
-
   .meters{display:flex;flex-direction:column;gap:14px;}
   .meter .mrow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
-  .meter .mname{font-size:14px;font-weight:600;color:#1B2A2C;}
-  .meter .msub{font-weight:400;color:#7d8c8a;font-size:12px;}
-  .meter .mval{font-family:"IBM Plex Mono",monospace;font-size:13px;color:#3a4f50;font-weight:500;}
-  .meter .mtrack{height:9px;background:#E6E1D6;border-radius:6px;overflow:hidden;}
+  .meter .mname{font-size:14px;font-weight:600;color:var(--navy);}
+  .meter .msub{font-weight:400;color:var(--muted);font-size:12px;}
+  .meter .mval{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted-2);font-weight:500;}
+  .meter .mtrack{height:9px;background:var(--line);border-radius:6px;overflow:hidden;}
   .meter .mfill{height:100%;border-radius:6px;}
-
-  .readout{font-size:14px;color:#27403d;line-height:1.5;margin-top:14px;background:#F1EEE4;border-radius:10px;padding:14px 16px;}
-  .disc-tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
-    background:#10211f;color:#7fe6cf;border-radius:20px;padding:4px 12px;margin:0 8px 8px 0;letter-spacing:.04em;}
-
-  .deptfit{display:flex;align-items:center;gap:16px;background:#F1EEE4;border-radius:11px;padding:18px 20px;}
+  .readout{font-size:14px;color:var(--muted-2);line-height:1.5;margin-top:14px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .disc-tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;background:var(--soft);color:var(--blue-deep);border:1px solid var(--line);border-radius:20px;padding:4px 12px;margin:0 8px 8px 0;}
+  .deptfit{display:flex;align-items:center;gap:16px;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:18px 20px;}
   .deptfit .dpill{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap;}
-  .deptfit p{margin:0;font-size:14px;color:#27403d;}
-
+  .deptfit p{margin:0;font-size:14px;color:var(--muted-2);}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  .panel{background:#F1EEE4;border-radius:11px;padding:18px 20px;}
-  .panel.good{border-left:3px solid #1ba189;}
-  .panel.weak{border-left:3px solid #cf7263;}
-  .panel h4{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px;color:#3a4f50;font-weight:600;}
-  .fitline{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;color:#27403d;}
-  .fitline .fv{font-family:"IBM Plex Mono",monospace;color:#6a7b7a;}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:18px 20px;}
+  .panel.good{border-left:3px solid var(--blue);}
+  .panel.weak{border-left:3px solid var(--red);}
+  .panel h4{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px;color:var(--muted);font-weight:600;}
+  .fitline{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;color:var(--muted-2);}
+  .fitline .fv{font-family:"IBM Plex Mono",monospace;color:var(--muted);}
+  .probe{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:13px 16px;margin-bottom:10px;}
+  .probe .pdim{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .probe .pq{font-size:14px;color:var(--navy);}
+  .rep-foot{border-top:1px solid var(--line);padding-top:16px;font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:6px;}
 
-  .probe{background:#F1EEE4;border-left:3px solid #b9923f;border-radius:0 10px 10px 0;padding:13px 16px;margin-bottom:10px;}
-  .probe .pdim{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#7d8c8a;margin-bottom:4px;}
-  .probe .pq{font-size:14px;color:#1B2A2C;}
-
-  .rep-foot{border-top:1px solid #E0DACB;padding-top:16px;font-size:11.5px;color:#7d8c8a;line-height:1.5;margin-top:6px;}
-
+  /* admin */
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;}
-  .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:16px;}
-  .stat .sv{font-family:"IBM Plex Mono",monospace;font-size:26px;color:var(--jade);font-weight:500;}
+  .stat{background:var(--white);border:1px solid var(--line);border-radius:11px;padding:16px;}
+  .stat .sv{font-family:"IBM Plex Mono",monospace;font-size:26px;color:var(--blue);font-weight:500;}
   .stat .sk{font-size:12px;color:var(--muted);margin-top:2px;}
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
-  .toolbar select{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 12px;font-size:13px;font-family:"IBM Plex Sans",sans-serif;}
+  .toolbar select{background:var(--white);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 12px;font-size:13px;font-family:"IBM Plex Sans",sans-serif;}
   .sync-note{font-size:12px;color:var(--muted);margin:0 0 16px;}
-  .sync-note b{color:var(--warn);}
+  .sync-note b{color:var(--red);}
   table{width:100%;border-collapse:collapse;font-size:14px;}
   th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:0 10px 10px;border-bottom:1px solid var(--line);}
-  td{padding:13px 10px;border-bottom:1px solid var(--surface-2);vertical-align:middle;}
-  tr:hover td{background:rgba(47,179,155,.04);}
+  td{padding:13px 10px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink);}
+  tr:hover td{background:var(--soft);}
   .pill{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;}
-  .pill.strong{background:rgba(95,191,142,.16);color:var(--ok);}
-  .pill.good{background:rgba(47,179,155,.16);color:var(--jade);}
-  .pill.border{background:rgba(216,178,94,.16);color:var(--warn);}
-  .pill.concern{background:rgba(224,121,107,.16);color:var(--danger);}
+  .pill.strong{background:#E6EFFB;color:var(--blue-deep);}
+  .pill.good{background:#EAF0FA;color:var(--blue-bright);}
+  .pill.border{background:#EEF1F6;color:var(--muted);}
+  .pill.concern{background:var(--red-soft);color:var(--red);}
   .row-act{display:flex;gap:8px;}
   .empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
 
@@ -181,33 +204,60 @@
 
   @media (max-width:560px){
     .report-inner{padding:24px 18px;}
-    .rep-person,.stats{grid-template-columns:1fr 1fr;}
+    .rep-person,.stats,.qgrid{grid-template-columns:1fr;}
     .two-col{grid-template-columns:1fr;}
     .verdict,.deptfit{flex-direction:column;align-items:flex-start;}
-    .likert{grid-template-columns:repeat(5,1fr);gap:5px;}
-    .lk{font-size:10px;padding:11px 3px;}
+    .byline{display:none;}
     th.hide-sm,td.hide-sm{display:none;}
   }
-  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="brand"><span class="capsule"></span><span class="brand-name"><b>Mediseller</b> · Screening</span></div>
+  <div class="top">
+    <div class="brand">
+      <span class="capsule"></span>
+      <span class="wordmark">Compass</span>
+      <span class="byline">by Mediseller</span>
+      <span class="ai-chip">AI-Powered</span>
+    </div>
+    <button class="admin-link" onclick="show('view-admin-gate')">Admin login</button>
+  </div>
 
   <!-- LANDING -->
   <section id="view-landing">
     <div class="hero">
-      <p class="eyebrow">People &amp; Culture · Department Screening</p>
-      <h1>The Mediseller <span class="em">Screening</span></h1>
-      <p>A short assessment of how you reason, work with numbers, and approach real situations in your role. Answer honestly — your first instinct is usually the most accurate.</p>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="startIntake()">Start</button>
-        <button class="btn btn-ghost" onclick="show('view-admin-gate')">Admin login</button>
+      <p class="eyebrow">People &amp; Culture · An AI-Powered Initiative</p>
+      <!-- Swap the quote below for one of these verified alternatives if preferred:
+           N. R. Narayana Murthy — "The softest pillow is a clear conscience."
+           Dhirubhai Ambani — "Think big, think fast, think ahead. Ideas are no one's monopoly." -->
+      <h1 class="quote">"When you work, work as if <span class="em">everything depends on you</span>."</h1>
+      <p class="quote-attr">— J. R. D. Tata, Tata Group</p>
+
+      <div class="motivation">
+        <p class="lead">There are no right or wrong answers — only honest ones.</p>
+        <p>Answer with your first, natural reaction. The more candid you are, the better the fit we find.</p>
       </div>
-      <div class="meta-strip">
-        <div><b>4</b>sections</div><div><b>~36</b>questions</div><div><b>~15</b>minutes</div>
+
+      <div class="values">
+        <h3 class="vh">What we value at Mediseller</h3>
+        <div class="qgrid">
+          <div class="qitem"><span class="qic"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><h4>Integrity</h4><p>Doing right when no one is watching.</p></div></div>
+          <div class="qitem"><span class="qic"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg></span><div><h4>Ownership</h4><p>Acting without being told.</p></div></div>
+          <div class="qitem"><span class="qic"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2 4 4 0 017 2c0 5.5-7 10-7 10z"/></svg></span><div><h4>Care for customers</h4><p>Patient, steady follow-through.</p></div></div>
+          <div class="qitem"><span class="qic"><svg viewBox="0 0 24 24"><path d="M3 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><div><h4>Composure</h4><p>Calm and clear under pressure.</p></div></div>
+          <div class="qitem"><span class="qic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></span><div><h4>Precision</h4><p>Accuracy in every detail.</p></div></div>
+          <div class="qitem"><span class="qic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/></svg></span><div><h4>Sound judgment</h4><p>Weighing trade-offs before deciding.</p></div></div>
+        </div>
       </div>
+
+      <div class="start-row">
+        <button class="btn btn-primary" onclick="startIntake()">Start the assessment</button>
+        <span class="note">Takes around 15 minutes</span>
+      </div>
+
+      <div class="foot">Compass · An AI-powered Mediseller People &amp; Culture Initiative</div>
     </div>
   </section>
 
@@ -217,17 +267,11 @@
     <h1 style="font-size:30px;margin-bottom:8px;">A few details</h1>
     <p class="muted" style="margin:0 0 24px;">Pick the role you're being assessed for. There are no trick questions.</p>
     <div class="card">
-      <div class="field"><label for="in-name">Full name</label>
-        <input id="in-name" type="text" placeholder="e.g. Riya Sharma" autocomplete="name" /></div>
-      <div class="field"><label for="in-dept">Department / function</label>
-        <select id="in-dept"><option value="">Select…</option></select></div>
-      <div class="field"><label for="in-status">Status</label>
-        <select id="in-status"><option>Current employee</option><option>Candidate</option></select></div>
-      <p id="intake-err" class="hidden" style="color:var(--danger);font-size:13px;margin:0 0 14px;">Please enter a name and select a department.</p>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="beginAssessment()">Begin</button>
-        <button class="btn btn-ghost" onclick="show('view-landing')">Cancel</button>
-      </div>
+      <div class="field"><label for="in-name">Full name</label><input id="in-name" type="text" placeholder="e.g. Riya Sharma" autocomplete="name" /></div>
+      <div class="field"><label for="in-dept">Department / function</label><select id="in-dept"><option value="">Select…</option></select></div>
+      <div class="field"><label for="in-status">Status</label><select id="in-status"><option>Current employee</option><option>Candidate</option></select></div>
+      <p id="intake-err" class="hidden" style="color:var(--red);font-size:13px;margin:0 0 14px;">Please enter a name and select a department.</p>
+      <div class="btn-row"><button class="btn btn-primary" onclick="beginAssessment()">Begin</button><button class="btn btn-ghost" onclick="show('view-landing')">Cancel</button></div>
     </div>
   </section>
 
@@ -237,25 +281,20 @@
     <div class="track"><i id="q-progress"></i></div>
     <div class="scenario" id="q-scenario"></div>
     <div id="q-body"></div>
-    <div class="nav">
-      <button class="btn btn-ghost" id="q-back" onclick="prevQuestion()">Back</button>
-      <button class="btn btn-primary" id="q-next" onclick="nextQuestion()" disabled>Next</button>
-    </div>
+    <div class="nav"><button class="btn btn-ghost" id="q-back" onclick="prevQuestion()">Back</button><button class="btn btn-primary" id="q-next" onclick="nextQuestion()" disabled>Next</button></div>
   </section>
 
-  <!-- DONE (test-taker) -->
+  <!-- DONE -->
   <section id="view-done" class="hidden">
     <div class="done-wrap">
-      <div class="big-tick"><svg viewBox="0 0 24 24" fill="none" stroke="#2FB39B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="big-tick"><svg viewBox="0 0 24 24" fill="none" stroke="#1F57B5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M20 6L9 17l-5-5"/></svg></div>
       <h1>Responses recorded</h1>
       <p>Thank you for completing the assessment. Your responses have been submitted to the Mediseller team. You can close this window now.</p>
-      <div class="btn-row" style="justify-content:center;margin-top:26px;">
-        <button class="btn btn-ghost" onclick="show('view-landing')">Back to start</button>
-      </div>
+      <div class="btn-row" style="justify-content:center;margin-top:26px;"><button class="btn btn-ghost" onclick="show('view-landing')">Back to start</button></div>
     </div>
   </section>
 
-  <!-- REPORT (admin only) -->
+  <!-- REPORT -->
   <section id="view-report" class="hidden">
     <div class="btn-row" style="margin-bottom:18px;">
       <button class="btn btn-primary btn-sm" onclick="downloadPDF()">Download PDF</button>
@@ -270,23 +309,16 @@
       <p class="eyebrow" style="text-align:center;">Restricted</p>
       <h1 style="font-size:28px;text-align:center;margin-bottom:20px;">Admin access</h1>
       <div class="card">
-        <div class="field"><label for="admin-pw">Password</label>
-          <input id="admin-pw" type="password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')tryAdmin()" /></div>
-        <p id="admin-err" class="hidden" style="color:var(--danger);font-size:13px;margin:0 0 14px;">Incorrect password.</p>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="tryAdmin()">Enter</button>
-          <button class="btn btn-ghost" onclick="show('view-landing')">Back</button>
-        </div>
+        <div class="field"><label for="admin-pw">Password</label><input id="admin-pw" type="password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')tryAdmin()" /></div>
+        <p id="admin-err" class="hidden" style="color:var(--red);font-size:13px;margin:0 0 14px;">Incorrect password.</p>
+        <div class="btn-row"><button class="btn btn-primary" onclick="tryAdmin()">Enter</button><button class="btn btn-ghost" onclick="show('view-landing')">Back</button></div>
       </div>
     </div>
   </section>
 
-  <!-- ADMIN DASHBOARD -->
+  <!-- ADMIN -->
   <section id="view-admin" class="hidden">
-    <div class="progress-head" style="margin-bottom:18px;">
-      <span class="eyebrow" style="margin:0;">Admin · Results</span>
-      <button class="btn btn-ghost btn-sm" onclick="show('view-landing')">Exit</button>
-    </div>
+    <div class="progress-head" style="margin-bottom:18px;"><span class="eyebrow" style="margin:0;">Admin · Results</span><button class="btn btn-ghost btn-sm" onclick="show('view-landing')">Exit</button></div>
     <div class="stats" id="admin-stats"></div>
     <p class="sync-note" id="sync-note"></p>
     <div class="toolbar">
@@ -300,28 +332,15 @@
 </div>
 
 <script>
-/* =================================================================
-   MEDISELLER SCREENING
-   CONFIG — set these two before hosting.
-   1) ADMIN_PASSWORD  — light gate for the admin view (not strong security).
-   2) SHEET_ENDPOINT  — paste your Google Apps Script Web App URL
-                        (see the setup guide). Leave "" to use this
-                        device's local storage only.
-   ================================================================= */
+/* ===== CONFIG ===== */
 const ADMIN_PASSWORD = "Mediseller@2026";
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxr5Md8mgezHT-jy3fAAh4T9z-qefvOaQTd5abMh7FxktdzTo2eacV3xLzbDXZU6PpnDg/exec";  // e.g. "https://script.google.com/macros/s/XXXX/exec"
-const STORE_KEY = "mediseller_screening_v2";
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxr5Md8mgezHT-jy3fAAh4T9z-qefvOaQTd5abMh7FxktdzTo2eacV3xLzbDXZU6PpnDg/exec";
+const STORE_KEY = "compass_results_v1";
 
 const DEPARTMENTS = ["Sales","Logistics & Dispatch","Data & Operations","Accounts & Finance","Procurement","Customer Support","HR & Admin"];
 
-/* ---------- Personality (Big Five) trait meta + DISC ---------- */
-const TRAITS = {
-  C:{name:"Conscientiousness"}, ES:{name:"Emotional Stability"},
-  E:{name:"Extraversion"}, A:{name:"Agreeableness"}, O:{name:"Openness"}
-};
+const TRAITS = {C:{name:"Conscientiousness"},ES:{name:"Emotional Stability"},E:{name:"Extraversion"},A:{name:"Agreeableness"},O:{name:"Openness"}};
 
-/* ---------- Work archetypes + weights over inputs ---------- */
-const INPUT_KEYS = ["analytical","numeracy","C","ES","E","A","O","values"];
 const ARCH = {
   sales:  {name:"Client-facing / Sales",            w:{E:.25,ES:.20,values:.15,A:.10,analytical:.10,numeracy:.10,C:.10,O:0}},
   ops:    {name:"Coordination / Operations",        w:{C:.25,A:.20,values:.15,ES:.15,analytical:.10,numeracy:.10,E:.05,O:0}},
@@ -329,37 +348,21 @@ const ARCH = {
   detail: {name:"Detail & Compliance / Back-office",w:{C:.30,numeracy:.20,values:.20,analytical:.15,ES:.10,A:.05,E:0,O:0}},
   support:{name:"People / Support",                 w:{A:.30,ES:.20,values:.15,E:.15,C:.10,analytical:.05,numeracy:.05,O:0}}
 };
-const DEPT_ARCH = {
-  "Sales":"sales","Customer Support":"support","Logistics & Dispatch":"ops",
-  "Data & Operations":"data","Accounts & Finance":"detail","Procurement":"ops","HR & Admin":"support"
-};
+const DEPT_ARCH = {"Sales":"sales","Customer Support":"support","Logistics & Dispatch":"ops","Data & Operations":"data","Accounts & Finance":"detail","Procurement":"ops","HR & Admin":"support"};
 
-/* ===================== QUESTION BANK ===================== */
-/* A. APTITUDE (objective) */
 const APTITUDE = [
-  {sub:"numeracy", q:"You buy a product for \u20b9400 and sell it for \u20b9520. What is the profit as a percentage of cost?",
-    options:["24%","30%","23%","120%"], correct:1},
-  {sub:"numeracy", q:"An order is 12 boxes at \u20b9250 each, with an 8% discount on the total. What is the amount payable?",
-    options:["\u20b92,760","\u20b92,640","\u20b93,240","\u20b92,880"], correct:0},
-  {sub:"numeracy", q:"GST at 18% is applied to an order of \u20b915,000. How much is the GST?",
-    options:["\u20b91,800","\u20b92,500","\u20b92,700","\u20b91,500"], correct:2},
-  {sub:"numeracy", q:"A client pays \u20b96,000 as a 40% advance. What is the total order value?",
-    options:["\u20b99,000","\u20b910,000","\u20b924,000","\u20b915,000"], correct:3},
-  {sub:"numeracy", q:"Convert 2.5 kg into grams.",
-    options:["250 g","2,500 g","25,000 g","25 g"], correct:1},
-  {sub:"analytical", q:"What number comes next: 2, 6, 12, 20, ?",
-    options:["28","30","26","32"], correct:1},
-  {sub:"analytical", q:"All exporters must file an IEC. Mediseller is an exporter. What follows for certain?",
-    options:["Everyone who files an IEC is an exporter","Mediseller must file an IEC","Mediseller need not file an IEC","Only large exporters file an IEC"], correct:1},
-  {sub:"analytical", q:"Which one does not belong with the others?",
-    options:["Cipla","Natco","Zydus","Paracetamol"], correct:3},
-  {sub:"analytical", q:"A is faster than B. C is slower than B. Who is slowest?",
-    options:["A","B","C","Cannot be determined"], correct:2},
-  {sub:"analytical", q:"Rule: every shipment that missed its deadline had no pre-dispatch check. Shipment X did have a pre-dispatch check. What can you conclude?",
-    options:["X met its deadline","X missed its deadline","Nothing can be concluded","X had no check"], correct:0}
+  {sub:"numeracy", q:"You buy a product for \u20b9400 and sell it for \u20b9520. What is the profit as a percentage of cost?", options:["24%","30%","23%","120%"], correct:1},
+  {sub:"numeracy", q:"An order is 12 boxes at \u20b9250 each, with an 8% discount on the total. What is the amount payable?", options:["\u20b92,760","\u20b92,640","\u20b93,240","\u20b92,880"], correct:0},
+  {sub:"numeracy", q:"GST at 18% is applied to an order of \u20b915,000. How much is the GST?", options:["\u20b91,800","\u20b92,500","\u20b92,700","\u20b91,500"], correct:2},
+  {sub:"numeracy", q:"A client pays \u20b96,000 as a 40% advance. What is the total order value?", options:["\u20b99,000","\u20b910,000","\u20b924,000","\u20b915,000"], correct:3},
+  {sub:"numeracy", q:"Convert 2.5 kg into grams.", options:["250 g","2,500 g","25,000 g","25 g"], correct:1},
+  {sub:"analytical", q:"What number comes next: 2, 6, 12, 20, ?", options:["28","30","26","32"], correct:1},
+  {sub:"analytical", q:"All exporters must file an IEC. Mediseller is an exporter. What follows for certain?", options:["Everyone who files an IEC is an exporter","Mediseller must file an IEC","Mediseller need not file an IEC","Only large exporters file an IEC"], correct:1},
+  {sub:"analytical", q:"Which one does not belong with the others?", options:["Cipla","Natco","Zydus","Paracetamol"], correct:3},
+  {sub:"analytical", q:"A is faster than B. C is slower than B. Who is slowest?", options:["A","B","C","Cannot be determined"], correct:2},
+  {sub:"analytical", q:"Rule: every shipment that missed its deadline had no pre-dispatch check. Shipment X did have a pre-dispatch check. What can you conclude?", options:["X met its deadline","X missed its deadline","Nothing can be concluded","X had no check"], correct:0}
 ];
 
-/* B. PERSONALITY (Big Five, Likert; key '+' normal, '-' reverse) */
 const PERSONALITY = [
   {trait:"C", key:"+", t:"I double-check my work before I consider it finished."},
   {trait:"C", key:"+", t:"I keep my tasks, files, and records well organised."},
@@ -374,166 +377,93 @@ const PERSONALITY = [
   {trait:"O", key:"+", t:"I enjoy finding new and better ways to do routine tasks."},
   {trait:"O", key:"+", t:"I like picking up skills outside my core role."}
 ];
-const LIKERT = [
-  {l:"Strongly disagree",v:1},{l:"Disagree",v:2},{l:"Neutral",v:3},{l:"Agree",v:4},{l:"Strongly agree",v:5}
-];
+const LIKERT = [{l:"Strongly disagree",v:1},{l:"Disagree",v:2},{l:"Neutral",v:3},{l:"Agree",v:4},{l:"Strongly agree",v:5}];
 
-/* C. VALUES & JUDGMENT (common SJT, scored 4..1) */
 const VALUES = [
   {dim:"integrity", scenario:"A customer asks you to show a higher value on the invoice than the real order, and offers you a small gift for it.",
-    options:[{t:"Politely refuse, explain documents must match the real order, and flag it to your manager.",s:4},
-             {t:"Refuse and say you can't change invoice values, but tell no one.",s:3},
-             {t:"Say you'll \u201ccheck\u201d and quietly let it drop.",s:2},
-             {t:"Agree quietly \u2014 it's a small favour that keeps the client happy.",s:1}]},
+    options:[{t:"Politely refuse, explain documents must match the real order, and flag it to your manager.",s:4},{t:"Refuse and say you can't change invoice values, but tell no one.",s:3},{t:"Say you'll \u201ccheck\u201d and quietly let it drop.",s:2},{t:"Agree quietly \u2014 it's a small favour that keeps the client happy.",s:1}]},
   {dim:"integrity", scenario:"A buyer wants a regulated product and asks you to \u201cskip the paperwork\u201d to save time.",
-    options:[{t:"Explain the documentation is mandatory and proceed properly.",s:4},
-             {t:"Say you'll try, but the process genuinely can't be skipped.",s:3},
-             {t:"Ask a colleague if there's a shortcut.",s:2},
-             {t:"Quietly skip a few steps to win the order.",s:1}]},
+    options:[{t:"Explain the documentation is mandatory and proceed properly.",s:4},{t:"Say you'll try, but the process genuinely can't be skipped.",s:3},{t:"Ask a colleague if there's a shortcut.",s:2},{t:"Quietly skip a few steps to win the order.",s:1}]},
   {dim:"integrity", scenario:"A customer on WhatsApp asks you to recommend a dosage for their condition.",
-    options:[{t:"Clarify that Mediseller supplies products but doesn't give medical advice, and suggest a doctor.",s:4},
-             {t:"Share some general information you find online.",s:3},
-             {t:"Give your own view based on what other buyers order.",s:2},
-             {t:"Recommend a product and dosage to help close the sale.",s:1}]},
+    options:[{t:"Clarify that Mediseller supplies products but doesn't give medical advice, and suggest a doctor.",s:4},{t:"Share some general information you find online.",s:3},{t:"Give your own view based on what other buyers order.",s:2},{t:"Recommend a product and dosage to help close the sale.",s:1}]},
   {dim:"customer", scenario:"An international client hasn't replied to your quotation in five days.",
-    options:[{t:"Send a warm, personalised follow-up referencing their earlier need.",s:4},
-             {t:"Send a short, generic \u201cAny update?\u201d message.",s:3},
-             {t:"Wait for them to come back on their own.",s:2},
-             {t:"Mark them as not interested and move on.",s:1}]},
+    options:[{t:"Send a warm, personalised follow-up referencing their earlier need.",s:4},{t:"Send a short, generic \u201cAny update?\u201d message.",s:3},{t:"Wait for them to come back on their own.",s:2},{t:"Mark them as not interested and move on.",s:1}]},
   {dim:"customer", scenario:"A long-standing client's order volume has dropped sharply.",
-    options:[{t:"Reach out warmly to understand what changed and how you can help.",s:4},
-             {t:"Send your usual catalogue and price update.",s:3},
-             {t:"Wait to see if it recovers on its own.",s:2},
-             {t:"Focus on fresh leads instead \u2014 they look more promising.",s:1}]},
+    options:[{t:"Reach out warmly to understand what changed and how you can help.",s:4},{t:"Send your usual catalogue and price update.",s:3},{t:"Wait to see if it recovers on its own.",s:2},{t:"Focus on fresh leads instead \u2014 they look more promising.",s:1}]},
   {dim:"customer", scenario:"A client in a Friday\u2013Saturday-weekend region is slow to confirm orders.",
-    options:[{t:"Adjust your follow-up timing to their working week and norms.",s:4},
-             {t:"Keep following up on your own usual schedule.",s:3},
-             {t:"Get visibly frustrated at the delays.",s:2},
-             {t:"Assume they're not serious and deprioritise them.",s:1}]},
+    options:[{t:"Adjust your follow-up timing to their working week and norms.",s:4},{t:"Keep following up on your own usual schedule.",s:3},{t:"Get visibly frustrated at the delays.",s:2},{t:"Assume they're not serious and deprioritise them.",s:1}]},
   {dim:"ownership", scenario:"A task you own is stuck because you're waiting on another team.",
-    options:[{t:"Follow up proactively, set a reminder, and progress a parallel task meanwhile.",s:4},
-             {t:"Send one message and wait for the reply.",s:3},
-             {t:"Mark it blocked and move on without chasing.",s:2},
-             {t:"Leave it until someone asks why it isn't done.",s:1}]},
+    options:[{t:"Follow up proactively, set a reminder, and progress a parallel task meanwhile.",s:4},{t:"Send one message and wait for the reply.",s:3},{t:"Mark it blocked and move on without chasing.",s:2},{t:"Leave it until someone asks why it isn't done.",s:1}]},
   {dim:"ownership", scenario:"You notice the same mistake has caused two recent problems. Nobody asked you to look into it.",
-    options:[{t:"Document the pattern and propose a simple fix to your manager.",s:4},
-             {t:"Mention it casually to a colleague.",s:3},
-             {t:"Assume someone else will catch it.",s:2},
-             {t:"Ignore it \u2014 it isn't your job.",s:1}]},
+    options:[{t:"Document the pattern and propose a simple fix to your manager.",s:4},{t:"Mention it casually to a colleague.",s:3},{t:"Assume someone else will catch it.",s:2},{t:"Ignore it \u2014 it isn't your job.",s:1}]},
   {dim:"ownership", scenario:"You've finished your assigned work early, with time to spare.",
-    options:[{t:"Pick up a pending list or tidy something that's been slipping.",s:4},
-             {t:"Ask your manager if there's anything else.",s:3},
-             {t:"Wait for the next thing to be assigned.",s:2},
-             {t:"Use the spare time for personal browsing.",s:1}]}
+    options:[{t:"Pick up a pending list or tidy something that's been slipping.",s:4},{t:"Ask your manager if there's anything else.",s:3},{t:"Wait for the next thing to be assigned.",s:2},{t:"Use the spare time for personal browsing.",s:1}]}
 ];
 
-/* D. DEPARTMENT-SPECIFIC (5 each, scored 4..1) */
 const DEPT_Q = {
 "Sales":[
-  {scenario:"A serious buyer says your price is too high and a competitor is cheaper.",
-   options:[{t:"Understand their real concern, then justify value (quality, reliability, terms) before discussing price.",s:4},{t:"Immediately offer your maximum discount to save the deal.",s:3},{t:"Say the price is fixed and leave it there.",s:2},{t:"Criticise the competitor's quality without evidence.",s:1}]},
-  {scenario:"A hot lead went quiet after a strong first call.",
-   options:[{t:"Follow up with a specific, helpful reason to re-engage (sample, reference, updated quote).",s:4},{t:"Send repeated \u201cAre you interested?\u201d messages.",s:3},{t:"Wait a few weeks and hope they return.",s:2},{t:"Drop them and chase new leads only.",s:1}]},
-  {scenario:"A client asks for a product you're not sure you can source reliably.",
-   options:[{t:"Be honest, check sourcing first, and commit only once you can deliver.",s:4},{t:"Say yes now and figure out sourcing later.",s:3},{t:"Say maybe and avoid following up.",s:2},{t:"Promise a date you know is unrealistic to lock the order.",s:1}]},
-  {scenario:"A repeat client repeatedly negotiates hard and delays payment.",
-   options:[{t:"Hold firm on clear terms while keeping the relationship warm and professional.",s:4},{t:"Keep giving in to avoid losing them.",s:3},{t:"Get short and cold with them.",s:2},{t:"Quietly inflate quotes to recover the margin.",s:1}]},
-  {scenario:"You could upsell a larger pack the client doesn't really need yet.",
-   options:[{t:"Recommend what genuinely fits their need, even if it's smaller.",s:4},{t:"Suggest the bigger pack but mention it's optional.",s:3},{t:"Push the bigger pack hard for the commission.",s:2},{t:"Imply they'll run out fast to pressure the bigger order.",s:1}]}
+  {scenario:"A serious buyer says your price is too high and a competitor is cheaper.",options:[{t:"Understand their real concern, then justify value (quality, reliability, terms) before discussing price.",s:4},{t:"Immediately offer your maximum discount to save the deal.",s:3},{t:"Say the price is fixed and leave it there.",s:2},{t:"Criticise the competitor's quality without evidence.",s:1}]},
+  {scenario:"A hot lead went quiet after a strong first call.",options:[{t:"Follow up with a specific, helpful reason to re-engage (sample, reference, updated quote).",s:4},{t:"Send repeated \u201cAre you interested?\u201d messages.",s:3},{t:"Wait a few weeks and hope they return.",s:2},{t:"Drop them and chase new leads only.",s:1}]},
+  {scenario:"A client asks for a product you're not sure you can source reliably.",options:[{t:"Be honest, check sourcing first, and commit only once you can deliver.",s:4},{t:"Say yes now and figure out sourcing later.",s:3},{t:"Say maybe and avoid following up.",s:2},{t:"Promise a date you know is unrealistic to lock the order.",s:1}]},
+  {scenario:"A repeat client repeatedly negotiates hard and delays payment.",options:[{t:"Hold firm on clear terms while keeping the relationship warm and professional.",s:4},{t:"Keep giving in to avoid losing them.",s:3},{t:"Get short and cold with them.",s:2},{t:"Quietly inflate quotes to recover the margin.",s:1}]},
+  {scenario:"You could upsell a larger pack the client doesn't really need yet.",options:[{t:"Recommend what genuinely fits their need, even if it's smaller.",s:4},{t:"Suggest the bigger pack but mention it's optional.",s:3},{t:"Push the bigger pack hard for the commission.",s:2},{t:"Imply they'll run out fast to pressure the bigger order.",s:1}]}
 ],
 "Logistics & Dispatch":[
-  {scenario:"A shipment will be delayed by two days due to a courier issue.",
-   options:[{t:"Inform the client proactively with the new date and a clear reason.",s:4},{t:"Wait until they ask before telling them.",s:3},{t:"Hope it catches up and say nothing.",s:2},{t:"Blame the courier openly to the client.",s:1}]},
-  {scenario:"You must pick a carrier: one is cheaper, one is more reliable for a fragile pharma order.",
-   options:[{t:"Choose reliability for fragile goods and note the reason.",s:4},{t:"Choose the cheaper option to save cost.",s:3},{t:"Pick whichever is faster to set up.",s:2},{t:"Pick at random \u2014 they're all similar.",s:1}]},
-  {scenario:"Just before dispatch you find the shipping address is missing its pincode. The order is \u201curgent.\u201d",
-   options:[{t:"Confirm the full correct address with the client before shipping.",s:4},{t:"Use the address from a previous order.",s:3},{t:"Ship with the pincode you think is right.",s:2},{t:"Ship as-is to avoid delay.",s:1}]},
-  {scenario:"You spot that fragile vials are being packed the same as boxes of tablets.",
-   options:[{t:"Stop, flag it, and set a simple packing rule for fragile items.",s:4},{t:"Mention it to a colleague in passing.",s:3},{t:"Assume the packer knows best.",s:2},{t:"Let it go \u2014 packing isn't your call.",s:1}]},
-  {scenario:"Two orders are ready but you can only dispatch one before cut-off.",
-   options:[{t:"Prioritise by deadline and value, and inform the other client of timing.",s:4},{t:"Send whichever was packed first.",s:3},{t:"Send the easier one to handle.",s:2},{t:"Delay both to tomorrow to be safe.",s:1}]}
+  {scenario:"A shipment will be delayed by two days due to a courier issue.",options:[{t:"Inform the client proactively with the new date and a clear reason.",s:4},{t:"Wait until they ask before telling them.",s:3},{t:"Hope it catches up and say nothing.",s:2},{t:"Blame the courier openly to the client.",s:1}]},
+  {scenario:"You must pick a carrier: one is cheaper, one is more reliable for a fragile pharma order.",options:[{t:"Choose reliability for fragile goods and note the reason.",s:4},{t:"Choose the cheaper option to save cost.",s:3},{t:"Pick whichever is faster to set up.",s:2},{t:"Pick at random \u2014 they're all similar.",s:1}]},
+  {scenario:"Just before dispatch you find the shipping address is missing its pincode. The order is \u201curgent.\u201d",options:[{t:"Confirm the full correct address with the client before shipping.",s:4},{t:"Use the address from a previous order.",s:3},{t:"Ship with the pincode you think is right.",s:2},{t:"Ship as-is to avoid delay.",s:1}]},
+  {scenario:"You spot that fragile vials are being packed the same as boxes of tablets.",options:[{t:"Stop, flag it, and set a simple packing rule for fragile items.",s:4},{t:"Mention it to a colleague in passing.",s:3},{t:"Assume the packer knows best.",s:2},{t:"Let it go \u2014 packing isn't your call.",s:1}]},
+  {scenario:"Two orders are ready but you can only dispatch one before cut-off.",options:[{t:"Prioritise by deadline and value, and inform the other client of timing.",s:4},{t:"Send whichever was packed first.",s:3},{t:"Send the easier one to handle.",s:2},{t:"Delay both to tomorrow to be safe.",s:1}]}
 ],
 "Data & Operations":[
-  {scenario:"You receive a messy lead file with duplicates and inconsistent formats.",
-   options:[{t:"Define a clean, repeatable process: dedupe, standardise, validate, then load.",s:4},{t:"Clean the obvious issues and load the rest as-is.",s:3},{t:"Load everything and fix problems later.",s:2},{t:"Use it without checking \u2014 it looks fine.",s:1}]},
-  {scenario:"You notice a sudden, odd spike in one metric in a report.",
-   options:[{t:"Investigate the cause before reporting it as real.",s:4},{t:"Report it but add a small note of doubt.",s:3},{t:"Report it as-is.",s:2},{t:"Ignore it \u2014 numbers are numbers.",s:1}]},
-  {scenario:"A manual task you do daily takes an hour and is error-prone.",
-   options:[{t:"Propose or build a simple repeatable/automated process for it.",s:4},{t:"Keep doing it but more carefully.",s:3},{t:"Do it quickly and accept the errors.",s:2},{t:"Leave it \u2014 that's just how it is.",s:1}]},
-  {scenario:"You're entering a bulk order of 12 line items at end of day.",
-   options:[{t:"Check each item, strength, and quantity against the source before saving.",s:4},{t:"Enter them and glance at the total.",s:3},{t:"Enter quickly and fix issues if they surface.",s:2},{t:"Copy a similar past order and tweak it.",s:1}]},
-  {scenario:"You have a backlog and limited time today.",
-   options:[{t:"Prioritise by impact and deadline, and flag what won't get done.",s:4},{t:"Start from the top of the list and work down.",s:3},{t:"Do the quick, easy ones first.",s:2},{t:"Do whatever you feel like first.",s:1}]}
+  {scenario:"You receive a messy lead file with duplicates and inconsistent formats.",options:[{t:"Define a clean, repeatable process: dedupe, standardise, validate, then load.",s:4},{t:"Clean the obvious issues and load the rest as-is.",s:3},{t:"Load everything and fix problems later.",s:2},{t:"Use it without checking \u2014 it looks fine.",s:1}]},
+  {scenario:"You notice a sudden, odd spike in one metric in a report.",options:[{t:"Investigate the cause before reporting it as real.",s:4},{t:"Report it but add a small note of doubt.",s:3},{t:"Report it as-is.",s:2},{t:"Ignore it \u2014 numbers are numbers.",s:1}]},
+  {scenario:"A manual task you do daily takes an hour and is error-prone.",options:[{t:"Propose or build a simple repeatable/automated process for it.",s:4},{t:"Keep doing it but more carefully.",s:3},{t:"Do it quickly and accept the errors.",s:2},{t:"Leave it \u2014 that's just how it is.",s:1}]},
+  {scenario:"You're entering a bulk order of 12 line items at end of day.",options:[{t:"Check each item, strength, and quantity against the source before saving.",s:4},{t:"Enter them and glance at the total.",s:3},{t:"Enter quickly and fix issues if they surface.",s:2},{t:"Copy a similar past order and tweak it.",s:1}]},
+  {scenario:"You have a backlog and limited time today.",options:[{t:"Prioritise by impact and deadline, and flag what won't get done.",s:4},{t:"Start from the top of the list and work down.",s:3},{t:"Do the quick, easy ones first.",s:2},{t:"Do whatever you feel like first.",s:1}]}
 ],
 "Accounts & Finance":[
-  {scenario:"An invoice total doesn't match the order you have on record.",
-   options:[{t:"Stop, reconcile against source documents, and correct before processing.",s:4},{t:"Adjust it to match and move on.",s:3},{t:"Process it and note it for later.",s:2},{t:"Assume the invoice is right.",s:1}]},
-  {scenario:"A client is 20 days late on payment.",
-   options:[{t:"Send a firm, polite reminder with the due amount and a clear next step.",s:4},{t:"Send a soft \u201cgentle reminder\u201d and wait.",s:3},{t:"Wait longer to avoid friction.",s:2},{t:"Send an aggressive demand straight away.",s:1}]},
-  {scenario:"A manager pressures you to approve an expense without a bill.",
-   options:[{t:"Explain the policy, hold the approval, and ask for the bill.",s:4},{t:"Approve it but note that a bill is pending.",s:3},{t:"Approve it to avoid conflict.",s:2},{t:"Approve and skip recording it properly.",s:1}]},
-  {scenario:"Month-end reconciliation shows a small unexplained difference.",
-   options:[{t:"Trace it to the source until it's explained.",s:4},{t:"Adjust it with a balancing entry and move on.",s:3},{t:"Ignore it \u2014 it's small.",s:2},{t:"Hide it so the books look clean.",s:1}]},
-  {scenario:"You're asked to compute GST and margins for a large quote quickly.",
-   options:[{t:"Calculate carefully and double-check before sending.",s:4},{t:"Calculate fast and send.",s:3},{t:"Estimate roughly to save time.",s:2},{t:"Reuse an old quote's numbers.",s:1}]}
+  {scenario:"An invoice total doesn't match the order you have on record.",options:[{t:"Stop, reconcile against source documents, and correct before processing.",s:4},{t:"Adjust it to match and move on.",s:3},{t:"Process it and note it for later.",s:2},{t:"Assume the invoice is right.",s:1}]},
+  {scenario:"A client is 20 days late on payment.",options:[{t:"Send a firm, polite reminder with the due amount and a clear next step.",s:4},{t:"Send a soft \u201cgentle reminder\u201d and wait.",s:3},{t:"Wait longer to avoid friction.",s:2},{t:"Send an aggressive demand straight away.",s:1}]},
+  {scenario:"A manager pressures you to approve an expense without a bill.",options:[{t:"Explain the policy, hold the approval, and ask for the bill.",s:4},{t:"Approve it but note that a bill is pending.",s:3},{t:"Approve it to avoid conflict.",s:2},{t:"Approve and skip recording it properly.",s:1}]},
+  {scenario:"Month-end reconciliation shows a small unexplained difference.",options:[{t:"Trace it to the source until it's explained.",s:4},{t:"Adjust it with a balancing entry and move on.",s:3},{t:"Ignore it \u2014 it's small.",s:2},{t:"Hide it so the books look clean.",s:1}]},
+  {scenario:"You're asked to compute GST and margins for a large quote quickly.",options:[{t:"Calculate carefully and double-check before sending.",s:4},{t:"Calculate fast and send.",s:3},{t:"Estimate roughly to save time.",s:2},{t:"Reuse an old quote's numbers.",s:1}]}
 ],
 "Procurement":[
-  {scenario:"One supplier is cheaper; another is pricier but consistently reliable.",
-   options:[{t:"Weigh total cost of reliability (delays, quality) against price, then decide.",s:4},{t:"Always pick the cheapest.",s:3},{t:"Always pick the one you know.",s:2},{t:"Pick whoever responds first.",s:1}]},
-  {scenario:"A supplier offers a better rate if you raise the order quantity above what you need.",
-   options:[{t:"Order to real demand unless the surplus is clearly justified.",s:4},{t:"Take the bigger order for the better rate.",s:3},{t:"Split the difference without analysis.",s:2},{t:"Order big \u2014 a discount is always good.",s:1}]},
-  {scenario:"A trusted supplier's quality has slipped on the last two batches.",
-   options:[{t:"Raise it formally, ask for corrective action, and keep a backup ready.",s:4},{t:"Mention it casually and hope it improves.",s:3},{t:"Overlook it because they're trusted.",s:2},{t:"Switch suppliers immediately with no discussion.",s:1}]},
-  {scenario:"You have three quotes with different prices, terms, and delivery times.",
-   options:[{t:"Compare on a like-for-like basis (landed cost, terms, lead time) before choosing.",s:4},{t:"Pick the lowest headline price.",s:3},{t:"Pick the fastest delivery.",s:2},{t:"Pick the one with the nicest salesperson.",s:1}]},
-  {scenario:"A supplier says a key item will be delayed a week.",
-   options:[{t:"Confirm impact, line up alternatives, and inform the teams affected.",s:4},{t:"Wait and see if it arrives sooner.",s:3},{t:"Accept the delay quietly.",s:2},{t:"Do nothing \u2014 it's the supplier's problem.",s:1}]}
+  {scenario:"One supplier is cheaper; another is pricier but consistently reliable.",options:[{t:"Weigh total cost of reliability (delays, quality) against price, then decide.",s:4},{t:"Always pick the cheapest.",s:3},{t:"Always pick the one you know.",s:2},{t:"Pick whoever responds first.",s:1}]},
+  {scenario:"A supplier offers a better rate if you raise the order quantity above what you need.",options:[{t:"Order to real demand unless the surplus is clearly justified.",s:4},{t:"Take the bigger order for the better rate.",s:3},{t:"Split the difference without analysis.",s:2},{t:"Order big \u2014 a discount is always good.",s:1}]},
+  {scenario:"A trusted supplier's quality has slipped on the last two batches.",options:[{t:"Raise it formally, ask for corrective action, and keep a backup ready.",s:4},{t:"Mention it casually and hope it improves.",s:3},{t:"Overlook it because they're trusted.",s:2},{t:"Switch suppliers immediately with no discussion.",s:1}]},
+  {scenario:"You have three quotes with different prices, terms, and delivery times.",options:[{t:"Compare on a like-for-like basis (landed cost, terms, lead time) before choosing.",s:4},{t:"Pick the lowest headline price.",s:3},{t:"Pick the fastest delivery.",s:2},{t:"Pick the one with the nicest salesperson.",s:1}]},
+  {scenario:"A supplier says a key item will be delayed a week.",options:[{t:"Confirm impact, line up alternatives, and inform the teams affected.",s:4},{t:"Wait and see if it arrives sooner.",s:3},{t:"Accept the delay quietly.",s:2},{t:"Do nothing \u2014 it's the supplier's problem.",s:1}]}
 ],
 "Customer Support":[
-  {scenario:"A customer is angry and rude about a genuine mistake on our side.",
-   options:[{t:"Stay calm, acknowledge it, apologise once, and focus on the fix.",s:4},{t:"Apologise repeatedly without giving a fix.",s:3},{t:"Defend the company and explain why it happened.",s:2},{t:"Match their tone and push back.",s:1}]},
-  {scenario:"A customer's complaint is vague and you don't fully understand it.",
-   options:[{t:"Ask clear, specific questions until you understand before acting.",s:4},{t:"Guess what they mean and respond.",s:3},{t:"Give a generic reply and hope it helps.",s:2},{t:"Tell them to be clearer.",s:1}]},
-  {scenario:"A customer asks for something that policy doesn't allow.",
-   options:[{t:"Explain warmly why it can't be done and offer the best alternative.",s:4},{t:"Just say it's against policy.",s:3},{t:"Promise to \u201ctry\u201d though you know it can't happen.",s:2},{t:"Quietly bend the rule to make them happy.",s:1}]},
-  {scenario:"Three customers message at once during a busy hour.",
-   options:[{t:"Acknowledge all, then handle by urgency, keeping each updated.",s:4},{t:"Finish one fully before opening the next.",s:3},{t:"Reply to the loudest one first.",s:2},{t:"Rush short replies to clear the queue.",s:1}]},
-  {scenario:"A customer thanks you warmly and asks a follow-up question.",
-   options:[{t:"Answer fully and check if anything else is needed.",s:4},{t:"Answer briefly and close the chat.",s:3},{t:"Answer only the literal question asked.",s:2},{t:"Tell them to raise a new ticket.",s:1}]}
+  {scenario:"A customer is angry and rude about a genuine mistake on our side.",options:[{t:"Stay calm, acknowledge it, apologise once, and focus on the fix.",s:4},{t:"Apologise repeatedly without giving a fix.",s:3},{t:"Defend the company and explain why it happened.",s:2},{t:"Match their tone and push back.",s:1}]},
+  {scenario:"A customer's complaint is vague and you don't fully understand it.",options:[{t:"Ask clear, specific questions until you understand before acting.",s:4},{t:"Guess what they mean and respond.",s:3},{t:"Give a generic reply and hope it helps.",s:2},{t:"Tell them to be clearer.",s:1}]},
+  {scenario:"A customer asks for something that policy doesn't allow.",options:[{t:"Explain warmly why it can't be done and offer the best alternative.",s:4},{t:"Just say it's against policy.",s:3},{t:"Promise to \u201ctry\u201d though you know it can't happen.",s:2},{t:"Quietly bend the rule to make them happy.",s:1}]},
+  {scenario:"Three customers message at once during a busy hour.",options:[{t:"Acknowledge all, then handle by urgency, keeping each updated.",s:4},{t:"Finish one fully before opening the next.",s:3},{t:"Reply to the loudest one first.",s:2},{t:"Rush short replies to clear the queue.",s:1}]},
+  {scenario:"A customer thanks you warmly and asks a follow-up question.",options:[{t:"Answer fully and check if anything else is needed.",s:4},{t:"Answer briefly and close the chat.",s:3},{t:"Answer only the literal question asked.",s:2},{t:"Tell them to raise a new ticket.",s:1}]}
 ],
 "HR & Admin":[
-  {scenario:"You learn a personal detail about an employee while handling their file.",
-   options:[{t:"Keep it strictly confidential and use it only as needed for the task.",s:4},{t:"Share it only with one trusted colleague.",s:3},{t:"Mention it casually if it comes up.",s:2},{t:"Discuss it freely \u2014 it's interesting.",s:1}]},
-  {scenario:"Two team members are in open conflict that's affecting work.",
-   options:[{t:"Hear both sides privately and fairly, then help find a resolution.",s:4},{t:"Side with whoever seems more reasonable.",s:3},{t:"Tell them to just sort it out.",s:2},{t:"Avoid it and hope it settles.",s:1}]},
-  {scenario:"Attendance records show a discrepancy for one employee.",
-   options:[{t:"Verify the facts calmly before drawing any conclusion.",s:4},{t:"Ask around informally about them.",s:3},{t:"Assume they're at fault and act.",s:2},{t:"Ignore it to avoid a difficult talk.",s:1}]},
-  {scenario:"A new joinee is clearly lost in their first week.",
-   options:[{t:"Set up a simple onboarding plan and a point of contact for questions.",s:4},{t:"Hand them documents to read.",s:3},{t:"Tell them to ask if they're stuck.",s:2},{t:"Let them find their own feet.",s:1}]},
-  {scenario:"A manager asks you to bend a leave policy for a favourite employee.",
-   options:[{t:"Apply the policy consistently and explain it kindly.",s:4},{t:"Allow it once but flag it.",s:3},{t:"Allow it quietly to keep the peace.",s:2},{t:"Allow it and adjust the records.",s:1}]}
+  {scenario:"You learn a personal detail about an employee while handling their file.",options:[{t:"Keep it strictly confidential and use it only as needed for the task.",s:4},{t:"Share it only with one trusted colleague.",s:3},{t:"Mention it casually if it comes up.",s:2},{t:"Discuss it freely \u2014 it's interesting.",s:1}]},
+  {scenario:"Two team members are in open conflict that's affecting work.",options:[{t:"Hear both sides privately and fairly, then help find a resolution.",s:4},{t:"Side with whoever seems more reasonable.",s:3},{t:"Tell them to just sort it out.",s:2},{t:"Avoid it and hope it settles.",s:1}]},
+  {scenario:"Attendance records show a discrepancy for one employee.",options:[{t:"Verify the facts calmly before drawing any conclusion.",s:4},{t:"Ask around informally about them.",s:3},{t:"Assume they're at fault and act.",s:2},{t:"Ignore it to avoid a difficult talk.",s:1}]},
+  {scenario:"A new joinee is clearly lost in their first week.",options:[{t:"Set up a simple onboarding plan and a point of contact for questions.",s:4},{t:"Hand them documents to read.",s:3},{t:"Tell them to ask if they're stuck.",s:2},{t:"Let them find their own feet.",s:1}]},
+  {scenario:"A manager asks you to bend a leave policy for a favourite employee.",options:[{t:"Apply the policy consistently and explain it kindly.",s:4},{t:"Allow it once but flag it.",s:3},{t:"Allow it quietly to keep the peace.",s:2},{t:"Allow it and adjust the records.",s:1}]}
 ]
 };
 
-/* ===================== STATE ===================== */
+/* ===== STATE ===== */
 let intake=null, qset=[], responses=[], idx=0;
 
-function show(id){
-  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  window.scrollTo(0,0);
-}
+function show(id){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');window.scrollTo(0,0);}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
-/* ---------- intake ---------- */
 function startIntake(){
   const sel=document.getElementById('in-dept');
   sel.innerHTML='<option value="">Select…</option>'+DEPARTMENTS.map(d=>`<option>${d}</option>`).join('');
-  document.getElementById('in-name').value='';
-  document.getElementById('in-status').value='Current employee';
-  document.getElementById('intake-err').classList.add('hidden');
-  show('view-intake');
+  document.getElementById('in-name').value='';document.getElementById('in-status').value='Current employee';
+  document.getElementById('intake-err').classList.add('hidden');show('view-intake');
 }
 function beginAssessment(){
   const name=document.getElementById('in-name').value.trim();
@@ -543,115 +473,80 @@ function beginAssessment(){
   intake={name,dept,status};
   buildQuestionSet(dept);
   responses=new Array(qset.length).fill(null);
-  idx=0; show('view-quiz'); renderQuestion();
+  idx=0;show('view-quiz');renderQuestion();
 }
-
-/* ---------- build ordered question set ---------- */
 function buildQuestionSet(dept){
   qset=[];
-  APTITUDE.forEach((it,i)=>qset.push({kind:'apt',sec:'Aptitude',data:it,order:shuffle([0,1,2,3])}));
+  APTITUDE.forEach(it=>qset.push({kind:'apt',sec:'Aptitude',data:it,order:shuffle([0,1,2,3])}));
   PERSONALITY.forEach(it=>qset.push({kind:'likert',sec:'Working style',data:it}));
   VALUES.forEach(it=>qset.push({kind:'sjt',sec:'Judgment',data:it,order:shuffle([0,1,2,3])}));
   (DEPT_Q[dept]||[]).forEach(it=>qset.push({kind:'sjt',sec:dept,data:it,order:shuffle([0,1,2,3]),deptq:true}));
 }
-
-/* ---------- render question ---------- */
 function renderQuestion(){
   const item=qset[idx], total=qset.length;
   document.getElementById('q-counter').textContent=`Question ${String(idx+1).padStart(2,'0')} / ${total}`;
   document.getElementById('q-sec').textContent=item.sec;
   document.getElementById('q-progress').style.width=(idx/total*100)+'%';
-  const body=document.getElementById('q-body');
-  const scen=document.getElementById('q-scenario');
-
+  const body=document.getElementById('q-body'), scen=document.getElementById('q-scenario');
   if(item.kind==='likert'){
     scen.textContent='How well does this describe you?';
-    body.innerHTML=`<div style="font-family:'Fraunces',serif;font-size:20px;line-height:1.35;margin-bottom:20px;">\u201c${item.data.t}\u201d</div>
-      <div class="likert" id="likert-row"></div>`;
+    body.innerHTML=`<div style="font-family:'Fraunces',serif;font-size:20px;line-height:1.35;margin-bottom:20px;color:var(--navy);">\u201c${item.data.t}\u201d</div><div class="likert" id="likert-row"></div>`;
     const row=document.getElementById('likert-row');
-    LIKERT.forEach(o=>{
-      const el=document.createElement('button');
-      el.className='lk'+(responses[idx]===o.v?' sel':'');
-      el.innerHTML=`<span class="dot"></span>${o.l}`;
-      el.onclick=()=>{responses[idx]=o.v;markLikert(el);};
-      row.appendChild(el);
-    });
+    LIKERT.forEach(o=>{const el=document.createElement('button');el.className='lk'+(responses[idx]===o.v?' sel':'');el.innerHTML=`<span class="dot"></span>${o.l}`;el.onclick=()=>{responses[idx]=o.v;markLikert(el);};row.appendChild(el);});
   } else {
     const d=item.data;
-    scen.textContent = item.kind==='apt' ? d.q : d.scenario;
+    scen.textContent=item.kind==='apt'?d.q:d.scenario;
     body.innerHTML='<div class="options" id="opts"></div>';
     const wrap=document.getElementById('opts');
     item.order.forEach(optIdx=>{
-      const opt=d.options[optIdx];
-      const label = item.kind==='apt' ? opt : opt.t;
+      const opt=d.options[optIdx], label=item.kind==='apt'?opt:opt.t;
       const el=document.createElement('button');
-      const chosen = responses[idx] && responses[idx].pick===optIdx;
+      const chosen=responses[idx]&&responses[idx].pick===optIdx;
       el.className='opt'+(chosen?' sel':'');
       el.innerHTML=`<span class="tick"></span><span>${label}</span>`;
       el.onclick=()=>{
-        if(item.kind==='apt') responses[idx]={pick:optIdx, correct: optIdx===d.correct?1:0, sub:d.sub};
-        else responses[idx]={pick:optIdx, score:opt.s, dim:d.dim||'dept', deptq:!!item.deptq};
+        if(item.kind==='apt') responses[idx]={pick:optIdx,correct:optIdx===d.correct?1:0,sub:d.sub};
+        else responses[idx]={pick:optIdx,score:opt.s,dim:d.dim||'dept',deptq:!!item.deptq};
         markOpt(el);
       };
       wrap.appendChild(el);
     });
   }
-  document.getElementById('q-back').disabled = idx===0;
-  document.getElementById('q-next').disabled = responses[idx]===null;
-  document.getElementById('q-next').textContent = idx===total-1 ? 'Submit' : 'Next';
+  document.getElementById('q-back').disabled=idx===0;
+  document.getElementById('q-next').disabled=responses[idx]===null;
+  document.getElementById('q-next').textContent=idx===total-1?'Submit':'Next';
 }
 function markOpt(el){document.querySelectorAll('#opts .opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');document.getElementById('q-next').disabled=false;}
 function markLikert(el){document.querySelectorAll('#likert-row .lk').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');document.getElementById('q-next').disabled=false;}
 function prevQuestion(){if(idx>0){idx--;renderQuestion();}}
-function nextQuestion(){if(responses[idx]===null)return; if(idx<qset.length-1){idx++;renderQuestion();}else finish();}
+function nextQuestion(){if(responses[idx]===null)return;if(idx<qset.length-1){idx++;renderQuestion();}else finish();}
 
-/* ===================== SCORING ===================== */
 function computeScores(){
-  // aptitude
   let aCorrect=0,aTot=0,nCorrect=0,nTot=0;
-  // personality raw sums
   const traitSum={C:0,ES:0,E:0,A:0,O:0}, traitN={C:0,ES:0,E:0,A:0,O:0};
-  // values per dim
   const vSum={integrity:0,customer:0,ownership:0}, vMax={integrity:0,customer:0,ownership:0};
   let dSum=0,dMax=0;
-
   qset.forEach((item,i)=>{
     const r=responses[i];
-    if(item.kind==='apt'){
-      if(item.data.sub==='analytical'){aTot++; aCorrect+=r.correct;}
-      else {nTot++; nCorrect+=r.correct;}
-    } else if(item.kind==='likert'){
-      let v=r; const it=item.data;
-      const score = it.key==='-' ? (6-v) : v;
-      traitSum[it.trait]+=score; traitN[it.trait]++;
-    } else { // sjt
-      if(item.deptq){dSum+=r.score; dMax+=4;}
-      else {vSum[r.dim]+=r.score; vMax[r.dim]+=4;}
-    }
+    if(item.kind==='apt'){ if(item.data.sub==='analytical'){aTot++;aCorrect+=r.correct;} else {nTot++;nCorrect+=r.correct;} }
+    else if(item.kind==='likert'){ const it=item.data; const score=it.key==='-'?(6-r):r; traitSum[it.trait]+=score; traitN[it.trait]++; }
+    else { if(item.deptq){dSum+=r.score;dMax+=4;} else {vSum[r.dim]+=r.score;vMax[r.dim]+=4;} }
   });
-
   const analytical=aTot?Math.round(aCorrect/aTot*100):0;
   const numeracy=nTot?Math.round(nCorrect/nTot*100):0;
-  const traits={}; Object.keys(traitSum).forEach(k=>{traits[k]=traitN[k]?Math.round((traitSum[k]/(traitN[k]*5))*100):0;});
-  const valuesDim={}; let vT=0,vM=0;
-  Object.keys(vSum).forEach(k=>{valuesDim[k]=vMax[k]?Math.round(vSum[k]/vMax[k]*100):0; vT+=vSum[k]; vM+=vMax[k];});
+  const traits={};Object.keys(traitSum).forEach(k=>{traits[k]=traitN[k]?Math.round((traitSum[k]/(traitN[k]*5))*100):0;});
+  const valuesDim={};let vT=0,vM=0;
+  Object.keys(vSum).forEach(k=>{valuesDim[k]=vMax[k]?Math.round(vSum[k]/vMax[k]*100):0;vT+=vSum[k];vM+=vMax[k];});
   const values=vM?Math.round(vT/vM*100):0;
   const deptSJT=dMax?Math.round(dSum/dMax*100):0;
-
-  // inputs for archetype engine
   const inp={analytical,numeracy,values,C:traits.C,ES:traits.ES,E:traits.E,A:traits.A,O:traits.O};
-  const archFit={}; Object.keys(ARCH).forEach(k=>{
-    let s=0; const w=ARCH[k].w; Object.keys(w).forEach(key=>{s+=w[key]*(inp[key]||0);}); archFit[k]=Math.round(s);
-  });
-
+  const archFit={};Object.keys(ARCH).forEach(k=>{let s=0;const w=ARCH[k].w;Object.keys(w).forEach(key=>{s+=w[key]*(inp[key]||0);});archFit[k]=Math.round(s);});
   const primary=DEPT_ARCH[intake.dept]||'ops';
   const deptFit=Math.round(0.6*archFit[primary]+0.4*deptSJT);
   const aptAvg=Math.round((analytical+numeracy)/2);
   const overall=Math.round(0.35*deptFit+0.30*values+0.35*aptAvg);
-
   return {analytical,numeracy,aptAvg,traits,values,valuesDim,deptSJT,archFit,primary,deptFit,overall,inp};
 }
-
 function band(p){
   if(p>=80)return{key:'strong',label:'Strong fit',rec:'Strong overall alignment with the role and with how Mediseller works. Recommended to proceed.'};
   if(p>=65)return{key:'good',label:'Good fit',rec:'Good overall fit. Proceed, keeping an eye on the watch areas below.'};
@@ -659,214 +554,106 @@ function band(p){
   return{key:'concern',label:'Concern',rec:'Notable gaps against the role. Treat with caution \u2014 a strong interview case would be needed.'};
 }
 function deptVerdict(p){
-  if(p>=75)return{cls:'strong',col:'#1ba189',bg:'rgba(27,161,137,.14)',label:'Strong fit'};
-  if(p>=60)return{cls:'good',col:'#b9923f',bg:'rgba(185,146,63,.16)',label:'Stretch'};
-  return{cls:'concern',col:'#cf7263',bg:'rgba(207,114,99,.16)',label:'Possible mismatch'};
+  if(p>=75)return{cls:'strong',col:'#12386F',bg:'#E6EFFB',label:'Strong fit'};
+  if(p>=60)return{cls:'good',col:'#5E6E88',bg:'#EEF1F6',label:'Stretch'};
+  return{cls:'concern',col:'#C8102E',bg:'#FBE9EC',label:'Possible mismatch'};
 }
-function meterColor(p){if(p>=80)return'#1ba189';if(p>=65)return'#2FB39B';if(p>=50)return'#c79a3a';return'#cf7263';}
+function meterColor(p){if(p>=80)return'#15407F';if(p>=65)return'#2E6BC6';if(p>=50)return'#7FA0CE';return'#C8102E';}
 function level(p){return p>=67?'high':(p>=40?'moderate':'low');}
-
-/* DISC derived from Big Five */
 function discProfile(t){
-  const D=Math.round((t.E+(100-t.A))/2);
-  const I=Math.round((t.E+t.O)/2);
-  const S=Math.round((t.A+t.ES+(100-t.E))/3);
-  const C=Math.round((t.C+(100-t.E))/2);
-  const arr=[{k:'D',v:D,name:'Driver',d:'direct, results-focused, decisive'},
-             {k:'I',v:I,name:'Influencer',d:'sociable, persuasive, energising'},
-             {k:'S',v:S,name:'Steady',d:'patient, reliable, calm'},
-             {k:'C',v:C,name:'Conscientious',d:'precise, careful, quality-focused'}];
-  arr.sort((a,b)=>b.v-a.v);
-  return arr;
+  const D=Math.round((t.E+(100-t.A))/2),I=Math.round((t.E+t.O)/2),S=Math.round((t.A+t.ES+(100-t.E))/3),C=Math.round((t.C+(100-t.E))/2);
+  const arr=[{k:'D',v:D,name:'Driver',d:'direct, results-focused, decisive'},{k:'I',v:I,name:'Influencer',d:'sociable, persuasive, energising'},{k:'S',v:S,name:'Steady',d:'patient, reliable, calm'},{k:'C',v:C,name:'Conscientious',d:'precise, careful, quality-focused'}];
+  arr.sort((a,b)=>b.v-a.v);return arr;
 }
 function personalityNarrative(t){
-  const desc={
-    C:{high:"conscientious and process-disciplined",moderate:"reasonably organised",low:"loose with structure and follow-through"},
+  const desc={C:{high:"conscientious and process-disciplined",moderate:"reasonably organised",low:"loose with structure and follow-through"},
     ES:{high:"calm and composed under pressure",moderate:"generally steady",low:"prone to stress under pressure"},
     E:{high:"outgoing and comfortable initiating contact",moderate:"balanced between reserved and outgoing",low:"reserved; prefers focused, independent work"},
     A:{high:"cooperative and team-oriented",moderate:"cooperative when needed",low:"independent and results-first; may clash in teams"},
-    O:{high:"curious and open to new methods",moderate:"open to change when shown the value",low:"prefers familiar routines"}
-  };
+    O:{high:"curious and open to new methods",moderate:"open to change when shown the value",low:"prefers familiar routines"}};
   return Object.keys(desc).map(k=>desc[k][level(t[k])]);
 }
-
-/* ---------- finish ---------- */
 function finish(){
   const sc=computeScores();
-  const rec={
-    id:'MS-'+Date.now().toString(36).toUpperCase(),
-    name:intake.name,dept:intake.dept,status:intake.status,date:new Date().toISOString(),
-    scores:sc
-  };
-  saveRecord(rec);
-  show('view-done');
+  const rec={id:'MS-'+Date.now().toString(36).toUpperCase(),name:intake.name,dept:intake.dept,status:intake.status,date:new Date().toISOString(),scores:sc};
+  saveRecord(rec);show('view-done');
 }
 
-/* ===================== REPORT (admin) ===================== */
 function gaugeSVG(pct){
   const r=46,c=2*Math.PI*r,off=c*(1-pct/100),col=meterColor(pct);
-  return `<svg width="118" height="118" viewBox="0 0 118 118"><circle cx="59" cy="59" r="${r}" fill="none" stroke="#23403d" stroke-width="11"/>
-    <circle cx="59" cy="59" r="${r}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 59 59)"/>
-    <text x="59" y="56" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="27" fill="#fff" font-weight="600">${pct}</text>
-    <text x="59" y="74" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" letter-spacing="2" fill="#9fb3b0">PERCENT</text></svg>`;
+  return `<svg width="118" height="118" viewBox="0 0 118 118"><circle cx="59" cy="59" r="${r}" fill="none" stroke="#D5E0F2" stroke-width="11"/><circle cx="59" cy="59" r="${r}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 59 59)"/><text x="59" y="56" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="27" fill="#15294B" font-weight="600">${pct}</text><text x="59" y="74" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" letter-spacing="2" fill="#5E6E88">PERCENT</text></svg>`;
 }
-function meter(name,sub,p){
-  return `<div class="meter"><div class="mrow"><span class="mname">${name}${sub?` <span class="msub">${sub}</span>`:''}</span><span class="mval">${p}%</span></div>
-    <div class="mtrack"><div class="mfill" style="width:${p}%;background:${meterColor(p)}"></div></div></div>`;
-}
+function meter(name,sub,p){return `<div class="meter"><div class="mrow"><span class="mname">${name}${sub?` <span class="msub">${sub}</span>`:''}</span><span class="mval">${p}%</span></div><div class="mtrack"><div class="mfill" style="width:${p}%;background:${meterColor(p)}"></div></div></div>`;}
 function fmtDate(iso){const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
-
-function renderReport(rec){
-  const s=rec.scores, b=band(s.overall);
-  const t=s.traits;
-  const disc=discProfile(t);
-  const narr=personalityNarrative(t);
-
-  // archetype ranking
-  const ranked=Object.keys(s.archFit).map(k=>({k,name:ARCH[k].name,v:s.archFit[k]})).sort((a,b)=>b.v-a.v);
-  const strengths=ranked.slice(0,2);
-  const weak=ranked.slice(-2).reverse();
-
-  const dv=deptVerdict(s.deptFit);
-
-  // probes
-  const probes=[];
-  Object.keys(s.valuesDim).forEach(d=>{ if(s.valuesDim[d]<65) probes.push({dim:({integrity:'Integrity',customer:'Customer orientation',ownership:'Ownership'})[d], q:({
-    integrity:"Describe a time you were pressured to bend a rule. What did you do?",
-    customer:"Tell me about a difficult client you turned around.",
-    ownership:"Tell me about something you fixed or improved without being asked."
-  })[d]});});
-  if(s.analytical<50) probes.push({dim:'Analytical reasoning',q:"Give them a short real problem and ask them to talk through how they'd break it down."});
-  if(s.numeracy<50) probes.push({dim:'Numeracy',q:"Ask them to work through a quick margin/GST calculation out loud."});
-  if(t.ES<40) probes.push({dim:'Composure',q:"Walk me through a stressful stretch at work and how you handled it."});
-
-  const probesHTML = probes.length ? `<div class="block"><p class="sec-label">Suggested interview probes</p>${
-    probes.map(p=>`<div class="probe"><div class="pdim">${p.dim}</div><div class="pq">${p.q}</div></div>`).join('')}</div>` : '';
-
-  document.getElementById('report-card').innerHTML=`
-  <div class="report-inner">
-    <div class="rep-top">
-      <div><div class="rep-brand"><span class="rep-cap"></span><b>Mediseller</b>&nbsp;· People &amp; Culture</div>
-        <h2>Screening &amp; Suitability Report</h2></div>
-      <div class="rep-id">${rec.id}<br>${fmtDate(rec.date)}</div>
-    </div>
-
-    <div class="rep-person">
-      <div class="cell"><div class="k">Name</div><div class="v">${escapeHtml(rec.name)}</div></div>
-      <div class="cell"><div class="k">Assessed for</div><div class="v">${escapeHtml(rec.dept)}</div></div>
-      <div class="cell"><div class="k">Status</div><div class="v">${escapeHtml(rec.status)}</div></div>
-    </div>
-
-    <div class="verdict">${gaugeSVG(s.overall)}
-      <div class="vtext"><div class="band">Overall · ${b.label}</div><div class="rec">${b.rec}</div></div>
-    </div>
-
-    <div class="block"><p class="sec-label">Aptitude</p>
-      <div class="meters">${meter('Analytical reasoning','',s.analytical)}${meter('Numeracy','trade maths',s.numeracy)}</div>
-      <div class="readout">${aptReadout(s)}</div>
-    </div>
-
-    <div class="block"><p class="sec-label">Personality profile (Big Five)</p>
-      <div class="meters">
-        ${meter('Conscientiousness','',t.C)}${meter('Emotional stability','',t.ES)}${meter('Extraversion','',t.E)}${meter('Agreeableness','',t.A)}${meter('Openness','',t.O)}
-      </div>
-      <div class="readout">
-        <div style="margin-bottom:10px;">
-          <span class="disc-tag">Primary: ${disc[0].k} · ${disc[0].name}</span>
-          <span class="disc-tag">Secondary: ${disc[1].k} · ${disc[1].name}</span>
-        </div>
-        Reads as someone who is ${narr[0]}, ${narr[1]}, and ${narr[2]}. In team settings they come across as ${disc[0].d}. <span class="msub">(DISC style derived from the trait profile.)</span>
-      </div>
-    </div>
-
-    <div class="block"><p class="sec-label">Work values &amp; judgment</p>
-      <div class="meters">${meter('Integrity & compliance','',s.valuesDim.integrity)}${meter('Customer orientation','',s.valuesDim.customer)}${meter('Ownership & initiative','',s.valuesDim.ownership)}</div>
-    </div>
-
-    <div class="block"><p class="sec-label">Fit for the assessed role</p>
-      <div class="deptfit">
-        <span class="dpill" style="color:${dv.col};background:${dv.bg};">${dv.label}</span>
-        <p><b>${escapeHtml(rec.dept)}</b> maps to the <b>${ARCH[s.primary].name}</b> profile. Role-fit score <b>${s.deptFit}%</b>, combining their trait/aptitude match (${s.archFit[s.primary]}%) with their judgment on ${escapeHtml(rec.dept)} scenarios (${s.deptSJT}%).</p>
-      </div>
-    </div>
-
-    <div class="block"><p class="sec-label">Suitability</p>
-      <div class="two-col">
-        <div class="panel good"><h4>Plays to their strengths</h4>
-          ${strengths.map(a=>`<div class="fitline"><span>${a.name}</span><span class="fv">${a.v}%</span></div>`).join('')}
-          <p class="msub" style="margin:8px 0 0;font-size:12.5px;color:#6a7b7a;">Best suited to work of this kind.</p>
-        </div>
-        <div class="panel weak"><h4>Likely not their strength</h4>
-          ${weak.map(a=>`<div class="fitline"><span>${a.name}</span><span class="fv">${a.v}%</span></div>`).join('')}
-          <p class="msub" style="margin:8px 0 0;font-size:12.5px;color:#6a7b7a;">May need support or is better avoided.</p>
-        </div>
-      </div>
-    </div>
-
-    ${probesHTML}
-
-    <div class="rep-foot">
-      This is a structured behavioural and aptitude screening aid, not a clinical or psychological diagnosis. Personality is reported as a profile, not a pass/fail; aptitude and judgment are scored for accuracy and alignment with Mediseller's standards. Self-report screens can be influenced by how a person presents themselves. Use this as one input alongside interviews, references, and on-the-job evidence \u2014 never as the sole basis for a people decision.
-    </div>
-  </div>`;
-}
 function aptReadout(s){
   const a=s.analytical>=70?'strong':(s.analytical>=50?'adequate':'developing');
   const n=s.numeracy>=70?'strong':(s.numeracy>=50?'adequate':'developing');
   return `Reasoning is <b>${a}</b> (${s.analytical}%) and numeracy is <b>${n}</b> (${s.numeracy}%). Numeracy matters most for Accounts, Procurement, and Data roles; reasoning supports problem-solving across all functions.`;
 }
+function renderReport(rec){
+  const s=rec.scores,b=band(s.overall),t=s.traits,disc=discProfile(t),narr=personalityNarrative(t);
+  const ranked=Object.keys(s.archFit).map(k=>({k,name:ARCH[k].name,v:s.archFit[k]})).sort((a,b)=>b.v-a.v);
+  const strengths=ranked.slice(0,2), weak=ranked.slice(-2).reverse();
+  const dv=deptVerdict(s.deptFit);
+  const probes=[];
+  Object.keys(s.valuesDim).forEach(d=>{ if(s.valuesDim[d]<65) probes.push({dim:({integrity:'Integrity',customer:'Customer orientation',ownership:'Ownership'})[d],q:({integrity:"Describe a time you were pressured to bend a rule. What did you do?",customer:"Tell me about a difficult client you turned around.",ownership:"Tell me about something you fixed or improved without being asked."})[d]});});
+  if(s.analytical<50) probes.push({dim:'Analytical reasoning',q:"Give them a short real problem and ask them to talk through how they'd break it down."});
+  if(s.numeracy<50) probes.push({dim:'Numeracy',q:"Ask them to work through a quick margin/GST calculation out loud."});
+  if(t.ES<40) probes.push({dim:'Composure',q:"Walk me through a stressful stretch at work and how you handled it."});
+  const probesHTML=probes.length?`<div class="block"><p class="sec-label">Suggested interview probes</p>${probes.map(p=>`<div class="probe"><div class="pdim">${p.dim}</div><div class="pq">${p.q}</div></div>`).join('')}</div>`:'';
 
-/* ===================== PDF ===================== */
+  document.getElementById('report-card').innerHTML=`
+  <div class="report-inner">
+    <div class="rep-top"><div><div class="rep-brand"><span class="rep-cap"></span><b>Compass</b>&nbsp;· by Mediseller</div><h2>Fit &amp; Suitability Report</h2></div><div class="rep-id">${rec.id}<br>${fmtDate(rec.date)}</div></div>
+    <div class="rep-person"><div class="cell"><div class="k">Name</div><div class="v">${escapeHtml(rec.name)}</div></div><div class="cell"><div class="k">Assessed for</div><div class="v">${escapeHtml(rec.dept)}</div></div><div class="cell"><div class="k">Status</div><div class="v">${escapeHtml(rec.status)}</div></div></div>
+    <div class="verdict">${gaugeSVG(s.overall)}<div class="vtext"><div class="band">Overall · ${b.label}</div><div class="rec">${b.rec}</div></div></div>
+    <div class="block"><p class="sec-label">Aptitude</p><div class="meters">${meter('Analytical reasoning','',s.analytical)}${meter('Numeracy','trade maths',s.numeracy)}</div><div class="readout">${aptReadout(s)}</div></div>
+    <div class="block"><p class="sec-label">Personality profile (Big Five)</p><div class="meters">${meter('Conscientiousness','',t.C)}${meter('Emotional stability','',t.ES)}${meter('Extraversion','',t.E)}${meter('Agreeableness','',t.A)}${meter('Openness','',t.O)}</div>
+      <div class="readout"><div style="margin-bottom:10px;"><span class="disc-tag">Primary: ${disc[0].k} · ${disc[0].name}</span><span class="disc-tag">Secondary: ${disc[1].k} · ${disc[1].name}</span></div>Reads as someone who is ${narr[0]}, ${narr[1]}, and ${narr[2]}. In team settings they come across as ${disc[0].d}. <span class="msub">(DISC style derived from the trait profile.)</span></div></div>
+    <div class="block"><p class="sec-label">Work values &amp; judgment</p><div class="meters">${meter('Integrity & compliance','',s.valuesDim.integrity)}${meter('Customer orientation','',s.valuesDim.customer)}${meter('Ownership & initiative','',s.valuesDim.ownership)}</div></div>
+    <div class="block"><p class="sec-label">Fit for the assessed role</p><div class="deptfit"><span class="dpill" style="color:${dv.col};background:${dv.bg};">${dv.label}</span><p><b>${escapeHtml(rec.dept)}</b> maps to the <b>${ARCH[s.primary].name}</b> profile. Role-fit score <b>${s.deptFit}%</b>, combining their trait/aptitude match (${s.archFit[s.primary]}%) with their judgment on ${escapeHtml(rec.dept)} scenarios (${s.deptSJT}%).</p></div></div>
+    <div class="block"><p class="sec-label">Suitability</p><div class="two-col">
+      <div class="panel good"><h4>Plays to their strengths</h4>${strengths.map(a=>`<div class="fitline"><span>${a.name}</span><span class="fv">${a.v}%</span></div>`).join('')}<p class="msub" style="margin:8px 0 0;font-size:12.5px;color:var(--muted);">Best suited to work of this kind.</p></div>
+      <div class="panel weak"><h4>Likely not their strength</h4>${weak.map(a=>`<div class="fitline"><span>${a.name}</span><span class="fv">${a.v}%</span></div>`).join('')}<p class="msub" style="margin:8px 0 0;font-size:12.5px;color:var(--muted);">May need support or is better avoided.</p></div>
+    </div></div>
+    ${probesHTML}
+    <div class="rep-foot">This is a structured behavioural and aptitude assessment aid, not a clinical or psychological diagnosis. Personality is reported as a profile, not a pass/fail; aptitude and judgment are scored for accuracy and alignment with Mediseller's standards. Self-report can be influenced by how a person presents themselves. Use this as one input alongside interviews, references, and on-the-job evidence \u2014 never as the sole basis for a people decision.</div>
+  </div>`;
+}
 function downloadPDF(){
   const node=document.getElementById('report-card');
   const nm=(node.querySelector('.v')?.textContent||'report').replace(/\s+/g,'_');
-  html2pdf().set({margin:[8,8,8,8],filename:`Mediseller_Screening_${nm}.pdf`,
-    image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,backgroundColor:'#FBFAF6',useCORS:true},
-    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(node).save();
+  html2pdf().set({margin:[8,8,8,8],filename:`Compass_${nm}.pdf`,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,backgroundColor:'#FFFFFF',useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(node).save();
 }
 
-/* ===================== STORAGE ===================== */
 function loadLocal(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'[]');}catch(e){return[];}}
 function setLocal(a){try{localStorage.setItem(STORE_KEY,JSON.stringify(a));}catch(e){}}
 function saveRecord(rec){
-  const all=loadLocal(); rec.synced=false; all.push(rec); setLocal(all);
+  const all=loadLocal();rec.synced=false;all.push(rec);setLocal(all);
   if(SHEET_ENDPOINT){
     fetch(SHEET_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(rec)})
-      .then(()=>{ const a=loadLocal(); const r=a.find(x=>x.id===rec.id); if(r){r.synced=true;setLocal(a);} })
-      .catch(()=>{ /* stays unsynced; admin can retry */ });
+      .then(()=>{const a=loadLocal();const r=a.find(x=>x.id===rec.id);if(r){r.synced=true;setLocal(a);}})
+      .catch(()=>{});
   }
 }
-
-/* ===================== ADMIN ===================== */
 function tryAdmin(){
-  if(document.getElementById('admin-pw').value===ADMIN_PASSWORD){
-    document.getElementById('admin-pw').value='';document.getElementById('admin-err').classList.add('hidden');
-    show('view-admin'); renderAdmin();
-  } else document.getElementById('admin-err').classList.remove('hidden');
+  if(document.getElementById('admin-pw').value===ADMIN_PASSWORD){document.getElementById('admin-pw').value='';document.getElementById('admin-err').classList.add('hidden');show('view-admin');renderAdmin();}
+  else document.getElementById('admin-err').classList.remove('hidden');
 }
 let adminCache=[];
 function renderAdmin(){
-  const note=document.getElementById('sync-note');
-  const local=loadLocal();
+  const note=document.getElementById('sync-note'), local=loadLocal();
   if(SHEET_ENDPOINT){
     note.textContent='Loading from Google Sheet…';
     fetch(SHEET_ENDPOINT,{method:'GET'}).then(r=>r.json()).then(remote=>{
-      const byId={}; (Array.isArray(remote)?remote:[]).forEach(r=>byId[r.id]=r);
+      const byId={};(Array.isArray(remote)?remote:[]).forEach(r=>byId[r.id]=r);
       const unsynced=local.filter(r=>!byId[r.id]);
       adminCache=[...Object.values(byId),...unsynced];
-      const pending=local.filter(r=>r.synced===false && !byId[r.id]).length;
+      const pending=local.filter(r=>r.synced===false&&!byId[r.id]).length;
       note.innerHTML=`Central source: Google Sheet (${Object.keys(byId).length} records).`+(pending?` <b>${pending} not yet synced from this device.</b>`:'');
       paintAdmin();
-    }).catch(()=>{
-      adminCache=local;
-      note.innerHTML='<b>Could not reach the Google Sheet.</b> Showing this device\u2019s local cache only.';
-      paintAdmin();
-    });
-  } else {
-    adminCache=local;
-    note.textContent='Storage: this device only (no Google Sheet configured).';
-    paintAdmin();
-  }
+    }).catch(()=>{adminCache=local;note.innerHTML='<b>Could not reach the Google Sheet.</b> Showing this device\u2019s local cache only.';paintAdmin();});
+  } else {adminCache=local;note.textContent='Storage: this device only (no Google Sheet configured).';paintAdmin();}
 }
 function paintAdmin(){
   const sel=document.getElementById('dept-filter');
@@ -874,23 +661,15 @@ function paintAdmin(){
   const cur=sel.value||'__all';
   sel.innerHTML='<option value="__all">All departments</option>'+depts.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
   sel.value=[...sel.options].some(o=>o.value===cur)?cur:'__all';
-  const data = sel.value==='__all'?adminCache:adminCache.filter(r=>r.dept===sel.value);
-
+  const data=sel.value==='__all'?adminCache:adminCache.filter(r=>r.dept===sel.value);
   const avg=data.length?Math.round(data.reduce((a,r)=>a+(r.scores?.overall||0),0)/data.length):0;
   const strong=data.filter(r=>(r.scores?.overall||0)>=80).length;
-  document.getElementById('admin-stats').innerHTML=
-    `<div class="stat"><div class="sv">${data.length}</div><div class="sk">assessments</div></div>
-     <div class="stat"><div class="sv">${avg}%</div><div class="sk">average overall</div></div>
-     <div class="stat"><div class="sv">${strong}</div><div class="sk">strong fits</div></div>`;
-
+  document.getElementById('admin-stats').innerHTML=`<div class="stat"><div class="sv">${data.length}</div><div class="sk">assessments</div></div><div class="stat"><div class="sv">${avg}%</div><div class="sk">average overall</div></div><div class="stat"><div class="sv">${strong}</div><div class="sk">strong fits</div></div>`;
   const wrap=document.getElementById('admin-table');
-  if(!data.length){wrap.innerHTML='<div class="empty-state">No assessments yet. Completed screenings will appear here.</div>';return;}
+  if(!data.length){wrap.innerHTML='<div class="empty-state">No assessments yet. Completed assessments will appear here.</div>';return;}
   const rows=data.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(r=>{
     const bd=band(r.scores?.overall||0);
-    return `<tr><td><strong>${escapeHtml(r.name)}</strong></td><td class="hide-sm">${escapeHtml(r.dept)}</td>
-      <td class="hide-sm muted">${fmtDate(r.date)}</td><td class="mono">${r.scores?.overall||0}%</td>
-      <td><span class="pill ${bd.key}">${bd.label}</span></td>
-      <td><div class="row-act"><button class="btn btn-ghost btn-sm" onclick="viewRecord('${r.id}')">View</button></div></td></tr>`;
+    return `<tr><td><strong>${escapeHtml(r.name)}</strong></td><td class="hide-sm">${escapeHtml(r.dept)}</td><td class="hide-sm muted">${fmtDate(r.date)}</td><td class="mono">${r.scores?.overall||0}%</td><td><span class="pill ${bd.key}">${bd.label}</span></td><td><div class="row-act"><button class="btn btn-ghost btn-sm" onclick="viewRecord('${r.id}')">View</button></div></td></tr>`;
   }).join('');
   wrap.innerHTML=`<table><thead><tr><th>Name</th><th class="hide-sm">Dept</th><th class="hide-sm">Date</th><th>Overall</th><th>Band</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
@@ -900,11 +679,9 @@ function exportCSV(){
   if(!adminCache.length){alert('No data to export.');return;}
   const head=['ID','Name','Department','Status','Date','Overall','Analytical','Numeracy','Conscientiousness','EmotionalStability','Extraversion','Agreeableness','Openness','Values','DeptFit'];
   const lines=[head.join(',')];
-  adminCache.forEach(r=>{const s=r.scores||{};const t=s.traits||{};
-    lines.push([r.id,r.name,r.dept,r.status,r.date,s.overall,s.analytical,s.numeracy,t.C,t.ES,t.E,t.A,t.O,s.values,s.deptFit]
-      .map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','));});
+  adminCache.forEach(r=>{const s=r.scores||{};const t=s.traits||{};lines.push([r.id,r.name,r.dept,r.status,r.date,s.overall,s.analytical,s.numeracy,t.C,t.ES,t.E,t.A,t.O,s.values,s.deptFit].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','));});
   const blob=new Blob([lines.join('\n')],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mediseller_screening.csv';a.click();URL.revokeObjectURL(a.href);
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='compass_results.csv';a.click();URL.revokeObjectURL(a.href);
 }
 
 show('view-landing');
