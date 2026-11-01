@@ -1,6 +1,6 @@
 # MediSeller Multi-Site Portfolio — Working Log
 
-Status: **Discovery complete for Phase 1** (decisions below; build spec next)
+Status: **Phase 1 spec drafted** — see [`docs/PHASE1-SPEC.md`](docs/PHASE1-SPEC.md), awaiting approval
 Source: handwritten list shared 2026-11-01. Readings marked `?` need confirmation.
 
 ## Project agenda (as understood so far)
