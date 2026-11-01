@@ -6,6 +6,7 @@
 
 **Profile:** Non-coder who directs AI (Claude Code / ChatGPT) to build · Windows PC · 5–8 hrs/week (~3 sessions) · Lesson format: explainer → exercise → mini project → quiz · Budget ₹10k+/month
 **Current focus (next 4–6 weeks):** AI skills first (List 1), with List 2 items as the projects.
+**Phone app:** https://claude.ai/artifact/B2g2W6TWWqD9jFfQXC8tpR (status, lesson checklist, quiz, inbox; Claude reads your progress from it)
 **Next up:** [Lesson 01: GitHub, Python & Claude Code on Windows](learn/01-github-python-windows/lesson.md)
 
 Status key: ⬜ not started · 🟡 in progress · ✅ done · 🅿️ parked

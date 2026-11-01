@@ -1,0 +1,498 @@
+<title>Learning Journey</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single phone-first column, sticky top header, fixed bottom tab bar; the notebook's blue ballpoint ink is the accent. */
+:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --sunk:#E8ECF4; --line:#D6DCE8;
+  --fg:#18213A; --muted:#5A6580; --ink:#2440A8; --ink-soft:#E3E8FA;
+  --doing:#B26A00; --doing-soft:#FBEFD9; --done:#1F7A4D; --done-soft:#DDF2E6;
+  --parked:#6B6F7E; --parked-soft:#ECEDF1; --danger:#B42335;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1320; --surface:#171C2C; --sunk:#1F2538; --line:#2C3450;
+  --fg:#E6E9F2; --muted:#9AA3BC; --ink:#8EA6FF; --ink-soft:#232C4E;
+  --doing:#F0B357; --doing-soft:#3A2D16; --done:#5FCB93; --done-soft:#173326;
+  --parked:#A3A7B5; --parked-soft:#262A36; --danger:#FF7A88; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1320; --surface:#171C2C; --sunk:#1F2538; --line:#2C3450;
+  --fg:#E6E9F2; --muted:#9AA3BC; --ink:#8EA6FF; --ink-soft:#232C4E;
+  --doing:#F0B357; --doing-soft:#3A2D16; --done:#5FCB93; --done-soft:#173326;
+  --parked:#A3A7B5; --parked-soft:#262A36; --danger:#FF7A88; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:1.5rem;letter-spacing:-.01em}
+h2{font-size:1.25rem}
+h3{font-size:1.05rem;font-weight:500}
+p{margin:0}
+.muted{color:var(--muted)}
+.label{font:600 .72rem/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+a{color:var(--ink)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
+.top-in{max-width:720px;margin:0 auto;padding:14px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;justify-content:space-between;gap:12px}
+.save{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--parked)}
+.dot.ok{background:var(--done)} .dot.local{background:var(--doing)}
+
+main{display:grid;gap:22px;padding-top:18px}
+section{display:grid;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:10px;min-width:0}
+.hero{border-color:var(--ink);box-shadow:0 0 0 3px var(--ink-soft)}
+
+/* summary meters */
+.meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.meter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:6px;min-width:0}
+.meter b{font:700 1.35rem/1 var(--f-display);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:6px;background:var(--sunk);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .d{background:var(--done)} .bar .p{background:var(--doing)}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:600}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.btn.sm{padding:4px 10px;font-size:.82rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* roadmap */
+.road{list-style:none;margin:0;padding:0;display:grid}
+.road li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.road li:first-child{border-top:0}
+.wk{font:500 .8rem/1.6 var(--f-mono);color:var(--muted)}
+
+/* list items */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:.9rem;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.items{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;padding:12px 14px;border-top:1px solid var(--line);align-items:start}
+.item:first-child{border-top:0}
+.num{font:500 .85rem/1.5 var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.item .t{font-weight:600}
+.item .n{font-size:.86rem;color:var(--muted)}
+.pill{border:0;border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:600;white-space:nowrap;min-width:84px;text-align:center}
+.s-todo{background:var(--sunk);color:var(--muted)}
+.s-doing{background:var(--doing-soft);color:var(--doing)}
+.s-done{background:var(--done-soft);color:var(--done)}
+.s-parked{background:var(--parked-soft);color:var(--parked);text-decoration:line-through}
+.hint{font-size:.82rem;color:var(--muted)}
+
+/* lesson */
+details.card>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"+";font:500 1.2rem/1 var(--f-mono);color:var(--muted)}
+details.card[open]>summary::after{content:"−"}
+.tools{display:grid;gap:8px}
+.tool{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.tool:first-child{border-top:0}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.gloss div{background:var(--sunk);border-radius:8px;padding:10px;font-size:.92rem}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;min-width:0}
+.step.on{border-color:var(--done)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:600}
+.check input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--done);flex:none}
+.cmd{position:relative;background:var(--sunk);border-radius:8px;padding:10px 70px 10px 12px;overflow-x:auto}
+.cmd pre{margin:0;font:400 .82rem/1.6 var(--f-mono);white-space:pre}
+.cmd .btn{position:absolute;top:6px;right:6px}
+.tip{font-size:.88rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+td,th{text-align:left;padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:.8rem}
+td:last-child{font-family:var(--f-mono);font-size:.85rem;font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto}
+textarea,input[type=text],select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;padding:10px;font:inherit}
+textarea{min-height:76px;resize:vertical}
+.q{display:grid;gap:6px}
+.q label{font-weight:600}
+
+/* inbox */
+.inbox-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 14px;border-top:1px solid var(--line)}
+.inbox-item:first-child{border-top:0}
+.empty{padding:18px;text-align:center;color:var(--muted)}
+
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+nav.tabs .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+nav.tabs a{display:grid;justify-items:center;gap:2px;text-decoration:none;color:var(--muted);font-size:.75rem;font-weight:600;padding:6px 0;border-radius:8px}
+nav.tabs a svg{width:22px;height:22px}
+nav.tabs a[aria-current="page"]{color:var(--ink);background:var(--ink-soft)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.88rem;z-index:7}
+@media (prefers-reduced-motion:no-preference){.pill,.step{transition:background .15s,border-color .15s}}
+@media (max-width:420px){.tool{grid-template-columns:1fr;gap:2px}.road li{grid-template-columns:48px minmax(0,1fr)}.road li .pill{grid-column:2;justify-self:start}}
+</style>
+
+<div class="wrap">
+  <header class="top"><div class="top-in">
+    <div><p class="label">From your notebook</p><h1>Learning Journey</h1></div>
+    <div class="save" id="save"><span class="dot" id="dot"></span><span id="saveText">Connecting…</span></div>
+  </div></header>
+
+  <main id="main">
+    <!-- TODAY -->
+    <div id="v-today" data-view>
+      <section>
+        <div class="meters" id="meters"></div>
+      </section>
+      <section style="margin-top:22px">
+        <div class="card hero">
+          <p class="label">Up next · Week 1</p>
+          <h2>Lesson 01: GitHub, Python & Claude Code on Windows</h2>
+          <p class="muted">Set up your AI-builder toolkit, then direct Claude Code to clean a messy leads file.</p>
+          <div class="bar" aria-hidden="true"><i class="d" id="lessonBar" style="width:0%"></i></div>
+          <div class="row"><a class="btn primary" href="#lesson" style="text-decoration:none">Open lesson</a><span class="hint" id="lessonPct">0 of 12 steps done</span></div>
+        </div>
+      </section>
+      <section style="margin-top:22px">
+        <div class="row" style="justify-content:space-between"><h2>Roadmap</h2><span class="hint">~3 sessions a week</span></div>
+        <div class="card"><ul class="road" id="road"></ul></div>
+      </section>
+      <section style="margin-top:22px">
+        <h2>Alongside: weekly venture brief</h2>
+        <div class="card">
+          <p class="label">Brief #1</p>
+          <h3>Medicine brands: generics, semaglutide patent expiry, export best-sellers</h3>
+          <p class="muted">Market, rules by region, capital needed, risks and a go / no-go. Ask Claude: “write brief #1”.</p>
+        </div>
+      </section>
+      <section style="margin-top:22px">
+        <details class="card">
+          <summary><h3>What Claude can't do</h3></summary>
+          <ul style="margin:0;padding-left:18px;display:grid;gap:6px" class="muted">
+            <li>Remember between sessions. Progress you save here and in the repo is what carries over.</li>
+            <li>Install software on your PC. Claude gives steps, or works in a folder you connect via Remote Control.</li>
+            <li>Run Codex, or host OpenClaw 24/7. You run Codex; OpenClaw needs your own VPS.</li>
+            <li>Place trades or give personalised investment advice. Backtests and paper trading only.</li>
+            <li>Replace a lawyer or CA. Research only; a professional signs off.</li>
+            <li>Help ship controlled medicines, or prescriptions to individuals, where the destination country forbids it.</li>
+            <li>Generate AI video without asking. Higgsfield uses your credits.</li>
+          </ul>
+        </details>
+      </section>
+    </div>
+
+    <!-- LISTS -->
+    <div id="v-lists" data-view hidden>
+      <section>
+        <h2>Your three lists</h2>
+        <p class="hint">Tap a status to change it: Not started → In progress → Done → Parked.</p>
+        <div class="chips" role="group" aria-label="Choose list">
+          <button class="chip" data-list="L1" aria-pressed="true">Learn</button>
+          <button class="chip" data-list="L2" aria-pressed="false">Grow</button>
+          <button class="chip" data-list="L3" aria-pressed="false">Explore</button>
+        </div>
+        <p class="muted" id="listBlurb"></p>
+        <ul class="items" id="items"></ul>
+      </section>
+    </div>
+
+    <!-- LESSON -->
+    <div id="v-lesson" data-view hidden>
+      <section>
+        <p class="label">Lesson 01 · List 1 item #3</p>
+        <h2>GitHub, Python & Claude Code on Windows</h2>
+        <p class="muted">Goal: a working toolkit and knowing what each piece does. You won't write code. You'll direct, run and check it.</p>
+      </section>
+
+      <section style="margin-top:22px">
+        <details class="card" open>
+          <summary><h3>1 · Explainer</h3></summary>
+          <div class="tools">
+            <div class="tool"><b>Terminal</b><span>A chat window with your computer. Claude Code, Codex and OpenClaw all run here. On Windows: PowerShell.</span></div>
+            <div class="tool"><b>Git</b><span>“Track changes” for a whole folder. Download projects and undo mistakes.</span></div>
+            <div class="tool"><b>GitHub</b><span>Google Drive for Git folders (repos). Your tracker lives there.</span></div>
+            <div class="tool"><b>Python</b><span>The language most AI tools use. You need it to run what AI writes for you.</span></div>
+            <div class="tool"><b>Claude Code</b><span>A senior developer inside your terminal. You describe the outcome; it writes, runs and fixes.</span></div>
+            <div class="tool"><b>VS Code</b><span>Notepad with superpowers, for looking at files.</span></div>
+          </div>
+          <p class="label" style="margin-top:6px">Words you'll hear</p>
+          <div class="gloss">
+            <div><b>Repo</b>: a project folder tracked by Git</div>
+            <div><b>Clone</b>: download a repo to your PC</div>
+            <div><b>Commit</b>: a saved checkpoint with a message</div>
+            <div><b>Push / Pull</b>: upload / download changes</div>
+            <div><b>Branch</b>: a parallel copy for trying changes</div>
+            <div><b>Library</b>: ready-made code, installed with <code>pip install</code></div>
+            <div><b>requirements.txt</b>: the shopping list of libraries</div>
+            <div><b>venv</b>: a separate box of libraries per project</div>
+            <div><b>README.md</b>: the manual. Always read it first</div>
+          </div>
+          <p class="label" style="margin-top:6px">Load any GitHub project</p>
+          <ol style="margin:0;padding-left:20px;display:grid;gap:4px">
+            <li>Read the README</li>
+            <li><code>git clone &lt;url&gt;</code>, then <code>cd</code> into the folder</li>
+            <li><code>python -m venv .venv</code>, then <code>.venv\Scripts\activate</code></li>
+            <li><code>pip install -r requirements.txt</code></li>
+            <li>Run what the README says</li>
+            <li>Stuck? Run <code>claude</code> and say “get this running on my Windows PC and explain each step”</li>
+          </ol>
+        </details>
+      </section>
+
+      <section style="margin-top:22px">
+        <div class="row" style="justify-content:space-between"><h3>2 · Setup on your PC</h3><span class="hint">Errors? Screenshot and send to Claude.</span></div>
+        <ol class="steps" id="steps"></ol>
+      </section>
+
+      <section style="margin-top:22px">
+        <h3>3 · Mini project: clean a messy leads file</h3>
+        <div class="card">
+          <p>From the <code>project</code> folder, run <code>claude</code> and paste this prompt. The file <code>sample_leads.csv</code> has 15 fake IndiaMART, TradeIndia, website and WhatsApp inquiries.</p>
+          <div class="cmd"><pre id="prompt">Read sample_leads.csv. Write a Python script clean_leads.py using pandas that:
+1. removes fully blank rows,
+2. normalises phone numbers to international format, digits only
+   (assume India +91 if no country code; drop a leading 0),
+3. lowercases emails and title-cases names,
+4. treats two rows as the same person if phone OR email matches,
+   merges them keeping the earliest date and combining sources,
+5. flags junk/test rows and rows with no phone and no email
+   into a separate file,
+6. saves leads_clean.csv and leads_flagged.csv and prints a summary.
+Explain each step in simple language for a non-coder, then run it.</pre><button class="btn sm" data-copy="prompt">Copy</button></div>
+          <p class="label">Check the result yourself</p>
+          <div class="tbl"><table>
+            <tr><th>Check</th><th>Expected</th></tr>
+            <tr><td>Blank rows removed</td><td>1</td></tr>
+            <tr><td>Duplicates merged</td><td>4</td></tr>
+            <tr><td>Clean leads</td><td>8</td></tr>
+            <tr><td>Flagged (“test” + John Smith)</td><td>2</td></tr>
+            <tr><td>Priya Nair's phone</td><td>919847012345</td></tr>
+            <tr><td>Rahul Sharma's sources</td><td>IndiaMART + TradeIndia</td></tr>
+          </table></div>
+          <p class="tip">Numbers don't match? Don't touch the code. Tell Claude Code: “Expected 8 clean leads but got X. Find out why and fix it.” That conversation is the real lesson.</p>
+        </div>
+        <ol class="steps" id="psteps"></ol>
+      </section>
+
+      <section style="margin-top:22px">
+        <h3>4 · Quiz</h3>
+        <p class="hint">Answer in your own words and tap Save. Claude reads these and reviews them with you.</p>
+        <div class="card" id="quiz"></div>
+        <div class="row"><button class="btn primary" id="saveQuiz">Save answers</button><span class="hint" id="quizSaved"></span></div>
+      </section>
+    </div>
+
+    <!-- INBOX -->
+    <div id="v-inbox" data-view hidden>
+      <section>
+        <h2>Inbox</h2>
+        <p class="muted">Jot down a new topic or idea. Claude sorts it into a list at the start of the next session.</p>
+        <form class="card" id="inboxForm">
+          <label class="label" for="inboxText">New item</label>
+          <textarea id="inboxText" placeholder="e.g. Learn n8n vs Make for automations" required></textarea>
+          <div class="row">
+            <select id="inboxList" style="flex:1;min-width:160px" aria-label="Which list">
+              <option value="">Not sure, let Claude decide</option>
+              <option value="L1">Learn</option>
+              <option value="L2">Grow (MediSeller)</option>
+              <option value="L3">Explore (new venture)</option>
+            </select>
+            <button class="btn primary" type="submit">Add</button>
+          </div>
+        </form>
+        <ul class="items" id="inboxItems"></ul>
+      </section>
+    </div>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <a href="#today" data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 5l8 6.5V20H4z"/><path d="M10 20v-5h4v5"/></svg>Today</a>
+  <a href="#lists" data-tab="lists"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2" fill="currentColor"/><circle cx="4.5" cy="12" r="1.2" fill="currentColor"/><circle cx="4.5" cy="18" r="1.2" fill="currentColor"/></svg>Lists</a>
+  <a href="#lesson" data-tab="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>Lesson</a>
+  <a href="#inbox" data-tab="inbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13 6.5 5h11L20 13v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></svg>Inbox</a>
+</div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const LISTS={
+  L1:{name:"Learn",blurb:"AI skills and finance, taught one at a time. Your current focus.",items:[
+    ["1","Multi-agent & MCP orchestration","Week 3 · project: active + lapsed customers"],
+    ["2","Obsidian / Jarvis","Week 6 · assistant that reads your vault"],
+    ["3","GitHub repos → loading / Python libraries","Week 1 · Lesson 01"],
+    ["4","Try Codex (OpenAI)","Week 4 · same task in Codex vs Claude Code"],
+    ["5","Agentic AI & AI agents","Week 2 · project: lead pipeline"],
+    ["6","Algo trading + AI powered trading","Week 10+ · paper-trading bot via broker API"],
+    ["7","OpenClaw / VPS","Week 6 · 24/7 assistant on WhatsApp/Telegram"],
+    ["8","Kimi / Chinese AI","Week 5 · cost vs quality comparison"],
+    ["9","GIFT City / AIFs / Global investing","Week 10+ · notes for wealth management"],
+    ["10","F&O + AI powered","Week 10+ · from zero, paper trades only"],
+    ["11","AI avatars / AI video generation","Week 7–8 · info/testimonials, edu/sales, training"],
+    ["12","AI automation consultancy (India ↔ Global)","Week 9 · package MediSeller builds as case studies"]]},
+  L2:{name:"Grow",blurb:"MediSeller growth. These become the projects for your lessons.",items:[
+    ["1","AI consultancy","Idea stage · MediSeller is the case study"],
+    ["2","Wealth management → internal + consultancy","Finance track"],
+    ["3","All-in-one → export hub","Venture brief #2"],
+    ["4","Product / country-focused websites","Later"],
+    ["5","Retain active + lapsed global customers","Week 3 project"],
+    ["6","Identify → retain active + lapsed India customers","Week 3 project"],
+    ["7","Leads → clean / churn / distribute (passive)","Week 1 warm-up, Week 2 project"],
+    ["8","Automations → 100%","Ongoing"]]},
+  L3:{name:"Explore",blurb:"New ventures and investments. One brief each week, in this order.",items:[
+    ["13","Medicine brands","Brief 1 · generics (Healing / Kachela), semaglutide, export best-sellers · compliance check per country"],
+    ["16","All-in-one export hub","Brief 2 · promotion schemes and benefits"],
+    ["7","Country-based local e-pharmacy","Brief 3 · Insulincart · licensing per region"],
+    ["8","Cross-border delivery (meds)","Brief 3 · B2B + B2C rules per destination"],
+    ["4","Medical tourism","Brief 4"],
+    ["14","Sexual wellness → Cart69 / Largexx","Brief 5"],
+    ["6","Weight-loss / use-based products","Brief 6"],
+    ["12","Buy silver (how to buy commodities)","Brief 7"],
+    ["17","Platinum / uranium / other metals","Brief 7"],
+    ["11","Carbon credits","Brief 8"],
+    ["1","Rare-earth minerals & magnets","Brief 9"],
+    ["2","E-waste recycling","Brief 9"],
+    ["3","SHANTI Act / nuclear power: SMRs + SMEs","Brief 10"],
+    ["10","Ukraine / Gaza redevelopment","Brief 11"],
+    ["15","Commercial property, Tier 2/3 cities","Brief 12"],
+    ["5","Spiritual clothing line → Khsm / Veshti","Brief 13"],
+    ["9","AI agentic workflows & automations","Same as Learn #5 and Grow #8"]]}
+};
+const ROAD=[["W1","GitHub, Python & Claude Code","L1-3"],["W2","Agentic AI basics","L1-5"],["W3","MCP & multi-agent","L1-1"],["W4","Codex vs Claude Code","L1-4"],["W5","Kimi & Chinese AI","L1-8"],["W6","OpenClaw + Obsidian","L1-7"],["W7–8","AI avatars & video","L1-11"],["W9","AI consultancy","L1-12"],["W10+","F&O → algo trading → global investing","L1-10"]];
+const STEPS=[
+  {id:"s1",t:"Open PowerShell",d:"Press the Windows key, type PowerShell, open Windows PowerShell (not Admin)."},
+  {id:"s2",t:"Install Git, Python and VS Code",cmd:"winget install --id Git.Git -e\nwinget install --id Python.Python.3.13 -e\nwinget install --id Microsoft.VisualStudioCode -e",d:"Then close PowerShell and open it again."},
+  {id:"s3",t:"Check they installed",cmd:"git --version\npython --version",tip:"If python opens the Microsoft Store: Settings → Apps → Advanced app settings → App execution aliases, turn off both “python” entries, reopen PowerShell."},
+  {id:"s4",t:"Allow scripts to run (one-time)",cmd:"Set-ExecutionPolicy -Scope CurrentUser RemoteSigned",d:"Type Y if asked."},
+  {id:"s5",t:"Install Claude Code and log in",cmd:"irm https://claude.ai/install.ps1 | iex",d:"Reopen PowerShell, run claude, and log in through the browser. Type /exit to leave."},
+  {id:"s6",t:"Tell Git who you are",cmd:'git config --global user.name "Your Name"\ngit config --global user.email "sarthhak.ai@gmail.com"'},
+  {id:"s7",t:"Clone your first repo (this tracker)",cmd:"cd $HOME\\Documents\ngit clone https://github.com/sarthhakai-code/mediseller-screening.git\ncd mediseller-screening\ngit checkout ccr-d088458d-yh1ygx\ncode .",d:"Approve the GitHub sign-in if a browser opens. VS Code opens the folder."},
+  {id:"s8",t:"First Python library in a virtual environment",cmd:"cd learning\\learn\\01-github-python-windows\\project\npython -m venv .venv\n.venv\\Scripts\\activate\npip install pandas\npython -c \"import pandas; print('pandas works', pandas.__version__)\"",d:"You should see (.venv) at the start of the line."}
+];
+const PSTEPS=[
+  {id:"p1",t:"Ran the prompt in Claude Code and approved its steps"},
+  {id:"p2",t:"My numbers match the expected table"},
+  {id:"p3",t:"Committed and pushed my work",cmd:'git add .\ngit commit -m "Lesson 01 mini project: lead cleaner"\ngit push'},
+  {id:"p4",t:"Quiz answered and saved"}
+];
+const QUIZ=[
+  "What's the difference between Git and GitHub?",
+  "You find a cool AI project on GitHub. What do you read first, and what are the usual steps to get it running?",
+  "What does pip install -r requirements.txt do?",
+  "Why create a virtual environment (.venv) for each project?",
+  "What is a commit, and why write a clear message with it?",
+  "Claude Code says the lead cleaner is done. How do you know it's correct without reading the code?",
+  "In your own words: what is a branch, and why is our tracker on one?",
+  "You see ModuleNotFoundError: No module named 'requests'. What does it mean and what do you do?",
+  "Name 2 other messy files or data sources at MediSeller that a script like this could clean."
+];
+const STATUS=["todo","doing","done","parked"];
+const SLABEL={todo:"Not started",doing:"In progress",done:"Done",parked:"Parked"};
+
+const state={status:{},steps:{},quiz:{},inbox:[],list:"L1"};
+let db=null, mode="loading";
+const $=s=>document.querySelector(s);
+
+/* ---------- storage: shared db when available, this device otherwise ---------- */
+const LS="lj-v1";
+function lsLoad(){try{const v=JSON.parse(localStorage.getItem(LS)||"{}");Object.assign(state,{status:v.status||{},steps:v.steps||{},quiz:v.quiz||{},inbox:v.inbox||[]});}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({status:state.status,steps:state.steps,quiz:state.quiz,inbox:state.inbox}));}catch(e){}}
+function setMode(m){mode=m;const dot=$("#dot"),t=$("#saveText");dot.className="dot"+(m==="db"?" ok":m==="local"?" local":"");t.textContent=m==="db"?"Synced":m==="local"?"Saved on this device":"Connecting…";}
+function toast(msg){const el=$("#toast");el.textContent=msg;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,1800);}
+function fail(e){toast("Couldn't save. Check your connection and try again.");console.warn(e);}
+
+async function writeStatus(id,s){state.status[id]=s;renderAll();
+  if(mode==="db"){try{await db.doc("items/"+id).set({status:s,updatedAt:new Date().toISOString()});}catch(e){fail(e)}}else lsSave();}
+async function writeSteps(){renderAll();
+  if(mode==="db"){try{await db.doc("progress/lesson01-steps").set({done:state.steps,updatedAt:new Date().toISOString()});}catch(e){fail(e)}}else lsSave();}
+async function writeQuiz(){
+  if(mode==="db"){try{await db.doc("progress/lesson01-quiz").set({answers:state.quiz,updatedAt:new Date().toISOString()});}catch(e){fail(e);return false}}else lsSave();return true;}
+async function addInbox(text,list){const row={text,list,createdAt:new Date().toISOString()};
+  if(mode==="db"){try{await db.collection("inbox").add(row);}catch(e){fail(e);return false}}else{row.id="l"+Date.now();state.inbox.unshift(row);lsSave();renderInbox();}return true;}
+async function delInbox(id){
+  if(mode==="db"){try{await db.doc("inbox/"+id).delete();}catch(e){fail(e)}}else{state.inbox=state.inbox.filter(r=>r.id!==id);lsSave();renderInbox();}}
+
+/* ---------- render ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function st(id){return state.status[id]||"todo";}
+function renderMeters(){
+  $("#meters").innerHTML=Object.entries(LISTS).map(([k,l])=>{
+    const ids=l.items.map(i=>k+"-"+i[0]);const n=ids.length;
+    const d=ids.filter(i=>st(i)==="done").length,p=ids.filter(i=>st(i)==="doing").length;
+    return `<a class="meter" href="#lists" data-go="${k}" style="text-decoration:none;color:inherit"><span class="label">${l.name}</span><b>${d}<span class="muted" style="font-size:.9rem;font-weight:500"> / ${n}</span></b><div class="bar"><i class="d" style="width:${d/n*100}%"></i><i class="p" style="width:${p/n*100}%"></i></div><span class="hint">${p} in progress</span></a>`;}).join("");
+}
+function renderRoad(){
+  $("#road").innerHTML=ROAD.map(([w,t,id])=>`<li><span class="wk">${w}</span><span>${esc(t)}</span><span class="pill s-${st(id)}">${SLABEL[st(id)]}</span></li>`).join("");
+}
+function renderItems(){
+  const l=LISTS[state.list];$("#listBlurb").textContent=l.blurb;
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.list===state.list));
+  $("#items").innerHTML=l.items.map(([n,t,note])=>{const id=state.list+"-"+n,s=st(id);
+    return `<li class="item"><span class="num">#${n}</span><div style="min-width:0"><div class="t">${esc(t)}</div><div class="n">${esc(note)}</div></div><button class="pill s-${s}" data-id="${id}" aria-label="${esc(t)}: ${SLABEL[s]}. Tap to change.">${SLABEL[s]}</button></li>`;}).join("");
+}
+function stepHTML(s){const on=!!state.steps[s.id];
+  return `<li class="step${on?" on":""}"><label class="check"><input type="checkbox" id="chk-${s.id}" data-step="${s.id}" ${on?"checked":""}><span>${esc(s.t)}</span></label>${s.d?`<p class="muted">${esc(s.d)}</p>`:""}${s.cmd?`<div class="cmd"><pre id="cmd-${s.id}">${esc(s.cmd)}</pre><button class="btn sm" data-copy="cmd-${s.id}">Copy</button></div>`:""}${s.tip?`<p class="tip">${esc(s.tip)}</p>`:""}</li>`;}
+function renderSteps(){
+  $("#steps").innerHTML=STEPS.map(stepHTML).join("");$("#psteps").innerHTML=PSTEPS.map(stepHTML).join("");
+  const total=STEPS.length+PSTEPS.length,done=[...STEPS,...PSTEPS].filter(s=>state.steps[s.id]).length;
+  $("#lessonBar").style.width=(done/total*100)+"%";$("#lessonPct").textContent=`${done} of ${total} steps done`;
+}
+function renderQuiz(force){
+  const box=$("#quiz");if(box.dataset.ready&&!force)return;box.dataset.ready="1";
+  box.innerHTML=QUIZ.map((q,i)=>`<div class="q"><label for="q${i+1}">${i+1}. ${esc(q)}</label><textarea id="q${i+1}" data-q="q${i+1}">${esc(state.quiz["q"+(i+1)]||"")}</textarea></div>`).join("");
+}
+function renderInbox(){
+  const ul=$("#inboxItems");
+  if(!state.inbox.length){ul.innerHTML=`<li class="empty">Nothing waiting. New ideas you add appear here until Claude sorts them.</li>`;return;}
+  ul.innerHTML=state.inbox.map(r=>`<li class="inbox-item"><div style="min-width:0"><div>${esc(r.text)}</div><div class="hint">${r.list?LISTS[r.list].name:"Claude decides"} · ${new Date(r.createdAt).toLocaleDateString()}</div></div><button class="btn sm" data-del="${esc(r.id)}">Remove</button></li>`).join("");
+}
+function renderAll(){renderMeters();renderRoad();renderItems();renderSteps();}
+
+/* ---------- routing ---------- */
+const VIEWS=["today","lists","lesson","inbox"];
+function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):"today";
+  VIEWS.forEach(n=>{document.getElementById("v-"+n).hidden=n!==v;});
+  document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.tab===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+  window.scrollTo(0,0);}
+addEventListener("hashchange",route);
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  const pill=e.target.closest("button.pill[data-id]");
+  if(pill){const id=pill.dataset.id;writeStatus(id,STATUS[(STATUS.indexOf(st(id))+1)%STATUS.length]);return;}
+  const chip=e.target.closest(".chip");if(chip){state.list=chip.dataset.list;renderItems();return;}
+  const go=e.target.closest("[data-go]");if(go){state.list=go.dataset.go;renderItems();}
+  const cp=e.target.closest("[data-copy]");
+  if(cp){const el=document.getElementById(cp.dataset.copy);const txt=el.textContent;
+    try{await navigator.clipboard.writeText(txt);cp.textContent="Copied";setTimeout(()=>cp.textContent="Copy",1400);}
+    catch(err){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Selected. Use your phone's Copy.");}
+    return;}
+  const del=e.target.closest("[data-del]");if(del){delInbox(del.dataset.del);return;}
+});
+document.addEventListener("change",e=>{const c=e.target.closest("input[data-step]");if(c){state.steps[c.dataset.step]=c.checked;if(!c.checked)delete state.steps[c.dataset.step];writeSteps();}});
+$("#saveQuiz").addEventListener("click",async()=>{
+  document.querySelectorAll("textarea[data-q]").forEach(t=>{state.quiz[t.dataset.q]=t.value.trim();});
+  const answered=Object.values(state.quiz).filter(Boolean).length;
+  if(await writeQuiz()){$("#quizSaved").textContent=`Saved ${answered} of ${QUIZ.length} answers`;
+    if(answered===QUIZ.length&&!state.steps.p4){state.steps.p4=true;writeSteps();}}
+});
+$("#inboxForm").addEventListener("submit",async e=>{e.preventDefault();const t=$("#inboxText").value.trim();if(!t)return;
+  if(await addInbox(t,$("#inboxList").value)){$("#inboxText").value="";toast("Added to inbox");}});
+
+/* ---------- boot ---------- */
+route();renderAll();renderQuiz();renderInbox();
+(async()=>{
+  const timer=setTimeout(()=>{if(mode==="loading"){lsLoad();setMode("local");renderAll();renderQuiz(true);renderInbox();}},10000);
+  try{db=await (window.claude?.use?.("db")??Promise.resolve(null));}catch(e){db=null;}
+  if(!db){clearTimeout(timer);if(mode==="loading"){lsLoad();setMode("local");renderAll();renderQuiz(true);renderInbox();}return;}
+  let first=true;
+  const ready=()=>{if(first){first=false;clearTimeout(timer);setMode("db");renderQuiz(true);}};
+  const err=e=>{console.warn(e);if(mode!=="db"){clearTimeout(timer);lsLoad();setMode("local");renderAll();renderQuiz(true);renderInbox();}};
+  db.collection("items").onSnapshot(s=>{state.status={};s.docs.forEach(d=>{const v=d.data();if(v&&v.status)state.status[d.id]=v.status;});ready();renderAll();},err);
+  db.doc("progress/lesson01-steps").onSnapshot(s=>{state.steps=(s.exists&&s.data().done)||{};renderAll();},err);
+  db.doc("progress/lesson01-quiz").onSnapshot(s=>{state.quiz=(s.exists&&s.data().answers)||{};ready();renderQuiz(true);},err);
+  db.collection("inbox").orderBy("createdAt","desc").onSnapshot(s=>{state.inbox=s.docs.map(d=>({id:d.id,...d.data()}));renderInbox();},err);
+})();
+</script>
