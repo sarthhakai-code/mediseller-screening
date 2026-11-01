@@ -28,7 +28,7 @@ function findDocs(dir) {
     if (wantPng) {
       await page.emulateMedia({ media: 'print' });
       await page.screenshot({ path: path.join(outDir, base + '.png'), fullPage: true });
-      await page.emulateMedia({ media: 'screen' });
+      await page.emulateMedia({ media: null });
     }
     console.log('built', base);
   }

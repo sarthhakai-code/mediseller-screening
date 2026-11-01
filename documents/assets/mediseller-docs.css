@@ -71,7 +71,8 @@ body {
 }
 @media print {
   body { background: var(--ms-white); }
-  .page { margin: 0; box-shadow: none; page-break-after: always; }
+  .page { margin: 0; box-shadow: none; height: 296.6mm; page-break-after: always; break-after: page; break-inside: avoid; }
+  .page:last-child { break-after: auto; }
   .page:last-child { page-break-after: auto; }
 }
 
@@ -147,11 +148,11 @@ body.cat-incentive .ms-chip { background: var(--ms-blue); } /* navy-on-navy fix 
 .ms-control .blank { display: block; border-bottom: 1px solid var(--ms-muted); height: 3.6mm; }
 
 /* ---------- Body ---------- */
-.ms-body { flex: 1; padding: 7mm 14mm 0; display: flex; flex-direction: column; }
+.ms-body { flex: 1 0 auto; padding: 7mm 14mm 16mm; display: flex; flex-direction: column; }
 
 /* ---------- Footer ---------- */
 .ms-footer {
-  margin-top: auto;
+  position: absolute; left: 0; right: 0; bottom: 0; background: var(--ms-white);
   padding: 4mm 14mm 6mm;
   border-top: 1px solid var(--ms-line);
   display: flex; justify-content: space-between; align-items: center;
@@ -225,8 +226,136 @@ body.cat-incentive .ms-chip { background: var(--ms-blue); } /* navy-on-navy fix 
 
 /* Acknowledgement line */
 .ack {
-  margin-top: 6mm; margin-bottom: 5mm;
+  margin-top: 6mm; margin-bottom: 0;
   display: grid; grid-template-columns: 1fr 1fr; gap: 10mm;
   font-size: 8pt; color: var(--ms-muted);
 }
 .ack div { border-top: 1px solid var(--ms-muted); padding-top: 1.5mm; }
+
+/* ==========================================================================
+   Multi-page & data components
+   ========================================================================== */
+
+/* Continuation header for page 2+ */
+.ms-cont {
+  background: var(--ms-navy); color: var(--ms-white);
+  padding: 4mm 14mm; display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1.2mm solid var(--ms-red); font-size: 8.5pt;
+}
+.ms-cont .t { font-weight: 700; }
+.ms-cont .c { opacity: .85; font-weight: 600; }
+.ms-cont + .ms-body { padding-top: 6mm; }
+
+/* Compact title variant for data-heavy docs */
+.ms-title.compact { padding-top: 7mm; padding-bottom: 3mm; }
+.ms-title.compact h1 { font-size: 23pt; }
+.ms-title.compact h1 .hi { font-size: 13pt; margin-top: 1mm; }
+.ms-title.compact .sub { margin-top: 2mm; font-size: 10pt; }
+
+/* Section headings */
+h2.sec {
+  margin: 5mm 0 2.5mm; font-size: 12pt; font-weight: 700; color: var(--ms-navy);
+  display: flex; align-items: center; gap: 2.5mm;
+}
+h2.sec:first-child { margin-top: 0; }
+h2.sec::before { content: ""; width: 1.4mm; height: 5mm; background: var(--ms-accent); border-radius: .5mm; }
+h2.sec .hi { font-size: 10pt; font-weight: 600; color: var(--ms-muted); }
+h3.sub { margin: 3.5mm 0 1.5mm; font-size: 9.5pt; font-weight: 700; color: var(--ms-black); text-transform: uppercase; letter-spacing: .06em; }
+h3.sub .hi { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--ms-muted); }
+
+p.lead { margin: 0 0 3mm; font-size: 9.5pt; color: var(--ms-muted); }
+
+/* Data tables */
+table.ms-table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+.ms-table thead th {
+  background: var(--ms-navy); color: var(--ms-white); text-align: left;
+  font-weight: 600; font-size: 7.6pt; letter-spacing: .03em;
+  padding: 2mm 2.2mm; vertical-align: bottom;
+}
+.ms-table thead th .hi { display: block; font-weight: 500; font-size: 7pt; opacity: .85; letter-spacing: 0; }
+.ms-table tbody td { padding: 1.55mm 2.2mm; border-bottom: 1px solid var(--ms-line); vertical-align: top; }
+.ms-table tbody tr:nth-child(even) td { background: var(--ms-soft); }
+.ms-table td.num, .ms-table th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ms-table td.ctr, .ms-table th.ctr { text-align: center; }
+.ms-table td.idx { color: var(--ms-muted); width: 7mm; font-variant-numeric: tabular-nums; }
+.ms-table td.strong { font-weight: 600; color: var(--ms-navy); }
+.ms-table tr.group td {
+  background: var(--ms-soft) !important; font-weight: 700; color: var(--ms-accent);
+  font-size: 8pt; letter-spacing: .06em; text-transform: uppercase; padding-top: 2.4mm;
+  border-bottom: 1px solid var(--ms-accent);
+}
+body.cat-incentive .ms-table tr.group td { color: var(--ms-blue); border-bottom-color: var(--ms-blue); }
+.ms-table.dense { font-size: 8.3pt; }
+.ms-table.dense tbody td { padding: .95mm 2mm; }
+.ms-table .box { display: inline-block; width: 3.6mm; height: 3.6mm; border: 1px solid var(--ms-muted); border-radius: .6mm; }
+
+/* Tags */
+.tag {
+  display: inline-block; font-size: 6.6pt; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: .5mm 1.6mm; border-radius: .8mm; white-space: nowrap; vertical-align: 1px;
+}
+.tag.global   { background: var(--ms-navy); color: var(--ms-white); }
+.tag.priority { background: var(--ms-blue); color: var(--ms-white); }
+.tag.common   { background: var(--ms-navy); color: var(--ms-white); }
+.tag.domestic { background: var(--ms-red);  color: var(--ms-white); }
+.tag.glob     { background: var(--ms-blue); color: var(--ms-white); }
+.tag.act      { background: var(--ms-black); color: var(--ms-white); }
+.tag.green  { background: #E3F1E6; color: #1C5B2A; }   /* lead-stage colour codes (functional, not brand) */
+.tag.yellow { background: #FFF3C4; color: #6B5300; }
+.tag.red    { background: #FBE1E4; color: #9A1424; }
+.tag.updated { background: var(--ms-soft); color: var(--ms-navy); border: 1px solid var(--ms-line); }
+
+/* "To confirm" marker */
+.tbc { color: var(--ms-red); font-weight: 700; font-size: 7.5pt; }
+.tbc-box {
+  margin-top: 4mm; border: 1px dashed var(--ms-red); border-radius: 1.5mm;
+  padding: 2.5mm 3.5mm; font-size: 7.8pt; color: var(--ms-black); background: #FFF;
+}
+.tbc-box b { color: var(--ms-red); }
+.tbc-box ul { margin: 1mm 0 0; padding-left: 4.5mm; }
+
+/* Info callout */
+.callout {
+  border-radius: 2mm; background: var(--ms-soft); border-left: 1.4mm solid var(--ms-accent);
+  padding: 3mm 4mm; font-size: 9pt; margin: 3mm 0;
+}
+.callout b { color: var(--ms-navy); }
+.callout .hi { color: var(--ms-muted); font-size: 8.5pt; }
+
+/* Highlight banner (scheme / key figure) */
+.banner {
+  display: grid; grid-template-columns: auto 1fr; gap: 5mm; align-items: center;
+  background: var(--ms-navy); color: var(--ms-white); border-radius: 2mm; padding: 4mm 6mm; margin-bottom: 4mm;
+}
+.banner .fig { font-size: 24pt; font-weight: 800; line-height: 1; border-right: 1px solid rgba(255,255,255,.3); padding-right: 5mm; }
+.banner .fig small { display: block; font-size: 8pt; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .8; margin-top: 1.5mm; }
+.banner .txt { font-size: 9.5pt; }
+.banner .txt b { font-size: 11pt; }
+.banner .txt .hi { opacity: .85; font-size: 9pt; display: block; margin-top: .8mm; }
+
+/* Grid helpers */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+.card { border: 1px solid var(--ms-line); border-radius: 2mm; padding: 3mm 3.5mm; font-size: 8.6pt; }
+.card h4 { margin: 0 0 1.5mm; font-size: 9.5pt; color: var(--ms-navy); }
+.card h4 .hi { font-size: 8.5pt; color: var(--ms-muted); font-weight: 600; }
+.card ul { margin: 0; padding-left: 4mm; }
+.card li { margin: .6mm 0; }
+
+/* Checklist list */
+ul.check { list-style: none; margin: 0; padding: 0; }
+ul.check li { display: grid; grid-template-columns: 5.5mm 1fr; gap: 1.5mm; padding: .8mm 0; border-bottom: 1px dotted var(--ms-line); font-size: 8.4pt; line-height: 1.38; }
+ul.check li::before { content: ""; width: 3.4mm; height: 3.4mm; border: 1px solid var(--ms-muted); border-radius: .6mm; margin-top: .6mm; }
+ul.check li small { color: var(--ms-muted); }
+
+/* Flow / priority chain */
+.chain { display: flex; flex-wrap: wrap; gap: 1.5mm; align-items: center; font-size: 8.6pt; font-weight: 600; }
+.chain span { background: var(--ms-navy); color: #fff; padding: 1.2mm 2.6mm; border-radius: 1mm; }
+.chain i { font-style: normal; color: var(--ms-muted); }
+
+/* Fill-in strip (daily sheets) */
+.fill { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4mm; font-size: 7.8pt; color: var(--ms-muted); margin-bottom: 4mm; }
+.fill div { border-bottom: 1px solid var(--ms-muted); padding-bottom: 4mm; }
+
+.small { font-size: 7.6pt; color: var(--ms-muted); }
+.mt { margin-top: 4mm; }
