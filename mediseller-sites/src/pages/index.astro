@@ -1,0 +1,135 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProductCard from '../components/ProductCard.astro';
+import site, { waLink } from '../lib/site.js';
+import { products, categories } from '../lib/catalogue.js';
+
+const featured = products.filter((p) => p.featured).slice(0, 8);
+const popular = ['Imatinib', 'Sofosbuvir', 'Insulin Glargine', 'Tirzepatide', 'Osimertinib', 'Dolutegravir'];
+const audiences = [
+  { icon: 'user', title: 'Patients & caregivers', text: 'Medicines that are unavailable, very expensive or months away in your country — sourced in India for personal use against your prescription.', href: '/how-to-order/' },
+  { icon: 'stethoscope', title: 'Doctors & clinics', text: 'Source specialist and critical-care medicines for your patients with batch details and documentation.', href: '/for-business/' },
+  { icon: 'building', title: 'Importers & distributors', text: 'Bulk export supply with export documentation, cold chain and consolidated shipping.', href: '/for-business/' },
+  { icon: 'store', title: 'Resellers & dropshippers', text: 'Sell Indian pharma and wellness products online — we pack and ship to your customers.', href: '/for-business/' },
+];
+const catIcons = { 'Oncology': 'shield', 'HIV / AIDS': 'shield', 'Hepatitis B & C': 'shield', "Men's Health": 'user', 'Diabetes & Insulin': 'snow', 'Weight Management': 'pill' };
+const faqs = [
+  ['Do I pay on the website?', 'No. You add medicines to your cart and send a quote request. An agent confirms the best price, availability and shipping with you on WhatsApp, email or a call before you pay.'],
+  ['Do I need a prescription?', 'Prescription-only medicines are dispatched only against a valid prescription. You can upload it at checkout or share it with your agent later.'],
+  ['Which countries do you ship to?', `We ship to ${site.shippingRegions.map((r) => r.region).join(', ')} and more. See the shipping page or ask an agent about your country.`],
+];
+---
+<Base schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">Global medicine sourcing from India</p>
+      <h1>Can't find or afford your medicine? <span>We'll get it to you.</span></h1>
+      <p class="lead">{site.description}</p>
+      <form class="hero-search" action="/products/" method="get" role="search">
+        <label class="sr-only" for="hero-q">Search medicines</label>
+        <input id="hero-q" name="q" type="search" placeholder="e.g. Imatinib, Sofosbuvir, insulin…" />
+        <button class="btn btn-primary" type="submit"><Icon name="search" size={18} /> Find</button>
+      </form>
+      <div class="hero-chips">
+        <span class="small muted">Popular:</span>
+        {popular.map((q) => <a class="chip" href={`/products/?q=${encodeURIComponent(q)}`}>{q}</a>)}
+      </div>
+      <div class="row" style="margin-top:24px">
+        <a class="btn btn-primary" href="/products/">Find your medicine <Icon name="arrow" size={18} /></a>
+        <a class="btn btn-wa" href={waLink('Hello, I need help finding a medicine.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> Talk to an agent</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Who we help</p>
+      <h2>One partner for patients and businesses</h2>
+      <div class="grid grid-4" style="margin-top:20px">
+        {audiences.map((a) => (
+          <a class="card card-link" href={a.href}>
+            <div class="icon-circle"><Icon name={a.icon} size={22} /></div>
+            <h3>{a.title}</h3><p class="muted small" style="margin:0">{a.text}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="row" style="justify-content:space-between"><div><p class="eyebrow">Categories</p><h2>Browse by therapy area</h2></div><a href="/products/">All medicines →</a></div>
+      <div class="grid grid-3" style="margin-top:20px">
+        {categories.map((c) => (
+          <a class="card card-link" href={c.url}>
+            <div class="icon-circle"><Icon name={catIcons[c.name] || 'pill'} size={22} /></div>
+            <h3>{c.name}</h3><p class="muted small" style="margin:0">{c.count} medicines</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">How it works</p>
+      <h2>Order like a shop. Get help like a pharmacy.</h2>
+      <ol class="steps" style="margin-top:20px">
+        <li><h3>Search</h3><p class="muted small" style="margin:0">Find your medicine by brand, generic name or condition.</p></li>
+        <li><h3>Add to cart</h3><p class="muted small" style="margin:0">Choose quantities. Add a note if it's urgent or you accept alternative brands.</p></li>
+        <li><h3>Request quote</h3><p class="muted small" style="margin:0">Share your details and (optionally) your prescription. Choose WhatsApp, email or a call.</p></li>
+        <li><h3>Agent confirms & ships</h3><p class="muted small" style="margin:0">Your agent confirms price, availability and delivery. You pay only after you agree.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="row" style="justify-content:space-between"><div><p class="eyebrow">Featured</p><h2>Frequently requested medicines</h2></div><a href="/products/">View all →</a></div>
+      <div class="grid grid-4" style="margin-top:20px">{featured.map((p) => <ProductCard product={p} />)}</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <p class="eyebrow">Global reach</p>
+        <h2>Shipping to {site.shippingRegions.length} regions</h2>
+        <p class="muted">We focus on countries where critical medicines are hard to get, expensive, or not covered by insurance.</p>
+        {site.shippingRegions.map((r) => <p style="margin:0 0 8px"><strong>{r.region}:</strong> <span class="muted">{r.countries.slice(0, 5).join(', ')}{r.countries.length > 5 ? '…' : ''}</span></p>)}
+        <a class="btn btn-outline" href="/shipping/" style="margin-top:12px"><Icon name="globe" size={18} /> All shipping countries</a>
+      </div>
+      <div class="grid" style="gap:12px">
+        <div class="card row" style="flex-wrap:nowrap"><div class="icon-circle" style="margin:0"><Icon name="shield" /></div><div><strong>Licensed & documented</strong><p class="small muted" style="margin:0">Indian drug licence and import-export code. Invoices and export documents with every order.</p></div></div>
+        <div class="card row" style="flex-wrap:nowrap"><div class="icon-circle" style="margin:0"><Icon name="snow" /></div><div><strong>Cold-chain capable</strong><p class="small muted" style="margin:0">Insulin, biologics and GLP-1 pens ship in temperature-controlled packaging.</p></div></div>
+        <div class="card row" style="flex-wrap:nowrap"><div class="icon-circle" style="margin:0"><Icon name="chat" /></div><div><strong>A real person for every order</strong><p class="small muted" style="margin:0">Agents on WhatsApp, email and phone — in your time zone.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  {site.stats && (
+    <section class="section alt"><div class="container grid grid-4">{site.stats.map((s) => <div class="card" style="text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--primary)">{s.value}</div><div class="muted">{s.label}</div></div>)}</div></section>
+  )}
+  {site.testimonials.length > 0 && (
+    <section class="section"><div class="container"><h2>What our customers say</h2><div class="grid grid-3">{site.testimonials.map((t) => <blockquote class="card" style="margin:0"><p>“{t.text}”</p><footer class="small muted">— {t.name}, {t.country}</footer></blockquote>)}</div></div></section>
+  )}
+
+  <section class="section alt">
+    <div class="container grid grid-2">
+      <div><p class="eyebrow">FAQ</p><h2>Good to know</h2><p class="muted">More answers on the <a href="/faq/">FAQ page</a>, or ask our assistant.</p></div>
+      <div class="faq">{faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container card" style="text-align:center;padding:40px 20px;background:linear-gradient(135deg,#FFF1F2,#fff)">
+      <h2>Not sure what you need?</h2>
+      <p class="muted">Send us the medicine name or a photo of your prescription — an agent will help.</p>
+      <div class="row" style="justify-content:center">
+        <a class="btn btn-wa" href={waLink('Hello, I have a prescription and need help sourcing it.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp an agent</a>
+        <a class="btn btn-outline" href="/contact/">Other ways to contact</a>
+      </div>
+    </div>
+  </section>
+</Base>

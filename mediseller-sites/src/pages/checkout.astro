@@ -1,0 +1,101 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import site, { waLink } from '../lib/site.js';
+import { BUYER_TYPES } from '../../server/leads.js';
+const c = site.checkout;
+const help = waLink('Hello, I need help with my order request.');
+---
+<Base title="Request your quote" noindex hideDock>
+  <div class="container checkout">
+    <form id="checkout" novalidate data-checkout>
+      <h1 style="font-size:1.8rem">Request your quote</h1>
+      <ol class="progress" aria-label="Checkout steps">
+        <li class="active" data-prog="1">1 · Your details</li>
+        <li data-prog="2">2 · Prescription</li>
+        <li data-prog="3">3 · How we reach you</li>
+      </ol>
+
+      <!-- STEP 1 -->
+      <section class="step" data-step="1" aria-labelledby="s1">
+        <h2 id="s1" style="font-size:1.2rem">Your details</h2>
+        <div class="form-grid">
+          <div class="field full"><label for="f-name">Full name *</label><input class="input" id="f-name" name="name" autocomplete="name" required /><span class="err"></span></div>
+          <div class="field"><label for="f-country">Country *</label><select id="f-country" name="country" data-country-select required></select><span class="err"></span></div>
+          <div class="field"><label for="f-city">City</label><input class="input" id="f-city" name="city" autocomplete="address-level2" /></div>
+          <div class="field full"><label for="f-phone">WhatsApp / phone number *</label>
+            <div class="phone-wrap"><input class="input" data-dial readonly tabindex="-1" aria-label="Country code" /><input class="input" id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required placeholder="Number with area code" /></div>
+            <span class="hint">We'll use this to send your quote. WhatsApp preferred.</span><span class="err"></span></div>
+          <div class="field"><label for="f-email">Email</label><input class="input" id="f-email" name="email" type="email" autocomplete="email" /><span class="err"></span></div>
+          <div class="field"><label for="f-type">I am a… *</label><select id="f-type" name="buyer_type" required>{BUYER_TYPES.map((t) => <option>{t}</option>)}</select></div>
+          <div class="field full" data-company hidden><label for="f-company">Company / pharmacy name</label><input class="input" id="f-company" name="company" autocomplete="organization" /></div>
+          <div class="field full"><label for="f-msg">Anything else your agent should know?</label><textarea class="input" id="f-msg" name="message" maxlength="2000" placeholder="e.g. needed urgently, current brand, alternative brands OK, delivery address city…"></textarea></div>
+        </div>
+        <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn btn-primary" type="button" data-next="2">Continue <Icon name="arrow" size={18} /></button></div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="step" data-step="2" aria-labelledby="s2" hidden>
+        <h2 id="s2" style="font-size:1.2rem">Prescription <span class="muted small">(optional)</span></h2>
+        <p class="muted small">Prescription-only medicines are dispatched only against a valid prescription. Upload it now to speed things up, or share it with your agent later.</p>
+        <div class="rx-box">
+          <div class="icon-circle" style="margin:0 auto 10px"><Icon name="clipboard" /></div>
+          <p style="margin:0 0 12px"><strong>Upload or take a photo of your prescription</strong><br /><span class="small muted">JPG, PNG, HEIC or PDF · up to {c.rxMaxFiles} files · max {c.rxMaxMB} MB each</span></p>
+          <div class="row" style="justify-content:center">
+            <label class="btn btn-primary"><Icon name="camera" size={18} /> Take photo<input type="file" accept="image/*" capture="environment" data-rx-input hidden /></label>
+            <label class="btn btn-outline"><Icon name="upload" size={18} /> Upload file<input type="file" accept="image/*,application/pdf" multiple data-rx-input hidden /></label>
+          </div>
+          <div class="rx-previews" data-rx-previews></div>
+          <p class="err small" data-rx-err style="color:#B91C1C;margin:8px 0 0"></p>
+        </div>
+        <label class="check" style="margin-top:12px"><input type="checkbox" name="rx_later" /> <span>I'll share my prescription with the agent later</span></label>
+        <div class="row" style="justify-content:space-between;margin-top:16px">
+          <button class="btn btn-outline" type="button" data-next="1">← Back</button>
+          <button class="btn btn-primary" type="button" data-next="3">Continue <Icon name="arrow" size={18} /></button>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="step" data-step="3" aria-labelledby="s3" hidden>
+        <h2 id="s3" style="font-size:1.2rem">How should we send your quote?</h2>
+        <div class="channels" role="radiogroup">
+          <label class="channel"><input type="radio" name="channel" value="whatsapp" checked /><span><strong><Icon name="whatsapp" size={16} /> Continue on WhatsApp</strong><span class="small muted">Fastest. We open WhatsApp with your request and reference number filled in.</span></span></label>
+          <label class="channel"><input type="radio" name="channel" value="rfq" /><span><strong><Icon name="clipboard" size={16} /> Submit quote request</strong><span class="small muted">An agent replies on WhatsApp or email with price, availability and shipping.</span></span></label>
+          <label class="channel"><input type="radio" name="channel" value="email" /><span><strong><Icon name="mail" size={16} /> Email me the quote</strong><span class="small muted">We email the quote to you. Email address required.</span></span></label>
+          <label class="channel"><input type="radio" name="channel" value="call" /><span><strong><Icon name="phone" size={16} /> Book a call with an agent</strong><span class="small muted">Pick a preferred time — we'll call or WhatsApp-call you.</span></span></label>
+        </div>
+        <div class="form-grid" data-call-fields hidden style="margin-top:14px">
+          <div class="field"><label for="f-day">Preferred day</label><select id="f-day" data-call-day></select></div>
+          <div class="field"><label for="f-time">Preferred time (your local time)</label><select id="f-time" data-call-time>
+            <option>Morning (9–12)</option><option>Afternoon (12–4)</option><option>Evening (4–8)</option><option>Any time</option></select></div>
+          <input type="hidden" name="call_slot" /><input type="hidden" name="call_tz" />
+          <div class="field full"><span class="err" data-call-err></span></div>
+        </div>
+        <div class="field" style="margin-top:16px"><label class="check"><input type="checkbox" name="consent" required /> <span>I agree to be contacted about this request and accept the <a href="/privacy/" target="_blank">privacy policy</a> and <a href="/terms/" target="_blank">terms</a>. *</span></label><span class="err"></span></div>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
+        {site.analytics.turnstileSiteKey && <div class="cf-turnstile" data-sitekey={site.analytics.turnstileSiteKey} style="margin-top:12px"></div>}
+        <p class="err small" data-form-error style="color:#B91C1C"></p>
+        <div class="row" style="justify-content:space-between;margin-top:8px">
+          <button class="btn btn-outline" type="button" data-next="2">← Back</button>
+          <button class="btn btn-primary" type="submit" data-submit>Send request</button>
+        </div>
+        <p class="small muted" style="margin-top:12px">No payment now. Your agent confirms everything before you pay.</p>
+      </section>
+      <p class="help-inline">Stuck? <a href={help} target="_blank" rel="noopener">WhatsApp an agent</a> or <button type="button" style="background:none;border:0;color:var(--primary);padding:0;font:inherit;cursor:pointer" data-open-chat>chat with us</button>.</p>
+    </form>
+
+    <aside class="summary card" aria-label="Order summary">
+      <h2 style="font-size:1.1rem">Your request <span class="muted small" data-sum-count></span></h2>
+      <div data-sum-items></div>
+      <a class="small" href="/cart/">Edit cart</a>
+      <hr style="border:0;border-top:1px solid var(--border);margin:14px 0" />
+      <ul class="small muted" style="padding-left:18px;margin:0">
+        <li>Best price confirmed by an agent</li><li>Genuine medicines, sourced in India</li><li>Invoice & export documents</li><li>Pay only after you agree</li>
+      </ul>
+    </aside>
+  </div>
+  {site.analytics.turnstileSiteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+  <script>
+    import '../scripts/checkout.js';
+  </script>
+</Base>

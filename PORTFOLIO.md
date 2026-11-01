@@ -1,6 +1,6 @@
 # MediSeller Multi-Site Portfolio — Working Log
 
-Status: **Phase 1 spec drafted** — see [`docs/PHASE1-SPEC.md`](docs/PHASE1-SPEC.md), awaiting approval
+Status: **Phase 1 built (M1–M3), awaiting client inputs for go-live** — spec [`docs/PHASE1-SPEC.md`](docs/PHASE1-SPEC.md), code [`mediseller-sites/`](mediseller-sites/)
 Source: handwritten list shared 2026-11-01. Readings marked `?` need confirmation.
 
 ## Project agenda (as understood so far)
@@ -83,6 +83,10 @@ Build and run a family of websites:
 - MVP scope: catalogue + assisted cart + RFQ + Rx upload; Gemini chatbot; trust pages (about, licences, shipping countries, how ordering works, FAQ, contact, privacy, terms); SEO (schema, sitemap) + GA4 + Meta Pixel/CAPI.
 - Client already has: **domains owned**, **logo and brand colours**, **company details** (licences, address, contacts).
 - Sites #2–8 and #12–17: details deferred until after the master site.
+
+### Approved 2026-11-01
+- D1–D10 approved as recommended: .in redirects to .com; Rx wording; Resend; slot-request call booking; Sheet-based catalogue; one-way Sheet sync; "MediSeller Assistant"; cookie banner; `MS-YYMMDD-XXXX`; one WhatsApp number.
+- Existing private repo **Mediseller-2.0** (React/FastAPI prototype) is used as the source for the seed catalogue and brand colours (red #E11D48 / white).
 
 ## Inputs needed from client before / during Phase 1 build
 1. New GitHub repo created (e.g. `mediseller-sites`) and the Claude GitHub app given access.

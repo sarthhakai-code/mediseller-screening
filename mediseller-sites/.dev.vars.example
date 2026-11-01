@@ -1,0 +1,14 @@
+# Local secrets for `npm run preview` (wrangler). Copy to .dev.vars — never commit .dev.vars.
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_KEY=
+SHEET_WEBHOOK_URL=
+SHEET_WEBHOOK_TOKEN=
+RESEND_API_KEY=
+EMAIL_FROM=MediSeller <quotes@mediseller.com>
+SALES_EMAIL=
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+META_PIXEL_ID=
+META_CAPI_TOKEN=
+TURNSTILE_SECRET=
+ADMIN_TOKEN=

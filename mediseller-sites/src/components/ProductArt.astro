@@ -1,0 +1,19 @@
+---
+// Placeholder product art until real pack shots are supplied (image column in products.csv).
+const { product, size = 'card' } = Astro.props;
+const palette = {
+  'Oncology': ['#FFE4E6', '#E11D48'], 'HIV / AIDS': ['#FEE2E2', '#B91C1C'], 'Hepatitis B & C': ['#FEF3C7', '#B45309'],
+  "Men's Health": ['#E0E7FF', '#4338CA'], 'Diabetes & Insulin': ['#CFFAFE', '#0E7490'], 'Weight Management': ['#DCFCE7', '#15803D'],
+};
+const [bg, fg] = palette[product.category] || ['#F1F5F9', '#475569'];
+const injectable = /inject/i.test(product.form);
+const s = size === 'large' ? 220 : 120;
+---
+{product.image
+  ? <img src={product.image} alt={`${product.name} pack`} loading="lazy" decoding="async" />
+  : <svg width={s} height={s} viewBox="0 0 120 120" role="img" aria-label={`${product.form} — image coming soon`}>
+      <circle cx="60" cy="60" r="56" fill={bg} />
+      {injectable
+        ? <g fill="none" stroke={fg} stroke-width="5" stroke-linecap="round"><rect x="48" y="28" width="24" height="56" rx="6" /><path d="M60 84v14M52 28h16M54 20h12M48 46h10M48 58h10M48 70h10" /></g>
+        : <g transform="rotate(-35 60 60)"><rect x="26" y="45" width="68" height="30" rx="15" fill="#fff" stroke={fg} stroke-width="4" /><path d="M60 45v30" stroke={fg} stroke-width="4" /><rect x="26" y="45" width="34" height="30" rx="15" fill={fg} opacity=".9" /></g>}
+    </svg>}

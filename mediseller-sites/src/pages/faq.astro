@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { faqGroups } from '../lib/faq.js';
+const all = faqGroups.flatMap((g) => g.items);
+---
+<Base title="Frequently asked questions" schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: all.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <div class="container section" style="max-width:860px">
+    <p class="eyebrow">FAQ</p><h1>Frequently asked questions</h1>
+    {faqGroups.map((g) => <section style="margin-top:28px"><h2 style="font-size:1.3rem">{g.title}</h2><div class="faq">{g.items.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div></section>)}
+    <p class="muted" style="margin-top:28px">Still have a question? Ask our assistant (bottom right) or <a href="/contact/">contact an agent</a>.</p>
+  </div>
+</Base>

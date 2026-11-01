@@ -1,0 +1,2 @@
+# Cloudflare Pages redirects (decision D1: .in → .com handled by a Cloudflare Bulk Redirect / redirect rule on the .in zone — see README)
+/products.html /products/ 301

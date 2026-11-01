@@ -1,0 +1,23 @@
+{
+  "name": "mediseller-sites",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Shared engine for the MediSeller family of assisted-commerce sites",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler pages dev dist --compatibility-date=2025-09-01",
+    "test:server": "node --test tests/server/*.test.js",
+    "test:e2e": "node tests/e2e/checkout.e2e.mjs"
+  },
+  "dependencies": {
+    "astro": "5.18.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "wrangler": "4.150.0"
+  }
+}

@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Listing from '../components/Listing.astro';
+import { products } from '../lib/catalogue.js';
+---
+<Base title="All medicines" description="Browse oncology, HIV, hepatitis, diabetes & insulin, weight management and men's health medicines sourced from India. Get the best price from an agent.">
+  <div class="container" style="padding-top:24px;padding-bottom:56px">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / All medicines</nav>
+    <h1 style="margin-top:12px">All medicines</h1>
+    <p class="muted">Prices are confirmed by an agent for your country and quantity. Can't see your medicine? We source many more — just ask.</p>
+    <Listing items={products} />
+  </div>
+</Base>

@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import site, { waLink } from '../lib/site.js';
+import { categories } from '../lib/catalogue.js';
+const who = [
+  ['building', 'Importers & distributors', 'Regular export supply with batch details, COA on request and export documentation.'],
+  ['stethoscope', 'Doctors, clinics & hospitals', 'Specialist and critical-care medicines for named patients and institutions.'],
+  ['store', 'Pharmacies & online sellers', 'Wholesale supply of Indian brands and generics for your shelves or store.'],
+  ['truck', 'Dropshippers', 'We pack and ship single orders to your customers under your order reference.'],
+];
+---
+<Base title="For business — export supply from India" description={`${site.name} supplies importers, distributors, doctors, pharmacies, resellers and dropshippers worldwide with medicines from India.`}>
+  <section class="hero"><div class="container">
+    <p class="eyebrow">For business</p>
+    <h1>Your sourcing partner in India</h1>
+    <p class="lead">Export supply of oncology, HIV, hepatitis, diabetes, weight-management and other high-value medicines — with documentation, cold chain and a dedicated account manager.</p>
+    <div class="row"><a class="btn btn-primary" href="#enquire">Send a business enquiry</a><a class="btn btn-wa" href={waLink('Hello, I am interested in business / bulk supply.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp sales</a></div>
+  </div></section>
+  <section class="section"><div class="container grid grid-4">
+    {who.map(([i, t, d]) => <div class="card"><div class="icon-circle"><Icon name={i} /></div><h3>{t}</h3><p class="small muted" style="margin:0">{d}</p></div>)}
+  </div></section>
+  <section class="section alt"><div class="container grid grid-2">
+    <div>
+      <h2>What you get</h2>
+      <ul class="stack" style="padding-left:18px">
+        <li>Competitive export pricing by volume</li><li>Invoices, packing lists and export documents</li>
+        <li>Cold-chain packaging for insulin and biologics</li><li>Consolidated and recurring shipments</li>
+        <li>One account manager on WhatsApp and email</li><li>Sourcing for products not listed on the site</li>
+      </ul>
+      <h3 style="margin-top:20px">Therapy areas</h3>
+      <div class="row">{categories.map((c) => <a class="chip" href={c.url}>{c.name}</a>)}</div>
+    </div>
+    <div id="enquire"><h2 style="font-size:1.2rem">Business enquiry</h2><EnquiryForm source="business" business submitLabel="Send enquiry" /></div>
+  </div></section>
+</Base>

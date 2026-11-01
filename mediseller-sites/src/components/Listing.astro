@@ -1,0 +1,62 @@
+---
+import ProductCard from './ProductCard.astro';
+import Icon from './Icon.astro';
+import { categories, forms } from '../lib/catalogue.js';
+const { items, activeCategory = '' } = Astro.props;
+---
+<div class="listing" data-listing>
+  <aside class="filters" id="filters" aria-label="Filters">
+    {!activeCategory && (
+      <fieldset><legend>Category</legend>
+        {categories.map((c) => <label><input type="checkbox" name="category" value={c.slug} /> {c.name} <span class="muted small">({c.count})</span></label>)}
+      </fieldset>
+    )}
+    <fieldset><legend>Dosage form</legend>
+      {forms.map((f) => <label><input type="checkbox" name="form" value={f} /> {f}</label>)}
+    </fieldset>
+    <fieldset><legend>Other</legend>
+      <label><input type="checkbox" name="cold" value="1" /> Cold chain</label>
+      <label><input type="checkbox" name="otc" value="1" /> No prescription needed</label>
+    </fieldset>
+    <a class="btn btn-wa btn-block btn-sm" href="#" data-wa-notfound><Icon name="whatsapp" size={16} /> Can't find it? Ask us</a>
+  </aside>
+  <div>
+    <div class="listing-tools">
+      <label class="sr-only" for="list-q">Filter by name</label>
+      <input id="list-q" type="search" placeholder="Filter by brand or generic…" data-list-q />
+      <span class="muted small" data-count aria-live="polite">{items.length} medicines</span>
+      <button class="btn btn-outline btn-sm filters-toggle" type="button" aria-controls="filters" aria-expanded="false" data-filters-toggle>Filters</button>
+    </div>
+    <div class="grid grid-4" data-grid>{items.map((p) => <ProductCard product={p} />)}</div>
+    <div class="empty" data-empty hidden>
+      <p>No match in our online catalogue — but we source many more medicines than we list.</p>
+      <a class="btn btn-wa" href="#" data-wa-notfound target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> Ask an agent</a>
+    </div>
+  </div>
+</div>
+<script>
+  import { $, $$, waUrl } from '../scripts/core.js';
+  const root = $('[data-listing]');
+  const q = $('[data-list-q]', root);
+  const params = new URLSearchParams(location.search);
+  if (params.get('q')) q.value = params.get('q');
+  const cards = $$('.pcard', root);
+  const checked = (n) => $$(`input[name="${n}"]:checked`, root).map((i) => i.value);
+  function apply() {
+    const terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const cats = checked('category'), forms = checked('form'), cold = checked('cold').length, otc = checked('otc').length;
+    let n = 0;
+    for (const c of cards) {
+      const ok = terms.every((t) => c.dataset.search.includes(t)) && (!cats.length || cats.includes(c.dataset.category)) &&
+        (!forms.length || forms.includes(c.dataset.form)) && (!cold || c.dataset.cold === '1') && (!otc || c.dataset.rx === '0');
+      c.hidden = !ok; if (ok) n++;
+    }
+    $('[data-count]', root).textContent = `${n} medicine${n === 1 ? '' : 's'}`;
+    $('[data-empty]', root).hidden = n > 0;
+    $$('[data-wa-notfound]', root).forEach((a) => (a.href = waUrl(`Hello, I'm looking for ${q.value || 'a medicine'}. Can you source it?`)));
+    const u = new URL(location.href); q.value ? u.searchParams.set('q', q.value) : u.searchParams.delete('q'); history.replaceState(null, '', u);
+  }
+  root.addEventListener('input', apply);
+  $('[data-filters-toggle]', root).addEventListener('click', (e) => { const o = $('#filters').classList.toggle('open'); e.currentTarget.setAttribute('aria-expanded', String(o)); });
+  apply();
+</script>

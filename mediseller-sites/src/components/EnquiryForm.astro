@@ -1,0 +1,51 @@
+---
+// Generic enquiry form (contact page, business page). Posts to /api/lead.
+import Icon from './Icon.astro';
+import { BUYER_TYPES } from '../../server/leads.js';
+const { source = 'contact', business = false, submitLabel = 'Send message' } = Astro.props;
+const types = business ? BUYER_TYPES.filter((t) => !['Patient', 'Caregiver'].includes(t)) : BUYER_TYPES;
+---
+<form class="card stack" novalidate data-enquiry data-source={source}>
+  <div class="form-grid">
+    <div class="field"><label>Name *<input class="input" name="name" autocomplete="name" required /></label><span class="err"></span></div>
+    <div class="field"><label>Country *<select name="country" data-country-select required></select></label><span class="err"></span></div>
+    <div class="field"><label>WhatsApp / phone *</label><div class="phone-wrap"><input class="input" data-dial readonly tabindex="-1" aria-label="Country code" /><input class="input" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required aria-label="Phone number" /></div><span class="err"></span></div>
+    <div class="field"><label>Email<input class="input" name="email" type="email" autocomplete="email" /></label><span class="err"></span></div>
+    <div class="field"><label>I am a…<select name="buyer_type">{types.map((t) => <option>{t}</option>)}</select></label></div>
+    {business && <div class="field"><label>Company *<input class="input" name="company" autocomplete="organization" required /></label><span class="err"></span></div>}
+    <div class="field full"><label>{business ? 'Products of interest & monthly volumes' : 'Your message'} *<textarea class="input" name="message" required maxlength="2000"></textarea></label><span class="err"></span></div>
+    <label class="check full"><input type="checkbox" name="consent" required /> <span>I agree to be contacted and accept the <a href="/privacy/" target="_blank">privacy policy</a>. *</span></label>
+    <input type="text" name="website" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
+  </div>
+  <p class="err small" data-form-error style="color:#B91C1C;margin:0"></p>
+  <p class="notice notice-info small" data-success hidden></p>
+  <button class="btn btn-primary" type="submit"><Icon name="send" size={18} /> {submitLabel}</button>
+</form>
+<script>
+  import { $, $$, fillCountrySelect, submitLead, showErrors, waUrl, cfg } from '../scripts/core.js';
+  $$('[data-enquiry]').forEach((form) => {
+    fillCountrySelect($('[data-country-select]', form), $('input[data-dial]', form));
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = form.elements, err = {};
+      if (f.name.value.trim().length < 2) err.name = 'Please enter your name.';
+      if (!f.country.value) err.country = 'Please choose your country.';
+      if (f.phone.value.replace(/\D/g, '').length < 6) err.phone = 'Please enter a valid number.';
+      if (f.company && !f.company.value.trim()) err.company = 'Please enter your company name.';
+      if (f.message.value.trim().length < 3) err.message = 'Please tell us what you need.';
+      if (!f.consent.checked) err.consent = 'Please accept the privacy policy so we can contact you.';
+      showErrors(form, err);
+      if (Object.keys(err).length) return;
+      const fd = new FormData(form);
+      fd.set('consent', 'true'); fd.set('source', form.dataset.source); fd.set('channel', 'rfq'); fd.set('items', '[]');
+      const btn = $('button[type=submit]', form); btn.disabled = true;
+      const res = await submitLead(fd);
+      btn.disabled = false;
+      if (res.errors) return showErrors(form, res.errors);
+      const ok = $('[data-success]', form);
+      ok.hidden = false;
+      if (res.ok) { ok.textContent = `Thank you! Your reference is ${res.ref}. An agent will contact you shortly.`; form.reset(); }
+      else ok.innerHTML = `We couldn't save your message automatically. <a href="${waUrl(`Hello ${cfg.name}. ${f.message.value}`)}" target="_blank" rel="noopener">Send it on WhatsApp instead →</a>`;
+    });
+  });
+</script>

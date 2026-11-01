@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { waLink } from '../lib/site.js';
+const steps = [
+  ['search', 'Find your medicine', 'Search by brand, generic name or condition, or browse by category. Not listed? Ask us — we source many more.'],
+  ['cart', 'Add to cart', 'Choose quantity and pack unit. Add notes like “urgent” or “alternative brand OK”.'],
+  ['clipboard', 'Share your details', 'Name, country and WhatsApp number. Upload or photograph your prescription (optional — you can share it later).'],
+  ['chat', 'Choose how we reach you', 'WhatsApp, quote request form, email, or book a call with an agent.'],
+  ['shield', 'Agent confirms your quote', 'Best price, brand, batch/expiry, shipping cost and delivery time. Prescription checked for Rx medicines.'],
+  ['truck', 'Pay & we ship', 'Pay only after you accept. We dispatch with invoice and tracking.'],
+];
+---
+<Base title="How to order" description="How ordering works: add to cart, request a quote, an agent confirms the best price and shipping, then you pay. No payment on the website.">
+  <div class="container section">
+    <p class="eyebrow">How to order</p>
+    <h1>Shop online. Close with a person.</h1>
+    <p class="muted" style="max-width:680px">We work like an online shop for browsing — and like your personal pharmacist-export desk for everything else. Nothing is charged on the website.</p>
+    <ol class="steps" style="margin-top:24px">{steps.map(([i, t, d]) => <li><h3>{t}</h3><p class="small muted" style="margin:0">{d}</p></li>)}</ol>
+    <div class="row" style="margin-top:28px"><a class="btn btn-primary" href="/products/">Find your medicine</a><a class="btn btn-wa" href={waLink('Hello, can you help me place an order?')} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> Order on WhatsApp</a></div>
+  </div>
+</Base>

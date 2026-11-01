@@ -1,0 +1,214 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import site, { waLink } from '../lib/site.js';
+import { categories } from '../lib/catalogue.js';
+
+const {
+  title,
+  description = site.description,
+  schema = [],
+  noindex = false,
+  stickyCta = false,
+  hideDock = false,
+} = Astro.props;
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const t = site.theme;
+const fonts = [...new Set([t.headingFont, t.bodyFont])]
+  .map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700;800`).join('&');
+const baseSchema = [
+  {
+    '@context': 'https://schema.org', '@type': 'Organization', name: site.name, url: `https://${site.domain}`,
+    email: site.contact.email, telephone: site.contact.phone,
+    address: { '@type': 'PostalAddress', streetAddress: site.contact.address, addressCountry: 'IN' },
+    contactPoint: [{ '@type': 'ContactPoint', contactType: 'sales', telephone: site.contact.phone, availableLanguage: ['English'] }],
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: `https://${site.domain}`,
+    potentialAction: { '@type': 'SearchAction', target: `https://${site.domain}/products/?q={search_term_string}`, 'query-input': 'required name=search_term_string' },
+  },
+];
+const clientCfg = {
+  id: site.id, name: site.name, whatsapp: site.contact.whatsapp, email: site.contact.email,
+  ga4: site.analytics.ga4, pixel: site.analytics.metaPixel, turnstile: site.analytics.turnstileSiteKey,
+  rxMaxFiles: site.checkout.rxMaxFiles, rxMaxMB: site.checkout.rxMaxMB, persona: site.chatbot.persona,
+  greeting: site.chatbot.greeting, chatbot: site.chatbot.enabled,
+};
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {noindex && <meta name="robots" content="noindex" />}
+  <meta name="theme-color" content={t.primary} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={new URL('/og.png', Astro.site).href} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${fonts}&display=swap`} />
+  <style set:html={`:root{--primary:${t.primary};--primary-hover:${t.primaryHover};--accent:${t.accent};--ink:${t.ink};--muted:${t.muted};--surface:${t.surface};--border:${t.border};--font-heading:'${t.headingFont}';--font-body:'${t.bodyFont}';}`} />
+  {[...baseSchema, ...schema].map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+  <script id="site-config" type="application/json" set:html={JSON.stringify(clientCfg)} />
+</head>
+<body class={[stickyCta && 'has-sticky', hideDock && 'no-dock'].filter(Boolean).join(' ')}>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="topbar">
+    <div class="container">
+      <span>Ships to {site.shippingRegions.length} regions worldwide</span>
+      <span class="hide-sm">·</span>
+      <a class="hide-sm" href={waLink('Hello, I need help finding a medicine.')} target="_blank" rel="noopener" style="color:#fff">WhatsApp +{site.contact.whatsapp}</a>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="container bar">
+      <a class="logo" href="/" aria-label={`${site.name} home`}>
+        <span class="logo-mark"><Icon name="pill" size={18} /></span>{site.name}
+      </a>
+      <form class="header-search" action="/products/" method="get" role="search" autocomplete="off">
+        <Icon name="search" size={18} />
+        <label class="sr-only" for="q-header">Search medicines</label>
+        <input id="q-header" name="q" type="search" placeholder="Search by brand, generic or condition…" data-live-search />
+        <div class="search-results" hidden></div>
+      </form>
+      <nav class="main-nav" id="main-nav" aria-label="Main">
+        {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      </nav>
+      <button class="btn btn-ghost cart-btn" type="button" data-open-cart aria-label="Open cart">
+        <Icon name="cart" size={22} /><span class="cart-count" data-cart-count data-n="0">0</span>
+      </button>
+      <button class="btn btn-ghost menu-btn" type="button" aria-controls="main-nav" aria-expanded="false" data-menu aria-label="Menu">
+        <Icon name="menu" size={22} />
+      </button>
+    </div>
+  </header>
+  <div class="trust-strip">
+    <div class="container">
+      <span>Licensed Indian exporter</span><span>Genuine, sourced medicines</span><span>Personal agent for every order</span><span>Cold-chain shipping</span>
+    </div>
+  </div>
+
+  <main id="main"><slot /></main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="grid grid-4">
+        <div>
+          <a class="logo" href="/" style="color:#fff"><span class="logo-mark"><Icon name="pill" size={18} /></span>{site.name}</a>
+          <p style="margin-top:12px">{site.tagline}.</p>
+          <a class="btn btn-wa btn-sm" href={waLink('Hello, I need help.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={16} /> Chat on WhatsApp</a>
+        </div>
+        <div>
+          <h4>Medicines</h4>
+          <ul>{categories.map((c) => <li><a href={c.url}>{c.name}</a></li>)}<li><a href="/products/">All medicines</a></li></ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about/">About us</a></li><li><a href="/how-to-order/">How to order</a></li>
+            <li><a href="/for-business/">For business</a></li><li><a href="/shipping/">Shipping countries</a></li>
+            <li><a href="/licences/">Licences</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/contact/">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li>{site.contact.address}</li>
+            <li><a href={`tel:${site.contact.phone.replace(/\s/g, '')}`}>{site.contact.phone}</a></li>
+            <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+            <li>{site.contact.hours}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="legal">
+        <p><strong>Medical disclaimer:</strong> Information on this website is for general reference only and is not medical advice. Prescription-only medicines are dispatched only against a valid prescription. Always consult a qualified doctor. Brand names are trademarks of their respective owners and are used only to identify products.</p>
+        <p>{site.legal.company} · Drug licence: {site.legal.drugLicence} · IEC: {site.legal.iec} · GSTIN: {site.legal.gst}</p>
+        <p class="row" style="gap:16px">© {year} {site.name}<a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/disclaimer/">Disclaimer</a><button type="button" class="btn-ghost" style="background:none;border:0;color:#E2E8F0;cursor:pointer;padding:0;font:inherit" data-cookie-settings>Cookie settings</button></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart drawer -->
+  <div class="overlay" data-overlay></div>
+  <aside class="drawer" id="cart-drawer" aria-label="Cart" aria-hidden="true">
+    <header><h2 style="margin:0;font-size:1.2rem">Your cart</h2><button class="icon-btn" type="button" data-close-cart aria-label="Close cart"><Icon name="close" /></button></header>
+    <div class="items" data-cart-items></div>
+    <footer>
+      <p class="small muted" style="margin:0">No payment online. Your agent confirms the best price, availability and shipping before you pay.</p>
+      <a class="btn btn-primary btn-block" href="/checkout/" data-checkout-link>Proceed to request quote <Icon name="arrow" size={18} /></a>
+      <a class="btn btn-outline btn-block" href="/cart/">View full cart</a>
+    </footer>
+  </aside>
+
+  <!-- Quick quote modal -->
+  <dialog class="modal" id="quote-modal" aria-labelledby="qm-title">
+    <form class="inner stack" method="dialog" data-quote-form novalidate>
+      <header><div><p class="eyebrow" style="margin:0">Get best price</p><h3 id="qm-title" data-qm-name style="margin:0">Product</h3></div><button class="icon-btn" value="cancel" formnovalidate aria-label="Close"><Icon name="close" /></button></header>
+      <p class="small muted" style="margin:0">An agent will reply with the best price and delivery to your country — usually within a few hours.</p>
+      <input type="hidden" name="sku" />
+      <div class="form-grid">
+        <div class="field full"><label for="qm-name">Your name</label><input class="input" id="qm-name" name="name" autocomplete="name" required /><span class="err"></span></div>
+        <div class="field"><label for="qm-country">Country</label><select id="qm-country" name="country" data-country-select required></select><span class="err"></span></div>
+        <div class="field"><label for="qm-qty">Quantity</label><div class="row" style="gap:6px;flex-wrap:nowrap"><input class="input" id="qm-qty" name="qty" type="number" min="1" value="1" style="width:80px" /><select name="unit" data-qm-unit style="flex:1"></select></div></div>
+        <div class="field full"><label for="qm-phone">WhatsApp / phone</label><div class="phone-wrap"><input class="input" data-dial readonly tabindex="-1" aria-label="Country code" /><input class="input" id="qm-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required /></div><span class="err"></span></div>
+        <label class="check full"><input type="checkbox" name="consent" required /> <span>I agree to be contacted about this request and accept the <a href="/privacy/" target="_blank">privacy policy</a>.</span></label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" style="display:none" />
+      </div>
+      <p class="err small" data-form-error style="color:#B91C1C;margin:0"></p>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn btn-wa" type="submit" name="via" value="whatsapp"><Icon name="whatsapp" size={18} /> Via WhatsApp</button>
+        <button class="btn btn-primary" type="submit" name="via" value="rfq">Request quote</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Help dock + chat -->
+  <div class="help-dock" data-help-dock>
+    <a class="fab fab-wa" href={waLink('Hello, I need help.')} target="_blank" rel="noopener" aria-label="WhatsApp an agent" data-track="whatsapp_click"><Icon name="whatsapp" size={28} /></a>
+    {site.chatbot.enabled && <button class="fab fab-chat" type="button" data-open-chat aria-label={`Chat with ${site.chatbot.persona}`}><Icon name="chat" size={26} /></button>}
+  </div>
+  {site.chatbot.enabled && (
+    <section class="chat-panel" id="chat-panel" aria-label="Chat" role="dialog">
+      <header>
+        <div><strong>{site.chatbot.persona}</strong><div class="small" style="opacity:.85">Replies instantly · agents on WhatsApp</div></div>
+        <button class="icon-btn" type="button" data-close-chat aria-label="Close chat"><Icon name="close" /></button>
+      </header>
+      <div class="chat-log" data-chat-log aria-live="polite"></div>
+      <div class="chat-quick" data-chat-quick>
+        <button class="chip" type="button">How does ordering work?</button>
+        <button class="chip" type="button">Do you ship to my country?</button>
+        <button class="chip" type="button">Talk to an agent</button>
+      </div>
+      <form class="chat-form" data-chat-form>
+        <label class="sr-only" for="chat-input">Message</label>
+        <input id="chat-input" name="text" placeholder="Type in any language…" autocomplete="off" maxlength="1000" />
+        <button class="btn btn-primary" type="submit" aria-label="Send"><Icon name="send" size={18} /></button>
+      </form>
+      <p class="chat-foot">AI assistant — not medical advice. By sharing contact details you agree to be contacted. <a href="/privacy/">Privacy</a></p>
+    </section>
+  )}
+
+  <!-- Cookie consent (gates GA4 + Meta Pixel) -->
+  {(site.analytics.ga4 || site.analytics.metaPixel) && (
+    <div class="consent" data-consent hidden role="dialog" aria-label="Cookie consent">
+      <p style="margin:0 0 10px">We use analytics and advertising cookies to improve the site and measure enquiries. You can change this any time.</p>
+      <div class="row"><button class="btn btn-primary btn-sm" type="button" data-consent-accept>Accept</button><button class="btn btn-outline btn-sm" type="button" data-consent-reject>Only essential</button><a class="small" href="/privacy/">Learn more</a></div>
+    </div>
+  )}
+
+  <script>
+    import '../scripts/app.js';
+  </script>
+</body>
+</html>

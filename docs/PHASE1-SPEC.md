@@ -1,6 +1,6 @@
 # Phase 1 Build Spec — mediseller.com / .in
 
-Status: **Draft for approval** · v0.1 · 2026-11-01
+Status: **Approved (all recommendations accepted) · M1–M3 built** · v0.2 · 2026-11-01
 Related: [`../PORTFOLIO.md`](../PORTFOLIO.md) (decisions log & site register)
 
 `[PLACEHOLDER]` marks values waiting on client inputs. Section 15 collects every decision that needs a yes/no before build starts.
@@ -350,9 +350,9 @@ M1 can start as soon as the repo exists, with placeholders. M2 needs Supabase; M
 
 ---
 
-## 15. Decisions needed for approval
+## 15. Decisions (all approved 2026-11-01 — client: "you do all tasks")
 
-| ID | Decision | Recommendation |
+| ID | Decision | Approved |
 |---|---|---|
 | D1 | mediseller.in: redirect to .com, or a separate India-focused site? | 301 redirect to .com in Phase 1 |
 | D2 | Rx wording: "Our team will request a valid prescription before dispatch" for Rx items | Approve (upload still optional) |
@@ -366,6 +366,13 @@ M1 can start as soon as the repo exists, with placeholders. M2 needs Supabase; M
 | D10 | WhatsApp: one sales number for all sites, or a separate number per site? | Separate per site once sites multiply; one for Phase 1 |
 
 ---
+
+## 15b. Build notes (deviations from v0.1)
+
+- **Client islands are plain JavaScript** (no Preact). This is smaller and faster (≈29 KB of JS in total) with the same behaviour.
+- **Google Sheet sync** goes through an Apps Script web-app webhook called directly by `/api/lead` (with `sheet_synced_at` tracking and `/api/admin/resync`), not a Supabase DB webhook. It is simpler to set up and needs no Google service account.
+- **Code lives in `mediseller-sites/`** in this repo for now, because this session cannot create new GitHub repos. It is self-contained and can be split into its own repo with one command (see its README).
+- **Catalogue:** 104 products from the Mediseller-2.0 seed. Controlled substances, withdrawn drugs and duplicates were excluded; see `mediseller-sites/docs/CATALOGUE-NOTES.md`.
 
 ## 16. Inputs needed (from `PORTFOLIO.md`)
 1. New GitHub repo `mediseller-sites` + Claude GitHub app access, **needed for M1**

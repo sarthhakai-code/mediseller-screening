@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import site from '../lib/site.js';
+---
+<Base title="Request received" noindex>
+  <div class="container" style="max-width:720px;padding:48px 16px 64px">
+    <div class="card" style="text-align:center;padding:32px 20px" data-ok>
+      <div class="icon-circle" style="margin:0 auto 12px;background:#F0FDF4;color:#15803D"><Icon name="check" size={26} /></div>
+      <h1 style="font-size:1.8rem">Thank you — we've got your request</h1>
+      <p>Your reference number</p>
+      <p style="font-size:1.6rem;font-weight:800;letter-spacing:.04em;margin:0 0 16px" data-ref>—</p>
+      <p class="muted" data-next-text>An agent will confirm the best price, availability and shipping — usually within a few working hours.</p>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <a class="btn btn-wa" href="#" target="_blank" rel="noopener" data-wa><Icon name="whatsapp" size={18} /> Message us on WhatsApp</a>
+        <a class="btn btn-outline" href="/products/">Continue browsing</a>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;padding:32px 20px" data-fallback hidden>
+      <h1 style="font-size:1.6rem">Almost done — send your request on WhatsApp</h1>
+      <p class="muted">Our system couldn't save your request automatically. Tap below to send it to an agent on WhatsApp (everything is pre-filled), or email us.</p>
+      <div class="row" style="justify-content:center">
+        <a class="btn btn-wa" href="#" target="_blank" rel="noopener" data-wa-fb><Icon name="whatsapp" size={18} /> Send on WhatsApp</a>
+        <a class="btn btn-outline" href="#" data-mail-fb><Icon name="mail" size={18} /> Send by email</a>
+      </div>
+    </div>
+    <h2 style="font-size:1.2rem;margin-top:32px">What happens next</h2>
+    <ol class="steps">
+      <li><strong>We check availability</strong><p class="small muted" style="margin:0">Brands, batches and stock for your quantity.</p></li>
+      <li><strong>You get a quote</strong><p class="small muted" style="margin:0">Price, shipping cost and delivery time for your country.</p></li>
+      <li><strong>Prescription check</strong><p class="small muted" style="margin:0">For prescription-only items we confirm a valid prescription.</p></li>
+      <li><strong>You confirm & we ship</strong><p class="small muted" style="margin:0">Pay only after you agree. Tracking shared on dispatch.</p></li>
+    </ol>
+  </div>
+  <script define:vars={{ email: site.contact.email, name: site.name }}>
+    window.__ty = { email, name };
+  </script>
+  <script>
+    import { $, store, waUrl } from '../scripts/core.js';
+    const p = new URLSearchParams(location.search);
+    const last = store.get('last-lead', {}) || {};
+    if (p.get('fallback')) {
+      $('[data-ok]').hidden = true; $('[data-fallback]').hidden = false;
+      $('[data-wa-fb]').href = waUrl(last.text || 'Hello, I would like a quote.');
+      $('[data-mail-fb]').href = `mailto:${window.__ty.email}?subject=${encodeURIComponent('Quote request')}&body=${encodeURIComponent(last.text || '')}`;
+    } else {
+      const ref = p.get('ref') || last.ref || '';
+      $('[data-ref]').textContent = ref || '—';
+      $('[data-wa]').href = waUrl(last.text || `Hello ${window.__ty.name}, my reference is ${ref}.`);
+      const msg = {
+        whatsapp: 'We opened WhatsApp with your request. If it did not open, tap the button below.',
+        email: 'We will email your quote shortly. Please check your spam folder too.',
+        call: 'We will call you at your preferred time. You can also message us on WhatsApp.',
+        rfq: 'An agent will reply on WhatsApp or email — usually within a few working hours.',
+      }[last.channel];
+      if (msg) $('[data-next-text]').textContent = msg;
+    }
+  </script>
+</Base>

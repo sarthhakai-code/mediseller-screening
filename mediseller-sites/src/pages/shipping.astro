@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import site, { waLink } from '../lib/site.js';
+---
+<Base title="Shipping countries" description={`${site.name} ships medicines from India to ${site.shippingRegions.map((r) => r.region).join(', ')} and more.`}>
+  <div class="container section">
+    <p class="eyebrow">Shipping</p>
+    <h1>Where we ship</h1>
+    <p class="muted" style="max-width:720px">We focus on countries where critical medicines are hard to find, expensive or slow to obtain. Don't see your country? Ask — we may still be able to help.</p>
+    <div class="grid grid-2" style="margin-top:24px">
+      {site.shippingRegions.map((r) => <div class="card region"><h2 style="font-size:1.15rem">{r.region}</h2><ul>{r.countries.map((c) => <li class="chip">{c}</li>)}</ul></div>)}
+    </div>
+    <div class="grid grid-3" style="margin-top:28px">
+      <div class="card"><h3>Documentation</h3><p class="small muted" style="margin:0">Commercial invoice and export paperwork with every shipment. Your agent advises on known import requirements.</p></div>
+      <div class="card"><h3>Cold chain</h3><p class="small muted" style="margin:0">Insulin, biologics and GLP-1 pens ship in insulated packaging with cold packs where transit times allow.</p></div>
+      <div class="card"><h3>Tracking</h3><p class="small muted" style="margin:0">Tracking number shared on dispatch. Delivery time depends on destination and courier.</p></div>
+    </div>
+    <p class="notice notice-warn small" style="margin-top:24px">Import rules for medicines vary by country. Buyers are responsible for complying with the laws of their destination country. Prescription-only medicines are dispatched only against a valid prescription.</p>
+    <a class="btn btn-wa" href={waLink('Hello, do you ship to my country?')} target="_blank" rel="noopener" style="margin-top:12px">Ask about your country</a>
+  </div>
+</Base>

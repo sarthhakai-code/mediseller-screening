@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../lib/site.js';
+const rows = [['Registered company', site.legal.company], ['Drug licence', site.legal.drugLicence], ['Import–Export Code (IEC)', site.legal.iec], ['GSTIN', site.legal.gst], ['Registered address', site.contact.address]];
+---
+<Base title="Licences & compliance">
+  <div class="container section prose">
+    <p class="eyebrow">Trust</p>
+    <h1>Licences & compliance</h1>
+    <p class="muted">{site.name} operates as a licensed pharmaceutical exporter in India. Copies of licences are available to business customers on request.</p>
+    <div class="card"><dl class="facts" style="display:grid;grid-template-columns:max-content 1fr;gap:10px 20px;margin:0">{rows.map(([k, v]) => <><dt class="muted">{k}</dt><dd style="margin:0;font-weight:600">{v}</dd></>)}</dl></div>
+    <h2>How we work</h2>
+    <ul>
+      <li>We source from licensed manufacturers and authorised distributors in India.</li>
+      <li>Prescription-only medicines are dispatched only against a valid prescription.</li>
+      <li>We do not provide medical advice, diagnosis or dosing guidance.</li>
+      <li>Every shipment carries an invoice and export documentation.</li>
+      <li>Personal data is handled under our <a href="/privacy/">privacy policy</a>.</li>
+    </ul>
+  </div>
+</Base>

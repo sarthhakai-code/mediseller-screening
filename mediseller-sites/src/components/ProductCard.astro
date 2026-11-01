@@ -1,0 +1,25 @@
+---
+import ProductArt from './ProductArt.astro';
+const { product: p } = Astro.props;
+const units = p.unit.split('/').map((u) => u.trim());
+---
+<article class="pcard" data-sku={p.sku} data-category={p.categorySlug} data-form={p.form} data-rx={p.rx ? '1' : '0'} data-cold={p.coldChain ? '1' : '0'}
+  data-search={`${p.name} ${p.generic} ${p.reference_brand} ${p.category}`.toLowerCase()}>
+  <a class="thumb" href={p.url} tabindex="-1" aria-hidden="true">
+    <ProductArt product={p} />
+    <span class="badges">
+      {p.rx && <span class="badge badge-rx">Rx</span>}
+      {p.coldChain && <span class="badge badge-cold">Cold chain</span>}
+    </span>
+  </a>
+  <div class="body">
+    <span class="cat">{p.category}</span>
+    <h3><a href={p.url}>{p.name}</a></h3>
+    <span class="generic">{p.generic}{p.strength && !p.name.includes(p.strength) ? ` · ${p.strength}` : ''} · {p.form}</span>
+    {p.reference_brand && <span class="generic small">Ref. brand: {p.reference_brand}</span>}
+    <div class="actions">
+      <button class="btn btn-primary" type="button" data-quote={p.sku}>Get best price</button>
+      <button class="btn btn-outline" type="button" data-add={p.sku} data-unit={units[0]}>Add to cart</button>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,17 @@
+name: mediseller-sites
+on:
+  push:
+    paths: ['mediseller-sites/**', '.github/workflows/mediseller-sites.yml']
+  pull_request:
+    paths: ['mediseller-sites/**']
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: mediseller-sites } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: mediseller-sites/package-lock.json }
+      - run: npm ci
+      - run: npm run test:server
+      - run: SITE=mediseller npm run build

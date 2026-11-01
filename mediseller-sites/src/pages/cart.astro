@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+<Base title="Your cart" noindex>
+  <div class="container" style="padding:24px 16px 56px;max-width:860px">
+    <h1>Your cart</h1>
+    <p class="muted">Adjust quantities and add notes for your agent. No payment is taken online.</p>
+    <div class="card" style="padding:8px 20px" data-cart-page></div>
+    <div class="row" style="justify-content:space-between;margin-top:20px">
+      <a class="btn btn-outline" href="/products/">← Continue browsing</a>
+      <a class="btn btn-primary" href="/checkout/" data-cart-page-cta>Proceed to request quote <Icon name="arrow" size={18} /></a>
+    </div>
+  </div>
+  <script>
+    import { $, cart } from '../scripts/core.js';
+    import { lineHTML, bindLines } from '../scripts/app.js';
+    const box = $('[data-cart-page]');
+    bindLines(box);
+    const render = () => {
+      if (box.contains(document.activeElement) && document.activeElement.matches('input')) return;
+      const items = cart.items();
+      box.innerHTML = items.length ? items.map(lineHTML).join('') : '<div class="empty"><p>Your cart is empty.</p><a class="btn btn-outline" href="/products/">Browse medicines</a></div>';
+      $('[data-cart-page-cta]').hidden = !items.length;
+    };
+    cart.onChange(render); render();
+  </script>
+</Base>

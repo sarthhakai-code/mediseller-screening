@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ProductArt from '../../components/ProductArt.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { products } from '../../lib/catalogue.js';
+import site, { waLink } from '../../lib/site.js';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props;
+const units = p.unit.split('/').map((u) => u.trim());
+const sameSalt = products.filter((x) => x.sku !== p.sku && x.generic.toLowerCase() === p.generic.toLowerCase());
+const related = [...sameSalt, ...products.filter((x) => x.sku !== p.sku && x.category === p.category && !sameSalt.includes(x))].slice(0, 4);
+const title = `${p.name}${p.reference_brand ? ` (ref. ${p.reference_brand.split(' (')[0]})` : ''}`;
+const faqs = [
+  [`How do I get the price of ${p.name}?`, `Add it to your cart and request a quote, or tap “Get best price”. An agent confirms the best price for your country and quantity — usually within a few working hours.`],
+  [`Do you ship ${p.generic} to my country?`, `We ship to many countries across ${site.shippingRegions.map((r) => r.region).join(', ')}. Your agent confirms delivery time and any import requirements for your country.`],
+  ...(p.rx ? [[`Do I need a prescription for ${p.name}?`, 'Yes. This is a prescription-only medicine and is dispatched only against a valid prescription. You can upload it at checkout or share it with your agent.']] : []),
+  ...(p.coldChain ? [['How is it shipped?', 'This product needs refrigeration (2–8 °C) and ships in cold-chain packaging. Your agent will advise on delivery timelines.']] : []),
+];
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'Product', name: p.name, sku: p.sku, category: p.category,
+    description: p.short_desc, brand: { '@type': 'Brand', name: p.manufacturer.includes('confirmed') ? site.name : p.manufacturer },
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'Active ingredient', value: p.generic },
+      { '@type': 'PropertyValue', name: 'Strength', value: p.strength },
+      { '@type': 'PropertyValue', name: 'Dosage form', value: p.form },
+    ],
+  },
+  { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `https://${site.domain}/` },
+    { '@type': 'ListItem', position: 2, name: p.category, item: `https://${site.domain}/category/${p.categorySlug}/` },
+    { '@type': 'ListItem', position: 3, name: p.name, item: `https://${site.domain}${p.url}` } ] },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+const waText = `Hello ${site.name}, I'd like the best price for ${p.name} (${p.generic}${p.strength ? ' ' + p.strength : ''}).`;
+---
+<Base title={`${title} — price & worldwide delivery`} description={`${p.name} (${p.generic} ${p.strength}, ${p.form}). ${p.short_desc}. Sourced from India and shipped worldwide — get the best price from an agent.`} schema={schema} stickyCta>
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href={`/category/${p.categorySlug}/`}>{p.category}</a> / {p.name}</nav>
+    <div class="pdp">
+      <div class="gallery"><ProductArt product={p} size="large" /></div>
+      <div>
+        <div class="row" style="gap:6px">
+          <span class="badge">{p.category}</span>
+          {p.rx && <span class="badge badge-rx">Prescription only</span>}
+          {p.coldChain && <span class="badge badge-cold"><Icon name="snow" size={12} /> Cold chain</span>}
+        </div>
+        <h1 style="margin-top:12px;font-size:clamp(1.6rem,3.5vw,2.3rem)">{p.name}</h1>
+        <p class="muted" style="font-size:1.05rem">{p.generic}{p.strength ? ` · ${p.strength}` : ''} · {p.form}</p>
+        <dl class="facts">
+          <dt>Active ingredient</dt><dd>{p.generic}</dd>
+          {p.strength && <><dt>Strength</dt><dd>{p.strength}</dd></>}
+          <dt>Dosage form</dt><dd>{p.form}</dd>
+          {p.pack && <><dt>Pack</dt><dd>{p.pack}</dd></>}
+          <dt>Manufacturer</dt><dd>{p.manufacturer}</dd>
+          {p.reference_brand && <><dt>Reference brand</dt><dd>{p.reference_brand}</dd></>}
+          <dt>Origin</dt><dd>India</dd>
+          {p.moq && <><dt>Min. order (B2B)</dt><dd>{p.moq}</dd></>}
+        </dl>
+        <div class="qty-row">
+          <div class="stepper" role="group" aria-label="Quantity">
+            <button type="button" data-step="-1" aria-label="Decrease">−</button>
+            <input id="pdp-qty" type="number" min="1" max="100000" value="1" inputmode="numeric" aria-label="Quantity" />
+            <button type="button" data-step="1" aria-label="Increase">+</button>
+          </div>
+          <select id="pdp-unit" aria-label="Unit" style="width:auto;flex:1;min-width:140px">{units.map((u) => <option>{u}</option>)}</select>
+        </div>
+        <label class="check small"><input type="checkbox" id="pdp-bulk" /> <span>Bulk / business quantity (importers, pharmacies, resellers)</span></label>
+        <p class="notice notice-info small" id="pdp-bulk-note" hidden style="margin-top:8px">For bulk orders your agent will share MOQ, batch details, export documents and consolidated shipping options. <a href="/for-business/">Business buying →</a></p>
+        <div class="pdp-cta">
+          <button class="btn btn-primary" type="button" data-add={p.sku} data-qty-from="#pdp-qty" data-unit-from="#pdp-unit"><Icon name="cart" size={18} /> Add to cart</button>
+          <button class="btn btn-outline" type="button" data-quote={p.sku}>Get best price</button>
+          <a class="btn btn-wa" href={waLink(waText)} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> Ask on WhatsApp</a>
+        </div>
+        {p.rx && <p class="notice notice-rx">Prescription-only medicine. Our team will request a valid prescription before dispatch — you can upload it at checkout (optional) or share it later.</p>}
+        <p class="small muted" style="margin-top:12px">No payment on the website. Your agent confirms price, availability and shipping before you pay.</p>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" aria-controls="t-over" id="tb-over">Overview</button>
+      <button role="tab" aria-selected="false" aria-controls="t-ship" id="tb-ship">Storage & shipping</button>
+      <button role="tab" aria-selected="false" aria-controls="t-faq" id="tb-faq">FAQ</button>
+    </div>
+    <div class="tabpanel prose" role="tabpanel" id="t-over" aria-labelledby="tb-over">
+      <p>{p.short_desc}.</p>
+      <p class="muted small">This information is for general reference only and is not medical advice. Use only as prescribed by your doctor.</p>
+      {!p.verified && <p class="notice notice-warn small">Product details are being verified by our pharmacist team. Your agent will confirm the exact brand, pack and specifications.</p>}
+    </div>
+    <div class="tabpanel prose" role="tabpanel" id="t-ship" aria-labelledby="tb-ship" hidden>
+      <p><strong>Storage:</strong> {p.storage}</p>
+      <p><strong>Shipping:</strong> Dispatched from India with invoice and export documentation. {p.coldChain ? 'Packed with gel packs / cold-chain packaging to keep 2–8 °C in transit.' : ''} Delivery time depends on your country — your agent will confirm.</p>
+      <p><a href="/shipping/">See shipping countries →</a></p>
+    </div>
+    <div class="tabpanel faq prose" role="tabpanel" id="t-faq" aria-labelledby="tb-faq" hidden>
+      {faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+    </div>
+
+    {related.length > 0 && (
+      <section class="section" style="padding-top:24px">
+        <h2>{sameSalt.length ? 'Alternatives & related medicines' : `More in ${p.category}`}</h2>
+        <div class="grid grid-4">{related.map((r) => <ProductCard product={r} />)}</div>
+      </section>
+    )}
+  </div>
+  <div class="sticky-cta">
+    <button class="btn btn-primary" type="button" data-add={p.sku} data-qty-from="#pdp-qty" data-unit-from="#pdp-unit">Add to cart</button>
+    <a class="btn btn-wa" href={waLink(waText)} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp</a>
+  </div>
+  <script define:vars={{ sku: p.sku, name: p.name }}>
+    window.__pdp = { sku, name };
+  </script>
+  <script>
+    import { $, $$, track } from '../../scripts/core.js';
+    const qty = $('#pdp-qty');
+    $$('[data-step]').forEach((b) => b.addEventListener('click', () => { qty.value = Math.max(1, (parseInt(qty.value, 10) || 1) + +b.dataset.step); }));
+    $('#pdp-bulk').addEventListener('change', (e) => { $('#pdp-bulk-note').hidden = !e.target.checked; if (e.target.checked && +qty.value < 10) qty.value = 10; });
+    const tabs = $$('[role=tab]');
+    tabs.forEach((t) => t.addEventListener('click', () => {
+      tabs.forEach((x) => { x.setAttribute('aria-selected', String(x === t)); $('#' + x.getAttribute('aria-controls')).hidden = x !== t; });
+    }));
+    track('view_item', { item_id: window.__pdp.sku, item_name: window.__pdp.name }, 'ViewContent');
+  </script>
+</Base>

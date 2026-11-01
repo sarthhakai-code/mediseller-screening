@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import site, { waLink } from '../lib/site.js';
+---
+<Base title="Contact us" description={`Contact ${site.name} on WhatsApp, phone or email. Agents help patients, doctors and businesses source medicines from India.`}>
+  <div class="container section grid grid-2" style="align-items:start">
+    <div>
+      <p class="eyebrow">Contact</p>
+      <h1>Talk to a real person</h1>
+      <p class="muted">The fastest way to reach us is WhatsApp. Share the medicine name, quantity and your country — or a photo of your prescription.</p>
+      <div class="stack" style="margin-top:20px">
+        <a class="btn btn-wa" href={waLink('Hello, I need help.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp +{site.contact.whatsapp}</a>
+        <p><Icon name="phone" size={16} /> <a href={`tel:${site.contact.phone.replace(/\s/g, '')}`}>{site.contact.phone}</a></p>
+        <p><Icon name="mail" size={16} /> <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></p>
+        <p class="muted"><Icon name="building" size={16} /> {site.contact.address}</p>
+        <p class="muted"><Icon name="calendar" size={16} /> {site.contact.hours}</p>
+      </div>
+    </div>
+    <div><h2 style="font-size:1.2rem">Send us a message</h2><EnquiryForm source="contact" /></div>
+  </div>
+</Base>
