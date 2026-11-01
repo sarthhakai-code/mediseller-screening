@@ -1,0 +1,232 @@
+/* ==========================================================================
+   MEDISELLER — Internal Document System v1.0
+   Shared stylesheet for all notice-board / team documents.
+   Follows MEDISELLER Brand Standard V1.0 (colours, Inter typography).
+   ========================================================================== */
+
+/* ---------- Fonts (bundled locally so print/PDF works offline) ---------- */
+@font-face { font-family: "Inter"; font-weight: 400; src: url("fonts/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; src: url("fonts/inter-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; src: url("fonts/inter-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 700; src: url("fonts/inter-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 800; src: url("fonts/inter-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-weight: 400; src: url("fonts/noto-sans-devanagari-devanagari-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-weight: 500; src: url("fonts/noto-sans-devanagari-devanagari-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-weight: 600; src: url("fonts/noto-sans-devanagari-devanagari-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-weight: 700; src: url("fonts/noto-sans-devanagari-devanagari-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Noto Sans Devanagari"; font-weight: 800; src: url("fonts/noto-sans-devanagari-devanagari-800-normal.woff2") format("woff2"); }
+
+/* ---------- Brand tokens (Brand Standard V1.0 — locked palette) ---------- */
+:root {
+  --ms-navy:   #0B2D4D;  /* Primary Navy   */
+  --ms-red:    #D62839;  /* Brand Red      */
+  --ms-blue:   #146FC1;  /* Clinical Blue  */
+  --ms-soft:   #F4F7FA;  /* Soft White     */
+  --ms-black:  #121820;  /* Medical Black  */
+  --ms-white:  #FFFFFF;  /* Pure White     */
+
+  /* derived neutrals (tints of navy, for rules and muted text) */
+  --ms-line:   #D5DEE8;
+  --ms-muted:  #4A5B6E;
+
+  /* category accent — overridden per document type via body class */
+  --ms-accent: var(--ms-navy);
+
+  --ms-font: "Inter", "Noto Sans Devanagari", system-ui, sans-serif;
+  --ms-font-hi: "Noto Sans Devanagari", "Inter", sans-serif;
+}
+
+/* Category accents (document code prefix in brackets) */
+body.cat-policy    { --ms-accent: var(--ms-red);   }  /* [POL] Office rules & policies   */
+body.cat-pricelist { --ms-accent: var(--ms-blue);  }  /* [PL]  Price lists & rate cards  */
+body.cat-incentive { --ms-accent: var(--ms-navy);  }  /* [INC] Incentives & commission   */
+body.cat-sop       { --ms-accent: var(--ms-blue);  }  /* [SOP] Procedures & schedules    */
+body.cat-reference { --ms-accent: var(--ms-black); }  /* [REF] Reference guides          */
+
+/* ---------- Page setup: A4 portrait ---------- */
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--ms-font);
+  color: var(--ms-black);
+  background: #E9EEF3;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  font-size: 10.5pt;
+  line-height: 1.45;
+}
+.hi { font-family: var(--ms-font-hi); }
+
+.page {
+  width: 210mm;
+  height: 297mm;
+  margin: 10mm auto;
+  background: var(--ms-white);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 18px rgba(11,45,77,.15);
+}
+@media print {
+  body { background: var(--ms-white); }
+  .page { margin: 0; box-shadow: none; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+}
+
+/* ---------- Header band ---------- */
+.ms-header {
+  background: var(--ms-navy);
+  color: var(--ms-white);
+  padding: 9mm 14mm 7mm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2.2mm solid var(--ms-red);
+}
+/* Official logo slot. Drop the approved master into assets/logo/ and swap the
+   placeholder for: <img src="../assets/logo/mediseller-logo-white.svg" alt="MEDISELLER"> */
+.ms-logo { height: 13mm; display: flex; align-items: center; }
+.ms-logo img { height: 100%; width: auto; }
+.ms-logo-placeholder {
+  height: 13mm; min-width: 52mm;
+  border: 1px dashed rgba(255,255,255,.55);
+  border-radius: 2mm;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7pt; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255,255,255,.75);
+  padding: 0 4mm;
+}
+.ms-header-meta { text-align: right; }
+.ms-chip {
+  display: inline-block;
+  background: var(--ms-accent);
+  color: var(--ms-white);
+  font-weight: 700;
+  font-size: 7.5pt;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 1.2mm 3mm;
+  border-radius: 1mm;
+}
+body.cat-incentive .ms-chip { background: var(--ms-blue); } /* navy-on-navy fix */
+.ms-header-meta .code { display: block; margin-top: 2mm; font-size: 9pt; font-weight: 600; opacity: .9; }
+
+/* ---------- Title block ---------- */
+.ms-title { padding: 9mm 14mm 4mm; }
+.ms-title h1 {
+  margin: 0;
+  font-size: 30pt;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  color: var(--ms-navy);
+}
+.ms-title h1 .hi { display: block; font-size: 17pt; font-weight: 700; color: var(--ms-accent); margin-top: 2mm; letter-spacing: 0; }
+.ms-title .sub {
+  margin-top: 4mm;
+  display: inline-flex; gap: 3mm; align-items: baseline;
+  font-size: 12pt; font-weight: 600; color: var(--ms-muted);
+}
+
+/* ---------- Document control strip ---------- */
+.ms-control {
+  margin: 0 14mm;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border: 1px solid var(--ms-line);
+  border-radius: 1.5mm;
+  background: var(--ms-soft);
+  font-size: 7.5pt;
+}
+.ms-control div { padding: 2mm 2.5mm; border-right: 1px solid var(--ms-line); }
+.ms-control div:last-child { border-right: 0; }
+.ms-control b { display: block; font-weight: 500; color: var(--ms-muted); text-transform: uppercase; letter-spacing: .06em; font-size: 6.3pt; margin-bottom: .6mm; }
+.ms-control span { font-weight: 600; color: var(--ms-navy); }
+.ms-control .blank { display: block; border-bottom: 1px solid var(--ms-muted); height: 3.6mm; }
+
+/* ---------- Body ---------- */
+.ms-body { flex: 1; padding: 7mm 14mm 0; display: flex; flex-direction: column; }
+
+/* ---------- Footer ---------- */
+.ms-footer {
+  margin-top: auto;
+  padding: 4mm 14mm 6mm;
+  border-top: 1px solid var(--ms-line);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 7.5pt; color: var(--ms-muted);
+}
+.ms-footer .conf { font-weight: 700; color: var(--ms-red); letter-spacing: .08em; text-transform: uppercase; }
+.ms-footer .brand { font-weight: 800; color: var(--ms-navy); letter-spacing: .14em; }
+
+/* ---------- Reusable: numbered rule cards ---------- */
+.rule {
+  display: grid;
+  grid-template-columns: 14mm 1fr;
+  gap: 5mm;
+  align-items: start;
+  padding: 5.5mm 0;
+  border-bottom: 1px solid var(--ms-line);
+}
+.rule .num {
+  width: 12mm; height: 12mm; border-radius: 50%;
+  background: var(--ms-navy); color: var(--ms-white);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15pt;
+}
+.rule .en { font-size: 15pt; font-weight: 600; color: var(--ms-black); line-height: 1.3; }
+.rule .en strong { font-weight: 800; color: var(--ms-navy); }
+.rule .hi { font-size: 12.5pt; color: var(--ms-muted); margin-top: 1.5mm; line-height: 1.5; }
+
+/* Alert / penalty card */
+.alert {
+  margin-top: 7mm;
+  border: 0.6mm solid var(--ms-red);
+  border-radius: 2.5mm;
+  display: grid;
+  grid-template-columns: 40mm 1fr;
+  overflow: hidden;
+}
+.alert .side {
+  background: var(--ms-red); color: var(--ms-white);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 5mm 3mm; text-align: center;
+}
+.alert .side .lbl { font-weight: 800; letter-spacing: .12em; font-size: 10pt; margin-top: 2mm; }
+.alert .main { padding: 6mm 7mm; }
+.alert .main .k { font-size: 10pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ms-red); }
+.alert .main .amt { font-size: 40pt; font-weight: 800; color: var(--ms-navy); line-height: 1.05; margin: 1mm 0 2mm; }
+.alert .main .en { font-size: 13pt; font-weight: 600; }
+.alert .main .hi { font-size: 12pt; color: var(--ms-muted); margin-top: 1mm; }
+
+/* Closing note */
+.note {
+  margin-top: 7mm;
+  background: var(--ms-soft);
+  border-left: 1.4mm solid var(--ms-navy);
+  padding: 5mm 6mm;
+  border-radius: 0 2mm 2mm 0;
+}
+.note .en { font-size: 11.5pt; font-weight: 600; color: var(--ms-navy); }
+.note .hi { font-size: 10.5pt; color: var(--ms-muted); margin-top: 1mm; }
+
+/* Values strip */
+.values {
+  margin-top: 6mm;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-radius: 2mm; overflow: hidden;
+}
+.values div { background: var(--ms-navy); color: var(--ms-white); text-align: center; padding: 3.5mm 2mm; }
+.values div:nth-child(2) { background: var(--ms-blue); }
+.values div:nth-child(3) { background: var(--ms-red); }
+.values b { display: block; font-size: 11pt; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.values .hi { font-size: 9.5pt; opacity: .9; }
+
+/* Acknowledgement line */
+.ack {
+  margin-top: 6mm; margin-bottom: 5mm;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10mm;
+  font-size: 8pt; color: var(--ms-muted);
+}
+.ack div { border-top: 1px solid var(--ms-muted); padding-top: 1.5mm; }
