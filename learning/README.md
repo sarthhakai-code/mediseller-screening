@@ -11,7 +11,7 @@
 
 Status key: ⬜ not started · 🟡 in progress · ✅ done · 🅿️ parked
 
-Original notebook pages: [List 1](notebook-pages/list1-learn.jpg) · [List 2](notebook-pages/list2-grow.jpg) · [List 3](notebook-pages/list3-explore.jpg)
+Original notebook pages: [List 1](notebook-pages/list1-learn.jpg) · [List 2](notebook-pages/list2-grow.jpg) · [List 3](notebook-pages/list3-explore.jpg) · [Page 4](notebook-pages/list4-learn-explore.jpg)
 
 ---
 
@@ -69,6 +69,42 @@ Leads: IndiaMART, TradeIndia, website, WhatsApp · Customer data: Excel/Sheets, 
 | — | 9 | AI agentic workflows & automations | = L1 #5, L2 #8 | — |
 
 Target regions for all export items: Africa · CIS/Russia/Central Asia · Middle East/SE Asia · US/UK/EU/LatAm.
+
+## Page 4: Learn (trading, crypto, business skills)
+
+| # | Topic | Fits with | Status |
+|---|---|---|---|
+| 1 | Technical analysis | Finance track, before swing trading / F&O | ⬜ |
+| 2 | Crypto course | Crypto track | ⬜ |
+| 3 | Swing trading | Finance track | ⬜ |
+| 4 | Udemy → Excel | Your Sheets data (L2 #5, #6) | ⬜ |
+| 5 | Personal finance | L2 #2 wealth management | ⬜ |
+| 6 | Income tax | Personal + business | ⬜ |
+| 7 | Short-selling | Finance track | ⬜ |
+| 8 | Stop-limit orders | Finance track | ⬜ |
+| 9 | Data scraping | AI track, L2 #7 leads | ⬜ |
+| 10 | Web development / App | AI track | ⬜ |
+| 11 | Consulting reports | L1 #12 consultancy | ⬜ |
+| 12 | BLVT (Binance Leveraged Tokens) & Binance Earn / staking | Crypto track | ⬜ |
+
+## Page 4: Explore (research topics)
+
+| # | Topic | Fits with | Status |
+|---|---|---|---|
+| 1 | Idea development | All ventures | ⬜ |
+| 2 | Exports / Invest India | L3 #16 export hub | ⬜ |
+| 3 | NFTs | Crypto track | 🅿️ |
+| 4 | Metaverse | | 🅿️ |
+| 5 | Fortune 100 | | ⬜ |
+| 6 | Healthcare startups | MediSeller | ⬜ |
+| 7 | Top Indian / international sectors | | ⬜ |
+| 8 | Thearn.com (to confirm) | | 🅿️ |
+| 9 | Legal → online pharma / export | L3 #7, #8 | ⬜ |
+| 10 | PharmEasy & others | L3 #7 e-pharmacy | ⬜ |
+| 11 | ETFs | L3 #12, #17, L1 #9 | ⬜ |
+| 12 | DEX / DeFi | Crypto track | 🅿️ |
+| 13 | Block / Square / top Indian crypto space | Crypto track | 🅿️ |
+| 14 | Blockchain / Solidity / Web3 | Crypto track | 🅿️ |
 
 ---
 

@@ -55,7 +55,7 @@ section{display:grid;gap:12px}
 .hero{border-color:var(--ink);box-shadow:0 0 0 3px var(--ink-soft)}
 
 /* summary meters */
-.meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px}
 .meter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:6px;min-width:0}
 .meter b{font:700 1.35rem/1 var(--f-display);font-variant-numeric:tabular-nums}
 .bar{height:6px;border-radius:6px;background:var(--sunk);overflow:hidden;display:flex}
@@ -193,6 +193,8 @@ nav.tabs a[aria-current="page"]{color:var(--ink);background:var(--ink-soft)}
           <button class="chip" data-list="L1" aria-pressed="true">Learn</button>
           <button class="chip" data-list="L2" aria-pressed="false">Grow</button>
           <button class="chip" data-list="L3" aria-pressed="false">Explore</button>
+          <button class="chip" data-list="L4" aria-pressed="false">Learn · p4</button>
+          <button class="chip" data-list="L5" aria-pressed="false">Explore · p4</button>
         </div>
         <p class="muted" id="listBlurb"></p>
         <ul class="items" id="items"></ul>
@@ -358,9 +360,37 @@ const LISTS={
     ["10","Ukraine / Gaza redevelopment","Brief 11"],
     ["15","Commercial property, Tier 2/3 cities","Brief 12"],
     ["5","Spiritual clothing line → Khsm / Veshti","Brief 13"],
-    ["9","AI agentic workflows & automations","Same as Learn #5 and Grow #8"]]}
+    ["9","AI agentic workflows & automations","Same as Learn #5 and Grow #8"]]},
+  L4:{name:"Learn · p4",blurb:"Notebook page 4, Learn side. Mostly trading, crypto and business skills.",items:[
+    ["1","Technical analysis","Finance track · before swing trading and F&O"],
+    ["2","Crypto course","Crypto track"],
+    ["3","Swing trading","Finance track · after technical analysis"],
+    ["4","Udemy → Excel","Pairs with your Sheets data (Grow #5, #6)"],
+    ["5","Personal finance","Foundation for wealth management (Grow #2)"],
+    ["6","Income tax","Personal + business basics"],
+    ["7","Short-selling","Finance track"],
+    ["8","Stop-limit orders","Finance track · order types"],
+    ["9","Data scraping","AI track · feeds the leads pipeline (Grow #7)"],
+    ["10","Web development / App","AI track · this app is your first one"],
+    ["11","Consulting reports","Supports AI consultancy (Learn #12)"],
+    ["12","BLVT (Binance Leveraged Tokens) & Binance Earn / staking","Crypto track"]]},
+  L5:{name:"Explore · p4",blurb:"Notebook page 4, Explore side. Research topics and market studies.",items:[
+    ["1","Idea development","How to test and shape a business idea"],
+    ["2","Exports / Invest India","Links to export hub (Explore #16)"],
+    ["3","NFTs","Crypto track"],
+    ["4","Metaverse",""],
+    ["5","Fortune 100","How the biggest companies make money"],
+    ["6","Healthcare startups","Close to MediSeller"],
+    ["7","Top Indian sectors / international sectors",""],
+    ["8","Thearn.com","To confirm"],
+    ["9","Legal → online pharma / export","Links to e-pharmacy and cross-border (Explore #7, #8)"],
+    ["10","PharmEasy & others","Competitor study for e-pharmacy"],
+    ["11","ETFs","Links to silver/metals (Explore #12, #17) and global investing"],
+    ["12","DEX / DeFi","Crypto track"],
+    ["13","Block / Square / top Indian crypto space","Crypto track"],
+    ["14","Blockchain / Solidity / Web3","Crypto track"]]}
 };
-const ROAD=[["W1","GitHub, Python & Claude Code","L1-3"],["W2","Agentic AI basics","L1-5"],["W3","MCP & multi-agent","L1-1"],["W4","Codex vs Claude Code","L1-4"],["W5","Kimi & Chinese AI","L1-8"],["W6","OpenClaw + Obsidian","L1-7"],["W7–8","AI avatars & video","L1-11"],["W9","AI consultancy","L1-12"],["W10+","F&O → algo trading → global investing","L1-10"]];
+const ROAD=[["W1","GitHub, Python & Claude Code","L1-3"],["W2","Agentic AI basics","L1-5"],["W3","MCP & multi-agent","L1-1"],["W4","Codex vs Claude Code","L1-4"],["W5","Kimi & Chinese AI","L1-8"],["W6","OpenClaw + Obsidian","L1-7"],["W7–8","AI avatars & video","L1-11"],["W9","AI consultancy","L1-12"],["W10+","Finance: personal finance → technical analysis → order types → swing → F&O → algo","L1-10"],["Later","Crypto: course → BLVT & Binance Earn → DeFi → Web3","L4-2"]];
 const STEPS=[
   {id:"s1",t:"Open PowerShell",d:"Press the Windows key, type PowerShell, open Windows PowerShell (not Admin)."},
   {id:"s2",t:"Install Git, Python and VS Code",cmd:"winget install --id Git.Git -e\nwinget install --id Python.Python.3.13 -e\nwinget install --id Microsoft.VisualStudioCode -e",d:"Then close PowerShell and open it again."},
