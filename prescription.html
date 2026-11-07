@@ -89,6 +89,7 @@
   .medrow{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,.9fr) minmax(0,1.2fr) minmax(0,1fr) 30px;
     gap:6px;padding:8px 0;border-bottom:1px dashed var(--line);align-items:center;}
   .medrow .notes{grid-column:1/-2;}
+  .medform{grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto;align-items:end;}
   .medrow input,.medrow select{padding:6px 8px;font-size:13px;}
   .medhead{font-size:11px;padding-bottom:2px;color:var(--muted);font-weight:500;}
   .medidx{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);}
@@ -162,6 +163,7 @@
     .medrow .x{position:absolute;right:0;top:10px;}
     .medhead{display:none;}
     .byline{display:none;}
+    .medform{grid-template-columns:repeat(2,minmax(0,1fr));} .medform label:first-child{grid-column:1/-1;}
   }
 </style>
 </head>
@@ -178,12 +180,12 @@
   </header>
 
   <nav class="tabs" id="tabs">
-    <button data-tab="generate" class="active">Generate</button>
-    <button data-tab="history">History <span class="count" id="c-history"></span></button>
-    <button data-tab="templates">Templates <span class="count" id="c-templates"></span></button>
-    <button data-tab="doctors">Doctors <span class="count" id="c-doctors"></span></button>
-    <button data-tab="medicines">Medicines <span class="count" id="c-medicines"></span></button>
-    <button data-tab="settings">Settings</button>
+    <button type="button" data-tab="generate" class="active">Generate</button>
+    <button type="button" data-tab="history">History <span class="count" id="c-history"></span></button>
+    <button type="button" data-tab="templates">Templates <span class="count" id="c-templates"></span></button>
+    <button type="button" data-tab="doctors">Doctors <span class="count" id="c-doctors"></span></button>
+    <button type="button" data-tab="medicines">Medicines <span class="count" id="c-medicines"></span></button>
+    <button type="button" data-tab="settings">Settings</button>
   </nav>
 
   <!-- ===================== GENERATE ===================== -->
@@ -196,7 +198,7 @@
         <li id="ob-med">Optional: import your medicine list as a CSV <a href="#" data-goto="medicines">→ Medicines</a></li>
       </ol>
       <div class="row">
-        <button class="btn" id="ob-demo">Load demo data (sample letterhead, doctor and medicines)</button>
+        <button type="button" class="btn" id="ob-demo">Load demo data (sample letterhead, doctor and medicines)</button>
       </div>
     </div>
 
@@ -216,18 +218,18 @@
         <div class="card">
           <h3>Patient</h3>
           <div class="grid g4">
-            <label class="f span2">Full name <span class="req">*</span><input id="g-name" autocomplete="off" /></label>
-            <label class="f">Age <span class="req">*</span><input id="g-age" inputmode="numeric" /></label>
+            <label class="f span2">Full name <span class="req">*</span><input type="text" id="g-name" autocomplete="off" /></label>
+            <label class="f">Age <span class="req">*</span><input type="text" id="g-age" inputmode="numeric" /></label>
             <label class="f">Unit<select id="g-ageunit"><option value="Y">Years</option><option value="M">Months</option><option value="D">Days</option></select></label>
             <label class="f">Gender <span class="req">*</span><select id="g-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
-            <label class="f">Phone<input id="g-phone" inputmode="tel" placeholder="10-digit mobile" /></label>
+            <label class="f">Phone<input type="text" id="g-phone" inputmode="tel" placeholder="10-digit mobile" /></label>
             <label class="f span2">Email<input id="g-email" type="email" /></label>
           </div>
         </div>
 
         <div class="card">
           <div class="card-h"><h3>Medicines <span class="req" style="color:var(--red)">*</span></h3>
-            <button class="btn sm" id="g-addmed">+ Add medicine</button></div>
+            <button type="button" class="btn sm" id="g-addmed">+ Add medicine</button></div>
           <div class="medrow medhead"><span>Medicine</span><span>Strength</span><span>Form</span><span>Dose</span><span>Timing</span><span>Duration</span><span></span></div>
           <div id="g-meds"></div>
           <p class="muted small" style="margin:10px 0 0">Start typing a name to pick from your saved list. Saved defaults for strength, form and dose fill in automatically.</p>
@@ -238,7 +240,7 @@
           <div class="grid g2">
             <label class="f">Investigations / tests advised<textarea id="g-inv" placeholder="e.g. CBC, Fasting blood sugar"></textarea></label>
             <label class="f">Advice<textarea id="g-adv" placeholder="e.g. Plenty of fluids, rest for 3 days"></textarea></label>
-            <label class="f span2">Follow-up<input id="g-fu" list="dl-fu" placeholder="e.g. After 7 days, or a date" /></label>
+            <label class="f span2">Follow-up<input type="text" id="g-fu" list="dl-fu" placeholder="e.g. After 7 days, or a date" /></label>
           </div>
         </div>
 
@@ -246,12 +248,12 @@
           <label class="attest"><input type="checkbox" id="g-attest" />
             <span>I confirm that this prescription follows a consultation by the selected registered medical practitioner, as required by the Telemedicine Practice Guidelines, 2020.</span></label>
           <div class="row">
-            <button class="btn primary" id="g-download">⬇ Download PDF</button>
-            <button class="btn" id="g-share">Share…</button>
-            <button class="btn wa" id="g-wa">WhatsApp</button>
-            <button class="btn" id="g-email-btn">Email</button>
+            <button type="button" class="btn primary" id="g-download">⬇ Download PDF</button>
+            <button type="button" class="btn" id="g-share">Share…</button>
+            <button type="button" class="btn wa" id="g-wa">WhatsApp</button>
+            <button type="button" class="btn" id="g-email-btn">Email</button>
             <span style="flex:1"></span>
-            <button class="btn ghost" id="g-new">+ New prescription</button>
+            <button type="button" class="btn ghost" id="g-new">+ New prescription</button>
           </div>
         </div>
       </div>
@@ -270,9 +272,9 @@
   <section class="tab hidden" id="tab-history">
     <div class="card">
       <div class="card-h"><h3>Generated prescriptions</h3>
-        <div class="row"><input id="h-search" placeholder="Search by name, phone or Rx ID" style="width:260px" />
-          <button class="btn sm" id="h-export">Export CSV</button></div></div>
-      <div class="scroll-x"><table class="list"><thead><tr><th>Date</th><th>Rx ID</th><th>Patient</th><th>Phone</th><th>Doctor</th><th>Medicines</th><th></th></tr></thead>
+        <div class="row"><input type="text" id="h-search" placeholder="Search by name, phone or Rx ID" style="width:260px" />
+          <button type="button" class="btn sm" id="h-export">Export CSV</button></div></div>
+      <div class="scroll-x"><table class="list"><thead><tr><th scope="col">Date</th><th scope="col">Rx ID</th><th scope="col">Patient</th><th scope="col">Phone</th><th scope="col">Doctor</th><th scope="col">Medicines</th><th scope="col"></th></tr></thead>
       <tbody id="h-body"></tbody></table></div>
       <p class="muted small" id="h-empty">No prescriptions yet. The last 100 are kept on this device.</p>
     </div>
@@ -295,22 +297,22 @@
     <div id="tpl-editor-view" class="hidden">
       <div class="card">
         <div class="card-h">
-          <div class="row"><button class="btn sm" id="ed-back">← All templates</button>
-            <input id="ed-name" style="width:260px;font-weight:600" /></div>
+          <div class="row"><button type="button" class="btn sm" id="ed-back">← All templates</button>
+            <input type="text" id="ed-name" style="width:260px;font-weight:600" /></div>
           <div class="row">
             <label class="row small muted"><input type="checkbox" id="ed-overlay" /> Show sample data</label>
           </div>
         </div>
         <div class="editor">
-          <div><div class="stage" id="ed-stage"><img id="ed-img" alt="template" /></div></div>
+          <div><div class="stage" id="ed-stage"><img id="ed-img" alt="template" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" /></div></div>
           <div>
             <div class="note" style="margin-bottom:12px">Click a field to place it on the template, then drag it into position. Drag the corner square to resize. Use the arrow keys to nudge and Delete to remove. Changes save automatically.</div>
             <h4 style="font-size:14px;margin-bottom:8px">Fields</h4>
             <div class="palette" id="ed-palette"></div>
             <div class="row" style="margin:12px 0">
-              <button class="btn sm" id="ed-auto">Auto-place remaining</button>
+              <button type="button" class="btn sm" id="ed-auto">Auto-place remaining</button>
               <select id="ed-copy" style="width:auto;flex:1;font-size:12px;padding:5px"></select>
-              <button class="btn sm danger" id="ed-clear">Clear all</button>
+              <button type="button" class="btn sm danger" id="ed-clear">Clear all</button>
             </div>
             <div class="card" id="ed-props" style="padding:14px;background:var(--soft)">
               <p class="muted small" style="margin:0">Select a field to edit its style.</p>
@@ -326,29 +328,29 @@
     <div class="card">
       <div class="card-h"><h3 id="d-form-title">Add doctor</h3></div>
       <div class="grid g4">
-        <label class="f span2">Full name <span class="req">*</span><input id="d-name" placeholder="Dr. Ananya Rao" /></label>
-        <label class="f span2">Qualification<input id="d-qual" placeholder="MBBS, MD (General Medicine)" /></label>
-        <label class="f">Registration no. <span class="req">*</span><input id="d-reg" placeholder="e.g. 12345" /></label>
-        <label class="f">Medical council<input id="d-council" placeholder="e.g. Karnataka Medical Council" /></label>
-        <label class="f">Specialisation<input id="d-spec" placeholder="General Physician" /></label>
-        <label class="f">Phone / email<input id="d-contact" /></label>
+        <label class="f span2">Full name <span class="req">*</span><input type="text" id="d-name" placeholder="Dr. Ananya Rao" /></label>
+        <label class="f span2">Qualification<input type="text" id="d-qual" placeholder="MBBS, MD (General Medicine)" /></label>
+        <label class="f">Registration no. <span class="req">*</span><input type="text" id="d-reg" placeholder="e.g. 12345" /></label>
+        <label class="f">Medical council<input type="text" id="d-council" placeholder="e.g. Karnataka Medical Council" /></label>
+        <label class="f">Specialisation<input type="text" id="d-spec" placeholder="General Physician" /></label>
+        <label class="f">Phone / email<input type="text" id="d-contact" /></label>
         <div class="imgslot span2">
           <span class="small muted" style="font-weight:500">Signature</span>
           <div class="pv" id="d-sig-pv">None</div>
-          <div class="row"><button class="btn sm" id="d-sig-up">Upload image</button><button class="btn sm" id="d-sig-draw">Draw</button>
-            <button class="btn sm ghost danger" id="d-sig-rm">Remove</button></div>
+          <div class="row"><button type="button" class="btn sm" id="d-sig-up">Upload image</button><button type="button" class="btn sm" id="d-sig-draw">Draw</button>
+            <button type="button" class="btn sm ghost danger" id="d-sig-rm">Remove</button></div>
         </div>
         <div class="imgslot span2">
           <span class="small muted" style="font-weight:500">Stamp / seal (optional)</span>
           <div class="pv" id="d-stamp-pv">None</div>
-          <div class="row"><button class="btn sm" id="d-stamp-up">Upload image</button><button class="btn sm ghost danger" id="d-stamp-rm">Remove</button></div>
+          <div class="row"><button type="button" class="btn sm" id="d-stamp-up">Upload image</button><button type="button" class="btn sm ghost danger" id="d-stamp-rm">Remove</button></div>
         </div>
         <label class="row small muted span4"><input type="checkbox" id="d-whiten" checked /> Remove white background from uploaded signature and stamp images</label>
       </div>
       <input type="file" id="d-file" accept="image/*" hidden />
       <div class="row" style="margin-top:14px">
-        <button class="btn primary" id="d-save">Save doctor</button>
-        <button class="btn ghost hidden" id="d-cancel">Cancel edit</button>
+        <button type="button" class="btn primary" id="d-save">Save doctor</button>
+        <button type="button" class="btn ghost hidden" id="d-cancel">Cancel edit</button>
       </div>
     </div>
     <div class="doc-grid" id="d-grid"></div>
@@ -359,26 +361,26 @@
     <div class="card">
       <div class="card-h"><h3>Medicine list</h3>
         <div class="row">
-          <button class="btn sm" id="m-import">Import CSV</button>
-          <button class="btn sm" id="m-export">Export CSV</button>
-          <button class="btn sm" id="m-sample">Sample CSV</button>
-          <button class="btn sm danger" id="m-clear">Clear list</button>
+          <button type="button" class="btn sm" id="m-import">Import CSV</button>
+          <button type="button" class="btn sm" id="m-export">Export CSV</button>
+          <button type="button" class="btn sm" id="m-sample">Sample CSV</button>
+          <button type="button" class="btn sm danger" id="m-clear">Clear list</button>
           <input type="file" id="m-file" accept=".csv,text/csv" hidden />
         </div></div>
       <p class="muted small" style="margin-top:0">CSV columns: <span class="mono">name, strength, form, dose, timing, duration, notes</span>. Only <span class="mono">name</span> is required. Duplicates (same name and strength) are updated, not added again.</p>
-      <div class="grid g4" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto;align-items:end" id="m-form">
-        <label class="f">Name<input id="m-name" /></label>
-        <label class="f">Strength<input id="m-strength" placeholder="500 mg" /></label>
-        <label class="f">Form<input id="m-form-i" list="dl-form" /></label>
-        <label class="f">Dose<input id="m-dose" list="dl-dose" /></label>
+      <div class="grid medform" id="m-form">
+        <label class="f">Name<input type="text" id="m-name" /></label>
+        <label class="f">Strength<input type="text" id="m-strength" placeholder="500 mg" /></label>
+        <label class="f">Form<input type="text" id="m-form-i" list="dl-form" /></label>
+        <label class="f">Dose<input type="text" id="m-dose" list="dl-dose" /></label>
         <label class="f">Timing<select id="m-timing"></select></label>
-        <label class="f">Duration<input id="m-dur" list="dl-dur" /></label>
-        <button class="btn primary" id="m-add">Add</button>
+        <label class="f">Duration<input type="text" id="m-dur" list="dl-dur" /></label>
+        <button type="button" class="btn primary" id="m-add">Add</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-h"><input id="m-search" placeholder="Search medicines" style="max-width:300px" /><span class="muted small" id="m-count"></span></div>
-      <div class="scroll-x"><table class="list"><thead><tr><th>Name</th><th>Strength</th><th>Form</th><th>Dose</th><th>Timing</th><th>Duration</th><th></th></tr></thead><tbody id="m-body"></tbody></table></div>
+      <div class="card-h"><input type="text" id="m-search" placeholder="Search medicines" style="max-width:300px" /><span class="muted small" id="m-count"></span></div>
+      <div class="scroll-x"><table class="list"><thead><tr><th scope="col">Name</th><th scope="col">Strength</th><th scope="col">Form</th><th scope="col">Dose</th><th scope="col">Timing</th><th scope="col">Duration</th><th scope="col"></th></tr></thead><tbody id="m-body"></tbody></table></div>
     </div>
   </section>
 
@@ -387,9 +389,9 @@
     <div class="card">
       <h3>General</h3>
       <div class="grid g3">
-        <label class="f">Organisation name (shown in the app header)<input id="s-org" placeholder="e.g. Acme Health" /></label>
-        <label class="f">Rx ID prefix<input id="s-prefix" maxlength="8" /></label>
-        <label class="f">Default country code for WhatsApp<input id="s-cc" inputmode="numeric" /></label>
+        <label class="f">Organisation name (shown in the app header)<input type="text" id="s-org" placeholder="e.g. Acme Health" /></label>
+        <label class="f">Rx ID prefix<input type="text" id="s-prefix" maxlength="8" /></label>
+        <label class="f">Default country code for WhatsApp<input type="text" id="s-cc" inputmode="numeric" /></label>
         <label class="f">Prescription font
           <select id="s-font"><option value="sans">Sans-serif (IBM Plex Sans)</option><option value="helv">Helvetica / Arial</option><option value="serif">Serif (Georgia)</option></select></label>
         <label class="f">Date format
@@ -399,16 +401,16 @@
         <label class="f span3">Share message (placeholders: {patient} {doctor} {rx_id} {date} {org})<textarea id="s-msg"></textarea></label>
         <label class="row small muted span3"><input type="checkbox" id="s-automed" /> Add new medicines typed on a prescription to the medicine list automatically</label>
       </div>
-      <div class="row" style="margin-top:12px"><button class="btn primary" id="s-save">Save settings</button></div>
+      <div class="row" style="margin-top:12px"><button type="button" class="btn primary" id="s-save">Save settings</button></div>
     </div>
     <div class="card">
       <h3>Backup &amp; data</h3>
       <p class="muted small" style="margin-top:0">Everything (templates, doctors, medicines, history) is stored only in this browser on this device. Export a backup regularly, and import it to move the setup to another computer.</p>
       <div class="row">
-        <button class="btn" id="s-export">Export full backup (.json)</button>
-        <button class="btn" id="s-import">Import backup</button>
+        <button type="button" class="btn" id="s-export">Export full backup (.json)</button>
+        <button type="button" class="btn" id="s-import">Import backup</button>
         <input type="file" id="s-file" accept=".json,application/json" hidden />
-        <button class="btn danger" id="s-wipe">Delete all data</button>
+        <button type="button" class="btn danger" id="s-wipe">Delete all data</button>
       </div>
       <p class="muted small" id="s-usage"></p>
     </div>
@@ -479,9 +481,9 @@ function readFile(file, as = "dataURL") {
 const imgCache = new Map();
 function loadImg(src) {
   if (imgCache.has(src)) return imgCache.get(src);
-  const p = new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error("Image failed to load")); i.src = src; });
-  imgCache.set(src, p); return p;
+  const p = rawImg(src); imgCache.set(src, p); p.catch(() => imgCache.delete(src)); return p;
 }
+function rawImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error("Image failed to load (file may be damaged)")); i.src = src; }); }
 function downloadBlob(blob, name) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
@@ -499,7 +501,7 @@ function parseCSV(text) {
   if (cur || row.length) { row.push(cur); rows.push(row); }
   return rows.filter(r => r.some(x => x.trim()));
 }
-const csvCell = v => /[",\n]/.test(String(v ?? "")) ? `"${String(v).replace(/"/g, '""')}"` : String(v ?? "");
+const csvCell = v => { let t = String(v ?? ""); if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; return /[",\n\r']/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
 
 /* ============================================================
    Field definitions (what can be placed on a template)
@@ -578,7 +580,7 @@ function wrapLines(ctx, text, maxW) {
   }
   return out;
 }
-const AGEU = { Y: "Y", M: "M", D: "D" }, AGEL = { Y: "years", M: "months", D: "days" };
+const AGEU = { Y: "Y", M: "Mo", D: "D" }, AGEL = { Y: "years", M: "months", D: "days" };
 function medTitle(m) { return [m.form ? m.form + "." : "", m.name, m.strength].filter(Boolean).join(" ").replace(/\.\./g, "."); }
 function fieldValue(key, d, doc) {
   const p = d.patient || {};
@@ -632,7 +634,6 @@ function drawMulti(ctx, f, lines, k, B) {
 function drawMeds(ctx, f, meds, k, B) {
   const cols = [["#", .05], ["Medicine", .41], ["Dose", .15], ["Timing", .20], ["Duration", .19]];
   let size = f.size * k; const min = size * 0.55; let L;
-  const pad = () => size * 0.35;
   const layout = sz => {
     const rowsOut = []; let hgt = sz * 1.5 + (f.rxSymbol ? sz * 2.1 : 0);
     meds.forEach((m, i) => {
@@ -754,7 +755,7 @@ async function importTemplateFile(file) {
     const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
     await page.render({ canvasContext: ctx, viewport: vp }).promise;
   } else if (/^image\//.test(file.type)) {
-    const img = await loadImg(await readFile(file));
+    const img = await rawImg(await readFile(file));
     const s = Math.min(1, 2400 / img.naturalWidth);
     canvas = document.createElement("canvas"); canvas.width = Math.round(img.naturalWidth * s); canvas.height = Math.round(img.naturalHeight * s);
     const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -800,11 +801,12 @@ const STARTER_MEDS = [
    Tabs
    ============================================================ */
 function showTab(name) {
+  if (E.tpl) closeEditor();
   $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
   $$(".tab").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + name));
   if (name === "generate") { refreshGenSelects(); schedulePreview(); }
   if (name === "history") renderHistory();
-  if (name === "templates") { closeEditor(); }
+  if (name === "templates") renderTemplates();
   if (name === "doctors") renderDoctors();
   if (name === "medicines") renderMeds();
   if (name === "settings") loadSettingsForm();
@@ -836,21 +838,21 @@ function nextRxId() {
 }
 function refreshGenSelects() {
   const tSel = $("#g-tpl"), dSel = $("#g-doc"), tv = tSel.value || localStorage.getItem("rx.lastTpl") || "", dv = dSel.value || localStorage.getItem("rx.lastDoc") || "";
-  tSel.innerHTML = `<option value="">${S.templates.length ? "Select template" : "No templates yet"}</option>` + S.templates.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
-  dSel.innerHTML = `<option value="">${S.doctors.length ? "Select doctor" : "No doctors yet"}</option>` + S.doctors.map(d => `<option value="${d.id}">${esc(d.name)}${d.reg ? " · " + esc(d.reg) : ""}</option>`).join("");
+  tSel.innerHTML = `<option value="">${S.templates.length ? "Select template" : "No templates yet"}</option>` + S.templates.map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
+  dSel.innerHTML = `<option value="">${S.doctors.length ? "Select doctor" : "No doctors yet"}</option>` + S.doctors.map(d => `<option value="${esc(d.id)}">${esc(d.name)}${d.reg ? " · " + esc(d.reg) : ""}</option>`).join("");
   if (S.templates.some(t => t.id === tv)) tSel.value = tv; else if (S.templates.length === 1) tSel.value = S.templates[0].id;
   if (S.doctors.some(d => d.id === dv)) dSel.value = dv; else if (S.doctors.length === 1) dSel.value = S.doctors[0].id;
 }
 function medRowHTML(m = {}) {
   return `<div class="medrow">
-    <input class="m-name" list="dl-meds" placeholder="Medicine name" value="${esc(m.name)}" autocomplete="off" />
-    <input class="m-strength" placeholder="Strength" value="${esc(m.strength)}" />
-    <input class="m-form" list="dl-form" placeholder="Form" value="${esc(m.form)}" />
-    <input class="m-dose" list="dl-dose" placeholder="Dose" value="${esc(m.dose)}" />
+    <input type="text" class="m-name" list="dl-meds" placeholder="Medicine name" value="${esc(m.name)}" autocomplete="off" />
+    <input type="text" class="m-strength" placeholder="Strength" value="${esc(m.strength)}" />
+    <input type="text" class="m-form" list="dl-form" placeholder="Form" value="${esc(m.form)}" />
+    <input type="text" class="m-dose" list="dl-dose" placeholder="Dose" value="${esc(m.dose)}" />
     <select class="m-timing">${TIMINGS.map(t => `<option ${t === m.timing ? "selected" : ""} value="${esc(t)}">${t || "Timing"}</option>`).join("")}</select>
-    <input class="m-dur" list="dl-dur" placeholder="Duration" value="${esc(m.duration)}" />
-    <button class="x" title="Remove" data-rm>×</button>
-    <input class="notes m-notes" placeholder="Notes / instructions (optional)" value="${esc(m.notes)}" />
+    <input type="text" class="m-dur" list="dl-dur" placeholder="Duration" value="${esc(m.duration)}" />
+    <button type="button" class="x" title="Remove" data-rm>×</button>
+    <input type="text" class="notes m-notes" placeholder="Notes / instructions (optional)" value="${esc(m.notes)}" />
   </div>`;
 }
 function addMedRow(m) { $("#g-meds").insertAdjacentHTML("beforeend", medRowHTML(m)); }
@@ -933,6 +935,13 @@ function problems(d, tpl, doc) {
   }
   if (!d.patient.name) errs.push("Enter the patient's name.");
   if (!d.patient.age) errs.push("Enter the patient's age.");
+  else if (!/^\d{1,3}(\.\d)?$/.test(d.patient.age) || +d.patient.age > ({ Y: 120, M: 36, D: 60 }[d.patient.ageUnit] || 120) || +d.patient.age <= 0)
+    errs.push("Patient age looks wrong. Enter a number, and check the unit (years / months / days).");
+  if (!d.date) errs.push("Enter the prescription date.");
+  else if (d.date > todayISO()) warns.push("The prescription date is in the future.");
+  if (d.patient.phone && !/^\d{10,13}$/.test(d.patient.phone.replace(/[\s\-+()]/g, "").replace(/^0+/, "")))
+    warns.push("Phone number doesn't look valid (expected a 10-digit mobile, optionally with country code).");
+  if (d.patient.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.patient.email)) warns.push("Email address doesn't look valid.");
   if (!d.patient.gender) errs.push("Select the patient's gender.");
   if (!d.meds.length) errs.push("Add at least one medicine.");
   if (tpl) {
@@ -941,6 +950,7 @@ function problems(d, tpl, doc) {
     if (!has("patient_name")) warns.push("This template has no Patient name box.");
     if (!has("doctor_block") && !has("doctor_reg")) warns.push("This template has no Doctor block or Reg. no. box. Fine only if they are already printed on the letterhead.");
     if (doc?.signature && !has("signature")) warns.push("This template has no Signature box, so the signature won't print.");
+    if (doc?.stamp && !has("stamp")) warns.push("This template has no Stamp box, so the stamp won't print.");
     const unmapped = [["investigations", d.investigations], ["advice", d.advice], ["follow_up", d.followUp]].filter(([k, v]) => v && !has(k)).map(([k]) => FIELDS[k].label);
     if (unmapped.length) warns.push(`Not on this template, so won't print: ${unmapped.join(", ")}.`);
   }
@@ -964,8 +974,12 @@ async function finalize() {
   // history
   const entry = { id: d.rxId, createdAt: Date.now(), data: d, doctorName: doc.name, templateName: tpl.name };
   const i = S.history.findIndex(h => h.id === d.rxId);
-  if (i >= 0) { entry.createdAt = S.history[i].createdAt; S.history[i] = entry; }
-  else { S.history.unshift(entry); S.history = S.history.slice(0, MAX_HISTORY); if (d.rxId === nextRxId()) { S.counter.n++; save("counter"); } }
+  if (i >= 0) { entry.createdAt = S.history[i].createdAt; entry.updatedAt = Date.now(); entry.versions = (S.history[i].versions || 1) + 1; S.history[i] = entry; }
+  else {
+    S.history.unshift(entry); S.history = S.history.slice(0, MAX_HISTORY);
+    const n = +(String(d.rxId).match(/-(\d+)$/) || [])[1] || 0;
+    if (n > S.counter.n) { S.counter.n = n; save("counter"); }
+  }
   save("history");
   // auto-add meds
   if (S.settings.automed) {
@@ -976,53 +990,78 @@ async function finalize() {
   updateCounts();
   return { ...out, d, doc };
 }
+function waNumber(raw) {
+  let ph = String(raw || "").replace(/\D/g, "").replace(/^0+/, "");
+  if (ph.length === 10) ph = (S.settings.cc || "91") + ph;
+  return ph;
+}
 function shareText(d, doc) {
   return (S.settings.msg || "").replace(/\{patient\}/g, d.patient.name).replace(/\{doctor\}/g, doc?.name || "").replace(/\{rx_id\}/g, d.rxId)
     .replace(/\{date\}/g, fmtDate(d.date)).replace(/\{org\}/g, S.settings.org || "").replace(/\n—\s*$/, "").trim();
 }
 function busy(btn, on) { btn.disabled = on; }
+/* navigator.share needs a fresh user action. Building the PDF can take long enough for the click to expire (Safari is strict),
+   so on NotAllowedError ask for one more tap with the file already prepared. Resolves true if shared or cancelled. */
+async function shareFile(file, r) {
+  const data = { files: [file], title: `Prescription ${r.d.rxId}`, text: shareText(r.d, r.doc) };
+  try { await navigator.share(data); return true; }
+  catch (err) {
+    if (err.name === "AbortError") return true;
+    if (err.name !== "NotAllowedError") return false;
+  }
+  return new Promise(res => {
+    const m = document.createElement("div"); m.className = "modal";
+    m.innerHTML = `<div class="card"><h3>Prescription ready</h3><p class="muted">${esc(file.name)}</p>
+      <div class="row"><span style="flex:1"></span><button type="button" class="btn ghost" data-a="no">Cancel</button><button type="button" class="btn primary" data-a="go">Share now</button></div></div>`;
+    document.body.appendChild(m);
+    m.onclick = async ev => { const a = ev.target.dataset.a; if (!a) return; m.remove();
+      if (a === "no") return res(true);
+      try { await navigator.share(data); res(true); } catch (e2) { res(e2.name === "AbortError"); } };
+  });
+}
 $("#g-download").onclick = async e => {
-  busy(e.target, true);
+  const btn = e.currentTarget; busy(btn, true);
   try { const r = await finalize(); if (r) { downloadBlob(r.blob, r.name); toast(`Saved ${r.name}`); } }
-  catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+  catch (err) { toast("Failed: " + err.message, true); } finally { busy(btn, false); }
 };
 $("#g-share").onclick = async e => {
-  busy(e.target, true);
+  const btn = e.currentTarget; busy(btn, true);
   try {
     const r = await finalize(); if (!r) return;
     const file = new File([r.blob], r.name, { type: "application/pdf" });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: `Prescription ${r.d.rxId}`, text: shareText(r.d, r.doc) }); }
-      catch (err) { if (err.name !== "AbortError") throw err; }
+      if (!(await shareFile(file, r))) { downloadBlob(r.blob, r.name); toast("Sharing failed, so the PDF was downloaded instead."); }
     } else { downloadBlob(r.blob, r.name); toast("This browser can't share files directly. The PDF was downloaded; use WhatsApp or Email."); }
-  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(btn, false); }
 };
 $("#g-wa").onclick = async e => {
-  busy(e.target, true);
+  const btn = e.currentTarget; busy(btn, true);
+  // open the tab now, while the click still counts as a user action; pop-up blockers reject window.open after slow async work
+  const mobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  let waWin = mobile ? null : window.open("", "_blank");
   try {
     const r = await finalize(); if (!r) return;
     const file = new File([r.blob], r.name, { type: "application/pdf" });
-    const mobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
     if (mobile && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], text: shareText(r.d, r.doc) }); return; } catch (err) { if (err.name === "AbortError") return; }
+      if (await shareFile(file, r)) { if (waWin) waWin.close(); return; }
     }
     downloadBlob(r.blob, r.name);
-    let ph = (r.d.patient.phone || "").replace(/\D/g, "");
-    if (ph.length === 10) ph = (S.settings.cc || "91") + ph;
+    const ph = waNumber(r.d.patient.phone);
     const url = `https://wa.me/${ph}?text=${encodeURIComponent(shareText(r.d, r.doc))}`;
-    window.open(url, "_blank", "noopener");
+    if (waWin && !waWin.closed) { waWin.opener = null; waWin.location.href = url; waWin = null; }
+    else if (!window.open(url, "_blank", "noopener")) toast("Pop-up blocked. Allow pop-ups for this site to open WhatsApp.", true);
     toast("PDF downloaded. Attach it in the WhatsApp chat that just opened.");
-  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+  } catch (err) { toast("Failed: " + err.message, true); } finally { if (waWin) waWin.close(); busy(btn, false); }
 };
 $("#g-email-btn").onclick = async e => {
-  busy(e.target, true);
+  const btn = e.currentTarget; busy(btn, true);
   try {
     const r = await finalize(); if (!r) return;
     downloadBlob(r.blob, r.name);
     const subj = `Prescription ${r.d.rxId} — ${r.d.patient.name}`;
     location.href = `mailto:${encodeURIComponent(r.d.patient.email || "")}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(shareText(r.d, r.doc) + "\n\n(Prescription PDF attached)")}`;
     toast("PDF downloaded. Attach it to the email draft.");
-  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(btn, false); }
 };
 
 /* ============================================================
@@ -1033,11 +1072,11 @@ function renderHistory() {
   const rows = S.history.filter(h => !q || [h.id, h.data.patient.name, h.data.patient.phone, h.doctorName].join(" ").toLowerCase().includes(q));
   $("#h-empty").classList.toggle("hidden", !!S.history.length);
   $("#h-body").innerHTML = rows.map(h => `<tr>
-    <td class="mono small">${esc(fmtDate(h.data.date))}</td><td class="mono small">${esc(h.id)}</td>
+    <td class="mono small">${esc(fmtDate(h.data.date))}</td><td class="mono small">${esc(h.id)}${h.versions > 1 ? ` <span class="chip" title="Re-issued after edits">v${h.versions}</span>` : ""}</td>
     <td><strong>${esc(h.data.patient.name)}</strong> <span class="muted small">${esc(h.data.patient.age)}${esc(AGEU[h.data.patient.ageUnit] || "")} ${esc((h.data.patient.gender || "")[0] || "")}</span></td>
     <td class="small">${esc(h.data.patient.phone)}</td><td class="small">${esc(h.doctorName)}</td>
-    <td class="small muted">${esc(h.data.meds.map(m => m.name).join(", ")).slice(0, 80)}</td>
-    <td style="white-space:nowrap"><button class="btn sm" data-h-pdf="${esc(h.id)}">PDF</button> <button class="btn sm" data-h-open="${esc(h.id)}">Open</button> <button class="btn sm" data-h-copy="${esc(h.id)}" title="New prescription with the same details">Repeat</button> <button class="x" data-h-del="${esc(h.id)}" title="Delete">×</button></td></tr>`).join("");
+    <td class="small muted">${esc(h.data.meds.map(m => m.name).join(", ").slice(0, 80))}</td>
+    <td style="white-space:nowrap"><button type="button" class="btn sm" data-h-pdf="${esc(h.id)}">PDF</button> <button type="button" class="btn sm" data-h-open="${esc(h.id)}">Open</button> <button type="button" class="btn sm" data-h-copy="${esc(h.id)}" title="New prescription with the same details">Repeat</button> <button type="button" class="x" data-h-del="${esc(h.id)}" title="Delete">×</button></td></tr>`).join("");
 }
 $("#h-search").oninput = renderHistory;
 $("#h-body").addEventListener("click", async e => {
@@ -1064,10 +1103,10 @@ function renderTemplates() {
   $("#tpl-count").textContent = `${S.templates.length} of ${MAX_TEMPLATES}`;
   $("#tpl-drop").classList.toggle("hidden", S.templates.length >= MAX_TEMPLATES);
   $("#tpl-grid").innerHTML = S.templates.map(t => `<div class="tpl-card">
-      <div class="thumb"><img src="${t.img}" alt="" /></div>
+      <div class="thumb"><img src="${esc(t.img)}" alt="" /></div>
       <div class="meta"><span class="name">${esc(t.name)}</span>
         <span class="muted small">${t.fields.length} fields mapped${t.fields.some(f => f.key === "medicines") ? "" : ' · <span style="color:var(--red)">no medicines box</span>'}</span>
-        <div class="row"><button class="btn sm primary" data-t-edit="${t.id}">Map fields</button><button class="btn sm danger" data-t-del="${t.id}">Delete</button></div>
+        <div class="row"><button type="button" class="btn sm primary" data-t-edit="${esc(t.id)}">Map fields</button><button type="button" class="btn sm danger" data-t-del="${esc(t.id)}">Delete</button></div>
       </div></div>`).join("") || `<p class="muted small">No templates yet.</p>`;
 }
 async function handleTemplateFiles(files) {
@@ -1105,7 +1144,7 @@ function openEditor(id) {
   $("#tpl-list-view").classList.add("hidden"); $("#tpl-editor-view").classList.remove("hidden");
   $("#ed-name").value = E.tpl.name; $("#ed-overlay").checked = false; $("#ed-stage").classList.remove("overlay");
   $("#ed-img").src = E.tpl.img;
-  $("#ed-copy").innerHTML = `<option value="">Copy layout from…</option>` + S.templates.filter(t => t !== E.tpl).map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
+  $("#ed-copy").innerHTML = `<option value="">Copy layout from…</option>` + S.templates.filter(t => t !== E.tpl).map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
   drawEditor();
 }
 function closeEditor() { E.tpl = null; $("#tpl-editor-view").classList.add("hidden"); $("#tpl-list-view").classList.remove("hidden"); renderTemplates(); }
@@ -1122,7 +1161,7 @@ function drawEditor() {
     st.appendChild(el);
   });
   const placed = new Set(E.tpl.fields.map(f => f.key));
-  $("#ed-palette").innerHTML = FIELD_ORDER.map(k => `<button data-k="${k}" class="${placed.has(k) ? "placed" : ""}" title="${placed.has(k) ? "Placed (click to select)" : "Click to add"}">${placed.has(k) ? "✓ " : "+ "}${esc(FIELDS[k].label)}</button>`).join("");
+  $("#ed-palette").innerHTML = FIELD_ORDER.map(k => `<button type="button" data-k="${k}" class="${placed.has(k) ? "placed" : ""}" title="${placed.has(k) ? "Placed (click to select)" : "Click to add"}">${placed.has(k) ? "✓ " : "+ "}${esc(FIELDS[k].label)}</button>`).join("");
   drawProps();
 }
 function drawProps() {
@@ -1130,7 +1169,7 @@ function drawProps() {
   if (!f) { P.innerHTML = `<p class="muted small" style="margin:0">Select a field to edit its style.</p>`; return; }
   const d = FIELDS[f.key];
   const txt = d.kind !== "image";
-  P.innerHTML = `<div class="card-h" style="margin-bottom:8px"><strong style="color:var(--navy)">${esc(d.label)}</strong><button class="btn sm danger" id="p-del">Remove</button></div>
+  P.innerHTML = `<div class="card-h" style="margin-bottom:8px"><strong style="color:var(--navy)">${esc(d.label)}</strong><button type="button" class="btn sm danger" id="p-del">Remove</button></div>
     <div class="grid g2">
       ${txt ? `<label class="f">Font size (pt)<input type="number" step="0.5" min="5" max="40" id="p-size" value="${f.size}" /></label>
       <label class="f">Colour<input type="color" id="p-color" value="${f.color || "#111111"}" style="height:36px;padding:2px" /></label>` : ""}
@@ -1206,19 +1245,19 @@ function renderDoctors() {
   $("#d-grid").innerHTML = S.doctors.map(d => `<div class="doc-card">
     <strong style="color:var(--navy)">${esc(d.name)}</strong><div class="small muted">${esc([d.qual, d.spec].filter(Boolean).join(" · "))}</div>
     <div class="small">${d.reg ? `Reg. No: <span class="mono">${esc(d.reg)}</span> ${esc(d.council)}` : `<span style="color:var(--red)">No registration number</span>`}</div>
-    <div class="imgs">${d.signature ? `<img src="${d.signature}" alt="signature" />` : `<span class="small" style="color:var(--amber)">No signature</span>`}${d.stamp ? `<img src="${d.stamp}" alt="stamp" />` : ""}</div>
-    <div class="row"><button class="btn sm" data-d-edit="${d.id}">Edit</button><button class="btn sm danger" data-d-del="${d.id}">Delete</button></div></div>`).join("");
+    <div class="imgs">${d.signature ? `<img src="${esc(d.signature)}" alt="signature" />` : `<span class="small" style="color:var(--amber)">No signature</span>`}${d.stamp ? `<img src="${esc(d.stamp)}" alt="stamp" />` : ""}</div>
+    <div class="row"><button type="button" class="btn sm" data-d-edit="${esc(d.id)}">Edit</button><button type="button" class="btn sm danger" data-d-del="${esc(d.id)}">Delete</button></div></div>`).join("");
 }
 function setSlot(which, src) {
   D[which] = src || "";
-  $(`#d-${which === "signature" ? "sig" : "stamp"}-pv`).innerHTML = src ? `<img src="${src}" alt="" />` : "None";
+  $(`#d-${which === "signature" ? "sig" : "stamp"}-pv`).innerHTML = src ? `<img src="${esc(src)}" alt="" />` : "None";
 }
 function resetDoctorForm() {
   D.editId = null; ["name", "qual", "reg", "council", "spec", "contact"].forEach(k => $("#d-" + k).value = "");
   setSlot("signature", ""); setSlot("stamp", ""); $("#d-form-title").textContent = "Add doctor"; $("#d-cancel").classList.add("hidden");
 }
 async function processSignatureImage(file, whiten) {
-  const img = await loadImg(await readFile(file));
+  const img = await rawImg(await readFile(file));
   const s = Math.min(1, 900 / img.naturalWidth); const c = document.createElement("canvas");
   c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
   const x = c.getContext("2d"); x.drawImage(img, 0, 0, c.width, c.height);
@@ -1239,7 +1278,7 @@ $("#d-file").onchange = async e => { const f = e.target.files[0]; e.target.value
 $("#d-sig-draw").onclick = () => {
   const m = document.createElement("div"); m.className = "modal";
   m.innerHTML = `<div class="card"><div class="card-h"><h3>Draw signature</h3></div><canvas class="sigpad" width="1000" height="320"></canvas>
-    <div class="row" style="margin-top:10px"><button class="btn" data-a="clear">Clear</button><span style="flex:1"></span><button class="btn ghost" data-a="cancel">Cancel</button><button class="btn primary" data-a="use">Use signature</button></div></div>`;
+    <div class="row" style="margin-top:10px"><button type="button" class="btn" data-a="clear">Clear</button><span style="flex:1"></span><button type="button" class="btn ghost" data-a="cancel">Cancel</button><button type="button" class="btn primary" data-a="use">Use signature</button></div></div>`;
   document.body.appendChild(m);
   const c = m.querySelector("canvas"), x = c.getContext("2d"); x.lineWidth = 5; x.lineCap = x.lineJoin = "round"; x.strokeStyle = "#1a2a7a";
   let down = false, drawn = false;
@@ -1279,7 +1318,7 @@ function renderMeds() {
   const list = S.medicines.filter(m => !q || (m.name + " " + m.strength).toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
   $("#m-count").textContent = `${S.medicines.length} medicines`;
   $("#m-body").innerHTML = list.slice(0, 500).map(m => `<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.strength)}</td><td>${esc(m.form)}</td><td>${esc(m.dose)}</td><td>${esc(m.timing)}</td><td>${esc(m.duration)}</td>
-    <td style="white-space:nowrap"><button class="btn sm" data-m-edit="${m.id}">Edit</button> <button class="x" data-m-del="${m.id}">×</button></td></tr>`).join("")
+    <td style="white-space:nowrap"><button type="button" class="btn sm" data-m-edit="${esc(m.id)}">Edit</button> <button type="button" class="x" data-m-del="${esc(m.id)}">×</button></td></tr>`).join("")
     + (list.length > 500 ? `<tr><td colspan="7" class="muted small">Showing 500 of ${list.length}. Search to narrow down.</td></tr>` : "");
 }
 $("#m-search").oninput = renderMeds;
@@ -1289,9 +1328,13 @@ function upsertMed(m) {
   if (i >= 0) { S.medicines[i] = { ...S.medicines[i], ...m, id: S.medicines[i].id }; return false; }
   S.medicines.push({ id: uid(), ...m }); return true;
 }
+const M = { editId: null };
 $("#m-add").onclick = () => {
   const m = { name: $("#m-name").value.trim(), strength: $("#m-strength").value.trim(), form: $("#m-form-i").value.trim(), dose: $("#m-dose").value.trim(), timing: $("#m-timing").value, duration: $("#m-dur").value.trim(), notes: "" };
   if (!m.name) return toast("Enter a medicine name.", true);
+  const ed = S.medicines.find(x => x.id === M.editId);
+  if (ed) { S.medicines = S.medicines.filter(x => x !== ed); m.notes = ed.notes || ""; }
+  M.editId = null;
   upsertMed(m); save("medicines"); renderMeds(); updateCounts();
   ["#m-name", "#m-strength", "#m-form-i", "#m-dose", "#m-dur"].forEach(s => $(s).value = ""); $("#m-timing").value = ""; $("#m-name").focus(); $("#m-add").textContent = "Add";
 };
@@ -1300,12 +1343,12 @@ $("#m-body").addEventListener("click", e => {
   if (b.dataset.mDel) { S.medicines = S.medicines.filter(m => m.id !== b.dataset.mDel); save("medicines"); renderMeds(); updateCounts(); }
   if (b.dataset.mEdit) { const m = S.medicines.find(x => x.id === b.dataset.mEdit);
     $("#m-name").value = m.name; $("#m-strength").value = m.strength || ""; $("#m-form-i").value = m.form || ""; $("#m-dose").value = m.dose || ""; $("#m-timing").value = m.timing || ""; $("#m-dur").value = m.duration || "";
-    $("#m-add").textContent = "Update"; window.scrollTo({ top: 0, behavior: "smooth" }); }
+    M.editId = m.id; $("#m-add").textContent = "Update"; window.scrollTo({ top: 0, behavior: "smooth" }); }
 });
 $("#m-import").onclick = () => $("#m-file").click();
 $("#m-file").onchange = async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-  const rows = parseCSV((await readFile(f, "text")).replace(/^﻿/, ""));
+  const rows = parseCSV((await readFile(f, "text")).replace(/^\uFEFF/, ""));
   if (!rows.length) return toast("The CSV is empty.", true);
   const head = rows[0].map(h => h.trim().toLowerCase());
   const col = names => head.findIndex(h => names.includes(h));
@@ -1345,12 +1388,24 @@ $("#s-export").onclick = () => {
   const data = { app: "mediseller-rx-studio", version: 1, exportedAt: new Date().toISOString() }; KEYS.forEach(k => data[k] = S[k]);
   downloadBlob(new Blob([JSON.stringify(data)], { type: "application/json" }), `rx-studio-backup-${todayISO()}.json`);
 };
+const isImg = v => v === "" || v === undefined || (typeof v === "string" && /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(v));
+function validateBackup(data) {
+  const arr = k => { if (data[k] !== undefined && !Array.isArray(data[k])) throw new Error(`Backup is damaged: "${k}" is not a list.`); };
+  ["templates", "doctors", "medicines", "history"].forEach(arr);
+  (data.templates || []).forEach(t => {
+    if (!t || !isImg(t.img) || !t.img || !Array.isArray(t.fields) || !(t.wPt > 0) || !(t.hPt > 0)) throw new Error("Backup is damaged: a template is invalid.");
+    t.fields = t.fields.filter(f => f && FIELDS[f.key]).map(f => ({ ...newField(f.key), ...f, x: clamp(+f.x || 0, 0, 1), y: clamp(+f.y || 0, 0, 1), w: clamp(+f.w || .1, .005, 1), h: clamp(+f.h || .02, .005, 1), size: clamp(+f.size || 10, 5, 40) }));
+  });
+  if ((data.templates || []).length > MAX_TEMPLATES) throw new Error(`Backup has more than ${MAX_TEMPLATES} templates.`);
+  (data.doctors || []).forEach(d => { if (!d || !d.name || !isImg(d.signature) || !isImg(d.stamp)) throw new Error("Backup is damaged: a doctor record is invalid."); });
+}
 $("#s-import").onclick = () => $("#s-file").click();
 $("#s-file").onchange = async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
   try {
     const data = JSON.parse(await readFile(f, "text"));
     if (data.app !== "mediseller-rx-studio") throw new Error("This is not an Rx Studio backup file.");
+    validateBackup(data);
     if (!confirm("Importing replaces ALL current data on this device. Continue?")) return;
     for (const k of KEYS) if (data[k] !== undefined) { S[k] = k === "settings" ? { ...DEFAULT_SETTINGS, ...data[k] } : data[k]; await save(k); }
     toast("Backup restored"); boot();

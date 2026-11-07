@@ -1,0 +1,7 @@
+{
+  "name": "rx-studio-tests",
+  "private": true,
+  "description": "End-to-end mock tests for prescription.html (Rx Studio)",
+  "scripts": { "test": "node rx-studio.mock-test.js" },
+  "devDependencies": { "jspdf": "2.5.1", "pdfjs-dist": "3.11.174" }
+}
