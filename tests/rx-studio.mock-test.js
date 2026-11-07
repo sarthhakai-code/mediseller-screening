@@ -18,8 +18,8 @@
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
-let chromium;
-try { ({ chromium } = require("playwright")); } catch { console.error("Playwright not found. Run: npm i -D playwright && npx playwright install chromium"); process.exit(2); }
+let chromium, devices;
+try { ({ chromium, devices } = require("playwright")); } catch { console.error("Playwright not found. Run: npm i -D playwright && npx playwright install chromium"); process.exit(2); }
 
 const ROOT = path.resolve(__dirname, "..");
 const NM = path.join(__dirname, "node_modules");
@@ -71,8 +71,8 @@ function mockRx(i) {
 }
 
 /* ---------- page helpers ---------- */
-async function newPage(viewport = { width: 1400, height: 1000 }) {
-  ctx = await browser.newContext({ acceptDownloads: true, viewport });
+async function newPage(viewport = { width: 1400, height: 1000 }, device) {
+  ctx = await browser.newContext(device ? { ...devices[device], acceptDownloads: true } : { acceptDownloads: true, viewport });
   await ctx.route(/cdnjs\.cloudflare\.com/, r => {
     const u = r.request().url();
     const f = u.includes("pdf.worker") ? "pdfjs-dist/build/pdf.worker.min.js" : u.includes("pdf.min") ? "pdfjs-dist/build/pdf.min.js" : "jspdf/dist/jspdf.umd.min.js";
@@ -487,6 +487,108 @@ async function fillRx(data, tplId, docId) {
     await tab("templates"); await page.click("[data-t-edit]"); await sleep(300);
     await page.screenshot({ path: path.join(OUT, "mobile-editor.png") }); const w = await page.evaluate(() => document.documentElement.scrollWidth); if (w > 390) bad.push(`editor:${w}`);
     eq(bad, [], "overflowing tabs"); await page.context().close(); page = desktop; ctx = mctx;
+  });
+
+  console.log("\n14. Phone experience (Pixel 7, touch)");
+  {
+    const desktop = page, dctx = ctx;
+    page = await newPage(null, "Pixel 7");
+    const shot = n => page.screenshot({ path: path.join(OUT, `phone-${n}.png`) });
+    await page.tap("#ob-demo"); await page.waitForFunction(() => S.templates.length && S.doctors.length && S.medicines.length);
+    await test("phone: every field is >=16px (no iOS zoom), every tap target >=40px, tabs on one scrollable row", async () => {
+      const r = await page.evaluate(() => {
+        const vis = e => e.offsetParent !== null && getComputedStyle(e).visibility !== "hidden";
+        const small = [...document.querySelectorAll("button,input,select,textarea,a")].filter(vis).filter(e => e.type !== "checkbox" && e.getBoundingClientRect().height < 40).map(e => e.id || e.className || e.tagName);
+        const tinyFont = [...document.querySelectorAll("input,select,textarea")].filter(vis).filter(e => parseFloat(getComputedStyle(e).fontSize) < 16).map(e => e.id || e.className);
+        const nav = document.querySelector("#tabs");
+        return { small, tinyFont, navH: nav.offsetHeight, navScrolls: nav.scrollWidth > nav.clientWidth, sticky: getComputedStyle(nav).position, overflow: document.documentElement.scrollWidth - innerWidth };
+      });
+      eq(r.tinyFont, [], "fields under 16px"); eq(r.small, [], "tap targets under 40px");
+      ok(r.navH < 60 && r.sticky === "sticky", `tab bar single sticky row (h=${r.navH})`); eq(r.overflow, 0, "horizontal overflow");
+      await shot("generate");
+    });
+    await test("phone: sticky action bar on Generate only; preview is a sheet that renders on open", async () => {
+      ok(await page.isVisible("#mbar"), "bar visible"); ok(await page.isHidden("#g-download"), "in-card Download hidden (bar has it)");
+      ok(await page.evaluate(() => document.querySelector("#g-canvas").classList.contains("hidden")), "preview not rendered while closed (saves battery)");
+      await page.tap("#mb-preview"); await page.waitForFunction(() => !document.querySelector("#g-canvas").classList.contains("hidden"));
+      const box = await page.locator("#g-canvas").boundingBox(); ok(box.width > 300 && box.y < 200, "full-width preview near the top");
+      eq(await page.textContent("#mb-preview-lbl"), "Edit");
+      await page.tap("#pv-zoom"); ok((await page.locator("#g-canvas").boundingBox()).width > 700, "zoomed in"); await shot("preview-sheet");
+      for (const t of ["history", "templates"]) { await page.evaluate(() => closePreview()); await tab(t); ok(await page.isHidden("#mbar"), `bar hidden on ${t}`); }
+      await tab("generate");
+    });
+    await test("phone: Android back button closes the preview instead of leaving the app", async () => {
+      await page.tap("#mb-preview"); await page.waitForFunction(() => document.body.classList.contains("pv-open"));
+      await page.goBack(); await page.waitForFunction(() => !document.body.classList.contains("pv-open"));
+      ok(page.url().endsWith(APP), "still on the app");
+    });
+    await test("phone: badge counts problems, then turns into a tick when ready", async () => {
+      await page.evaluate(() => fillForm({ rxId: G.rxId, templateId: S.templates[0].id, doctorId: S.doctors[0].id, date: todayISO(), mode: "Video" }));
+      await page.waitForFunction(() => document.querySelector("#mb-badge").textContent === "4"); // name, age, gender, medicine
+      await page.fill("#g-name", "Meera Nair"); await page.fill("#g-age", "29"); await page.selectOption("#g-gender", "Female");
+      await page.waitForFunction(() => document.querySelector("#mb-badge").textContent === "1");
+    });
+    await test("phone: medicine autocomplete shows strengths, fills the row on tap and moves to Dose", async () => {
+      const name = page.locator("#g-meds .m-name").first(); await name.tap(); await page.keyboard.type("para");
+      await page.waitForSelector(".ac [data-ac]"); const opts = await page.$$eval(".ac [data-ac]", b => b.map(x => x.textContent));
+      ok(opts.length >= 2 && opts.some(o => o.includes("650 mg")) && opts.some(o => o.includes("500 mg")), "strength shown: " + opts.join(" | "));
+      await shot("autocomplete");
+      const i = opts.findIndex(o => o.includes("500 mg")); await page.tap(`.ac [data-ac="${i}"]`);
+      eq(await page.evaluate(() => { const r = document.querySelector("#g-meds .medrow"); return [r.querySelector(".m-name").value, r.querySelector(".m-strength").value, r.querySelector(".m-form").value, document.activeElement.className]; }),
+        ["Paracetamol", "500 mg", "Tab", "m-dose"]);
+      ok(await page.isHidden(".ac"), "list closed");
+      await page.fill("#g-meds .m-dose", "1-0-1");
+      await page.waitForFunction(() => document.querySelector("#mb-badge").textContent === "✓");
+    });
+    await test("phone: Share without the consultation tick scrolls the tick into view", async () => {
+      await page.evaluate(() => scrollTo(0, 0)); await page.tap("#mb-share"); await sleep(700);
+      ok((await page.textContent("#toast")).includes("confirmation"), "toast");
+      const b = await page.locator("#g-attest").boundingBox(); const vh = page.viewportSize().height;
+      ok(b.y > 0 && b.y < vh - 80, `tick visible above the bar (y=${Math.round(b.y)})`);
+      eq(await page.evaluate(() => document.activeElement.id), "g-attest");
+    });
+    await test("phone: missing field error jumps to that field", async () => {
+      await page.fill("#g-age", ""); await page.evaluate(() => scrollTo(0, document.body.scrollHeight)); await page.tap("#mb-pdf"); await sleep(700);
+      eq(await page.evaluate(() => document.activeElement.id), "g-age"); await page.fill("#g-age", "29");
+    });
+    await test("phone: PDF button in the bar downloads a valid prescription", async () => {
+      await page.check("#g-attest"); const { buf } = await download("#mb-pdf"); const info = await inspectPdf(buf); eq(info.pages, 1);
+    });
+    await test("phone: history and medicine tables become cards with no sideways scrolling", async () => {
+      for (const t of ["history", "medicines"]) {
+        await tab(t); await sleep(150);
+        const r = await page.evaluate(sel => { const tr = document.querySelector(sel + " tr"); return { disp: tr && getComputedStyle(tr).display, thead: getComputedStyle(document.querySelector(sel).closest("table").tHead).display, over: document.documentElement.scrollWidth - innerWidth }; }, t === "history" ? "#h-body" : "#m-body");
+        eq([r.disp, r.thead, r.over], ["block", "none", 0], t); await shot(t);
+      }
+    });
+    await test("phone: template editor zooms to 200%, tap selects a field, toolbar edits it, tap outside deselects", async () => {
+      await tab("templates"); await page.tap("[data-t-edit]"); await sleep(300);
+      eq(await page.inputValue("#ed-zoom"), "2", "default zoom on phones");
+      ok(await page.evaluate(() => { const s = document.querySelector("#ed-scroll"); return s.scrollWidth > s.clientWidth; }), "zoomed stage pans inside its frame");
+      ok(await page.isHidden("#ed-mtool"), "toolbar hidden with nothing selected");
+      const fb = page.locator('.fbox[data-i="0"]'); await fb.scrollIntoViewIfNeeded(); await fb.tap();
+      ok(await page.isVisible("#ed-mtool"), "toolbar shown"); const s0 = await page.evaluate(() => E.tpl.fields[0].size);
+      await page.tap('[data-mt="bigger"]'); await page.tap('[data-mt="bigger"]'); await page.tap('[data-mt="align"]'); await page.tap('[data-mt="bold"]');
+      const f = await page.evaluate(() => E.tpl.fields[0]); eq([f.size, f.align, f.bold], [s0 + 1, "center", false], "toolbar edits");
+      ok((await page.textContent("#mt-lbl")).includes(`${s0 + 1}pt`), "label shows size");
+      await shot("editor");
+      await page.tap('[data-mt="done"]'); ok(await page.isHidden("#ed-mtool"), "deselected");
+      await fb.tap(); ok(await page.isVisible("#ed-mtool"), "reselected");
+      const pt = await page.evaluate(() => { const r = document.querySelector("#ed-scroll").getBoundingClientRect();
+        for (let y = Math.max(r.top, 0) + 5; y < Math.min(r.bottom, innerHeight - 90); y += 7) for (let x = r.left + 5; x < r.right - 5; x += 7) { const el = document.elementFromPoint(x, y); if (el && el.id === "ed-stage") return [x, y]; } return null; });
+      ok(pt, "found blank spot"); await page.touchscreen.tap(pt[0], pt[1]); await sleep(150);
+      ok(await page.isHidden("#ed-mtool"), "tap on blank template deselects");
+    });
+    await test("phone: still no horizontal overflow on any tab after all interactions", async () => {
+      const bad = []; for (const t of ["generate", "history", "templates", "doctors", "medicines", "settings"]) { await tab(t); await sleep(100); const o = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth); if (o > 0) bad.push(`${t}:+${o}`); }
+      eq(bad, []);
+    });
+    await page.context().close(); page = desktop; ctx = dctx;
+  }
+  await test("desktop: phone-only UI stays hidden", async () => {
+    eq(await page.evaluate(() => ["#mbar", "#ed-mtool", ".pv-sheet-h", ".ml"].map(s => getComputedStyle(document.querySelector(s)).display)), ["none", "none", "none", "none"]);
+    ok(await page.isHidden("#pv-close"), "sheet controls hidden");
+    ok(await page.isVisible("#g-download"), "desktop Download button visible");
   });
 
   await test("no uncaught JavaScript errors during the whole run", async () => eq(pageErrors, []));

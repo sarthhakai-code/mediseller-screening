@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#15294B" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Rx Studio" />
+<meta name="format-detection" content="telephone=no" />
 <title>Rx Studio · Mediseller</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -117,8 +123,10 @@
   .drop{border:2px dashed #C8D5EA;border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;background:#FAFCFF;}
   .drop.over{border-color:var(--blue);background:var(--soft);}
   .editor{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;}
-  .stage{position:relative;user-select:none;touch-action:none;box-shadow:0 2px 14px rgba(21,41,75,.14);background:#fff;}
+  .stage-scroll{overflow:auto;max-height:82vh;border-radius:4px;-webkit-overflow-scrolling:touch;}
+  .stage{position:relative;user-select:none;touch-action:pan-x pan-y;box-shadow:0 2px 14px rgba(21,41,75,.14);background:#fff;}
   .stage img{width:100%;display:block;pointer-events:none;}
+  .fbox{touch-action:none;}
   .fbox{position:absolute;border:1.5px solid rgba(31,87,181,.85);background:rgba(31,87,181,.10);cursor:move;
     font:600 10px "IBM Plex Mono",monospace;color:var(--blue-deep);overflow:hidden;padding:1px 4px;line-height:1.3;}
   .fbox.img{border-color:rgba(200,16,46,.85);background:rgba(200,16,46,.08);color:var(--red);}
@@ -151,18 +159,99 @@
   .modal .card{max-width:560px;width:100%;margin:0;}
   footer.foot{margin-top:30px;font-size:11px;color:var(--muted);text-align:center;}
 
+  /* shared mobile helpers (hidden on desktop) */
+  button,.btn,a,label,select,input,textarea{touch-action:manipulation;}
+  .mobile-only,.mbar,.mtool{display:none;}
+  .mf{display:block;min-width:0;position:relative;}
+  .ml{display:none;}
+  .ac{position:absolute;left:0;right:0;top:100%;z-index:30;background:#fff;border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 10px 28px rgba(21,41,75,.18);margin-top:4px;max-height:300px;overflow:auto;-webkit-overflow-scrolling:touch;}
+  .ac button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:none;
+    padding:11px 12px;font:400 14px "IBM Plex Sans",sans-serif;color:var(--ink);cursor:pointer;border-bottom:1px solid var(--line);}
+  .ac button:last-child{border-bottom:none;}
+  .ac button.on,.ac button:hover{background:var(--soft);}
+  .ac b{font-weight:600;color:var(--navy);}
+  .ac .s{color:var(--muted);font-size:12px;white-space:nowrap;}
+  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;
+    font:600 11px "IBM Plex Mono",monospace;background:var(--red);color:#fff;}
+  .badge.warn{background:var(--amber);} .badge.ok{background:var(--green);} .badge:empty{display:none;}
+
   @media (max-width:1000px){
     .gen-grid,.editor{grid-template-columns:1fr;}
     .sticky{position:static;}
+    /* iOS zooms into any field under 16px: keep form controls at 16px on touch-sized screens */
+    input,select,textarea{font-size:16px;min-height:44px;}
+    input[type=checkbox]{min-height:0;width:20px;height:20px;}
+    .medrow input,.medrow select{font-size:16px;padding:9px 10px;}
+    .btn{min-height:44px;}
+    .btn.sm{min-height:40px;}
+    .x{min-width:40px;min-height:40px;}
+    .palette button{padding:8px 12px;font-size:13px;}
+    nav.tabs{position:sticky;top:0;z-index:40;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -18px 14px;padding:8px 18px;
+      background:rgba(244,247,252,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+    nav.tabs::-webkit-scrollbar{display:none;}
+    nav.tabs button{flex:none;min-height:40px;}
+    .top{border-bottom:none;padding-bottom:4px;}
+    /* generate: sticky action bar + full-screen preview sheet */
+    #tab-generate{padding-bottom:76px;}
+    .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:85;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(255,255,255,.97);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(21,41,75,.08);}
+    .mbar .btn{flex:1;justify-content:center;font-size:15px;}
+    #g-download,#g-share{display:none;}
+    body[data-tab=generate] .toast{bottom:calc(84px + env(safe-area-inset-bottom));}
+    body[data-tab=templates] .toast{bottom:calc(76px + env(safe-area-inset-bottom));}
+    .pv-col{position:fixed;inset:0;z-index:80;background:var(--paper);display:none;flex-direction:column;}
+    body.pv-open .pv-col{display:flex;}
+    body.pv-open{overflow:hidden;}
+    .pv-col>.card{flex:1;margin:0;border:none;border-radius:0;overflow:auto;-webkit-overflow-scrolling:touch;
+      padding:calc(10px + env(safe-area-inset-top)) 12px calc(90px + env(safe-area-inset-bottom));}
+    .pv-col .mobile-only{display:flex;}
+    .pv-sheet-h{gap:8px;align-items:center;margin-bottom:10px;}
+    .pv-col.zoom .pv-wrap{display:block;overflow:auto;}
+    .pv-col.zoom .pv-wrap canvas{width:220%;max-width:none;}
+    /* template editor */
+    .stage-scroll{max-height:68vh;}
+    .mtool.show{display:flex;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:70;gap:6px;align-items:center;
+      background:var(--navy);color:#fff;border-radius:14px;padding:6px 8px;box-shadow:0 8px 24px rgba(21,41,75,.3);}
+    .mtool .lbl{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px;}
+    .mtool button{min-width:42px;min-height:40px;border:none;border-radius:9px;background:rgba(255,255,255,.12);color:#fff;font:600 14px "IBM Plex Sans",sans-serif;}
+    .mtool button.del{background:var(--red);}
+    #tpl-editor-view{padding-bottom:70px;}
+  }
+  @media (pointer:coarse){
+    .fbox .rz{width:22px;height:22px;}
+    .fbox{border-width:2px;}
   }
   @media (max-width:640px){
-    .wrap{padding:14px 12px 70px;}
+    body{font-size:15px;}
+    .wrap{padding:calc(10px + env(safe-area-inset-top)) 12px 24px;}
+    nav.tabs{margin:0 -12px 12px;padding:8px 12px;}
+    #hdr-storage,.byline,footer.foot{display:none;}
+    h3{font-size:18px;}
+    .card{padding:14px;border-radius:12px;margin-bottom:12px;}
     .g2,.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr));}
-    .medrow{grid-template-columns:repeat(2,minmax(0,1fr));position:relative;padding-right:30px;}
-    .medrow .m-name,.medrow .notes{grid-column:1/-1;}
-    .medrow .x{position:absolute;right:0;top:10px;}
+    .g2>label.f,.g3>label.f{grid-column:1/-1;}
+    .span3{grid-column:1/-1;}
+    .medrow{grid-template-columns:repeat(2,minmax(0,1fr));position:relative;padding:14px 46px 14px 0;gap:8px;}
+    .medrow .mf-name,.medrow .mf-notes{grid-column:1/-1;}
+    .medrow .x{position:absolute;right:0;top:30px;}
+    .ml{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:3px;}
     .medhead{display:none;}
-    .byline{display:none;}
+    .attest{font-size:14px;}
+    .tpl-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .doc-grid{grid-template-columns:1fr;}
+    #h-search,#m-search{width:100%!important;max-width:none!important;}
+    #ed-name{width:100%!important;}
+    .editor .note{display:none;}
+    /* tables become cards */
+    table.cards thead{display:none;}
+    table.cards,table.cards tbody,table.cards tr,table.cards td{display:block;width:100%;}
+    table.cards tr{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff;}
+    table.cards td{border:none;padding:3px 0;display:flex;gap:12px;justify-content:space-between;text-align:right;}
+    table.cards td[data-label]:empty{display:none;}
+    table.cards td[data-label]::before{content:attr(data-label);color:var(--muted);font-size:12px;flex:none;text-align:left;}
+    table.cards td.lead{display:block;text-align:left;font-size:15px;padding-bottom:4px;}
+    table.cards td.act{justify-content:flex-start;flex-wrap:wrap;gap:6px;padding-top:8px;text-align:left;}
     .medform{grid-template-columns:repeat(2,minmax(0,1fr));} .medform label:first-child{grid-column:1/-1;}
   }
 </style>
@@ -218,12 +307,12 @@
         <div class="card">
           <h3>Patient</h3>
           <div class="grid g4">
-            <label class="f span2">Full name <span class="req">*</span><input type="text" id="g-name" autocomplete="off" /></label>
-            <label class="f">Age <span class="req">*</span><input type="text" id="g-age" inputmode="numeric" /></label>
+            <label class="f span2">Full name <span class="req">*</span><input type="text" id="g-name" autocomplete="off" autocapitalize="words" enterkeyhint="next" /></label>
+            <label class="f">Age <span class="req">*</span><input type="text" id="g-age" inputmode="decimal" enterkeyhint="next" /></label>
             <label class="f">Unit<select id="g-ageunit"><option value="Y">Years</option><option value="M">Months</option><option value="D">Days</option></select></label>
             <label class="f">Gender <span class="req">*</span><select id="g-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
-            <label class="f">Phone<input type="text" id="g-phone" inputmode="tel" placeholder="10-digit mobile" /></label>
-            <label class="f span2">Email<input id="g-email" type="email" /></label>
+            <label class="f">Phone<input type="tel" id="g-phone" autocomplete="off" placeholder="10-digit mobile" enterkeyhint="next" /></label>
+            <label class="f span2">Email<input id="g-email" type="email" autocapitalize="off" autocomplete="off" enterkeyhint="done" /></label>
           </div>
         </div>
 
@@ -258,13 +347,20 @@
         </div>
       </div>
 
-      <div>
+      <div class="pv-col" id="pv-col">
         <div class="card sticky">
+          <div class="pv-sheet-h mobile-only"><button type="button" class="btn sm" id="pv-close">← Back to form</button><span style="flex:1"></span>
+            <button type="button" class="btn sm" id="pv-zoom">Zoom in</button></div>
           <div class="card-h"><h3>Live preview</h3><span class="muted small" id="g-pv-status"></span></div>
           <div class="pv-wrap"><canvas id="g-canvas" class="hidden"></canvas><div class="pv-empty" id="g-pv-empty">Pick a template to see the preview.</div></div>
           <ul class="warn" id="g-warn"></ul>
         </div>
       </div>
+    </div>
+    <div class="mbar" id="mbar">
+      <button type="button" class="btn" id="mb-preview"><span id="mb-preview-lbl">Preview</span> <span class="badge" id="mb-badge"></span></button>
+      <button type="button" class="btn" id="mb-pdf">⬇ PDF</button>
+      <button type="button" class="btn primary" id="mb-share">Share</button>
     </div>
   </section>
 
@@ -274,7 +370,7 @@
       <div class="card-h"><h3>Generated prescriptions</h3>
         <div class="row"><input type="text" id="h-search" placeholder="Search by name, phone or Rx ID" style="width:260px" />
           <button type="button" class="btn sm" id="h-export">Export CSV</button></div></div>
-      <div class="scroll-x"><table class="list"><thead><tr><th scope="col">Date</th><th scope="col">Rx ID</th><th scope="col">Patient</th><th scope="col">Phone</th><th scope="col">Doctor</th><th scope="col">Medicines</th><th scope="col"></th></tr></thead>
+      <div class="scroll-x"><table class="list cards"><thead><tr><th scope="col">Date</th><th scope="col">Rx ID</th><th scope="col">Patient</th><th scope="col">Phone</th><th scope="col">Doctor</th><th scope="col">Medicines</th><th scope="col"></th></tr></thead>
       <tbody id="h-body"></tbody></table></div>
       <p class="muted small" id="h-empty">No prescriptions yet. The last 100 are kept on this device.</p>
     </div>
@@ -301,10 +397,11 @@
             <input type="text" id="ed-name" style="width:260px;font-weight:600" /></div>
           <div class="row">
             <label class="row small muted"><input type="checkbox" id="ed-overlay" /> Show sample data</label>
+            <label class="row small muted">Zoom <select id="ed-zoom" style="width:auto"><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option><option value="3">300%</option></select></label>
           </div>
         </div>
         <div class="editor">
-          <div><div class="stage" id="ed-stage"><img id="ed-img" alt="template" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" /></div></div>
+          <div><div class="stage-scroll" id="ed-scroll"><div class="stage" id="ed-stage"><img id="ed-img" alt="template" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" /></div></div></div>
           <div>
             <div class="note" style="margin-bottom:12px">Click a field to place it on the template, then drag it into position. Drag the corner square to resize. Use the arrow keys to nudge and Delete to remove. Changes save automatically.</div>
             <h4 style="font-size:14px;margin-bottom:8px">Fields</h4>
@@ -380,7 +477,7 @@
     </div>
     <div class="card">
       <div class="card-h"><input type="text" id="m-search" placeholder="Search medicines" style="max-width:300px" /><span class="muted small" id="m-count"></span></div>
-      <div class="scroll-x"><table class="list"><thead><tr><th scope="col">Name</th><th scope="col">Strength</th><th scope="col">Form</th><th scope="col">Dose</th><th scope="col">Timing</th><th scope="col">Duration</th><th scope="col"></th></tr></thead><tbody id="m-body"></tbody></table></div>
+      <div class="scroll-x"><table class="list cards"><thead><tr><th scope="col">Name</th><th scope="col">Strength</th><th scope="col">Form</th><th scope="col">Dose</th><th scope="col">Timing</th><th scope="col">Duration</th><th scope="col"></th></tr></thead><tbody id="m-body"></tbody></table></div>
     </div>
   </section>
 
@@ -419,12 +516,17 @@
   <footer class="foot">Rx Studio · Powered by Mediseller · Data stays in this browser</footer>
 </div>
 
-<datalist id="dl-meds"></datalist>
 <datalist id="dl-form"><option>Tab</option><option>Cap</option><option>Syp</option><option>Susp</option><option>Inj</option><option>Oint</option><option>Cream</option><option>Gel</option><option>Drops</option><option>Inhaler</option><option>Sachet</option><option>Lotion</option><option>Spray</option><option>Powder</option></datalist>
 <datalist id="dl-dose"><option>1-0-1</option><option>1-0-0</option><option>0-0-1</option><option>0-1-0</option><option>1-1-1</option><option>1-1-1-1</option><option>SOS</option><option>Once a week</option><option>5 ml 1-0-1</option><option>Apply locally</option></datalist>
 <datalist id="dl-dur"><option>1 day</option><option>3 days</option><option>5 days</option><option>7 days</option><option>10 days</option><option>14 days</option><option>1 month</option><option>3 months</option><option>Continue</option></datalist>
 <datalist id="dl-fu"><option>After 3 days</option><option>After 5 days</option><option>After 7 days</option><option>After 2 weeks</option><option>After 1 month</option><option>SOS / if symptoms persist</option></datalist>
 
+<div class="mtool" id="ed-mtool">
+  <span class="lbl" id="mt-lbl"></span>
+  <button type="button" data-mt="smaller" aria-label="Smaller text">A−</button><button type="button" data-mt="bigger" aria-label="Bigger text">A+</button>
+  <button type="button" data-mt="align" aria-label="Change alignment" id="mt-align">⇤</button><button type="button" data-mt="bold" aria-label="Bold">B</button>
+  <button type="button" data-mt="del" class="del" aria-label="Remove field">✕</button><button type="button" data-mt="done" aria-label="Done">✓</button>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -802,6 +904,7 @@ const STARTER_MEDS = [
    ============================================================ */
 function showTab(name) {
   if (E.tpl) closeEditor();
+  closePreview(); document.body.dataset.tab = name;
   $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
   $$(".tab").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + name));
   if (name === "generate") { refreshGenSelects(); schedulePreview(); }
@@ -825,7 +928,6 @@ function updateCounts() {
   $("#ob-tpl").classList.toggle("done", !!S.templates.length);
   $("#ob-doc").classList.toggle("done", !!S.doctors.length);
   $("#ob-med").classList.toggle("done", !!S.medicines.length);
-  $("#dl-meds").innerHTML = S.medicines.map(m => `<option value="${esc(m.name)}">${esc([m.strength, m.form].filter(Boolean).join(" · "))}</option>`).join("");
 }
 
 /* ============================================================
@@ -845,18 +947,59 @@ function refreshGenSelects() {
 }
 function medRowHTML(m = {}) {
   return `<div class="medrow">
-    <input type="text" class="m-name" list="dl-meds" placeholder="Medicine name" value="${esc(m.name)}" autocomplete="off" />
-    <input type="text" class="m-strength" placeholder="Strength" value="${esc(m.strength)}" />
-    <input type="text" class="m-form" list="dl-form" placeholder="Form" value="${esc(m.form)}" />
-    <input type="text" class="m-dose" list="dl-dose" placeholder="Dose" value="${esc(m.dose)}" />
-    <select class="m-timing">${TIMINGS.map(t => `<option ${t === m.timing ? "selected" : ""} value="${esc(t)}">${t || "Timing"}</option>`).join("")}</select>
-    <input type="text" class="m-dur" list="dl-dur" placeholder="Duration" value="${esc(m.duration)}" />
-    <button type="button" class="x" title="Remove" data-rm>×</button>
-    <input type="text" class="notes m-notes" placeholder="Notes / instructions (optional)" value="${esc(m.notes)}" />
+    <label class="mf mf-name"><span class="ml">Medicine</span><input type="text" class="m-name" placeholder="Medicine name" value="${esc(m.name)}" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" /></label>
+    <label class="mf"><span class="ml">Strength</span><input type="text" class="m-strength" placeholder="Strength" value="${esc(m.strength)}" autocomplete="off" /></label>
+    <label class="mf"><span class="ml">Form</span><input type="text" class="m-form" list="dl-form" placeholder="Form" value="${esc(m.form)}" autocomplete="off" /></label>
+    <label class="mf"><span class="ml">Dose</span><input type="text" class="m-dose" list="dl-dose" placeholder="Dose" value="${esc(m.dose)}" autocomplete="off" /></label>
+    <label class="mf"><span class="ml">Timing</span><select class="m-timing">${TIMINGS.map(t => `<option ${t === m.timing ? "selected" : ""} value="${esc(t)}">${t || "Timing"}</option>`).join("")}</select></label>
+    <label class="mf"><span class="ml">Duration</span><input type="text" class="m-dur" list="dl-dur" placeholder="Duration" value="${esc(m.duration)}" autocomplete="off" /></label>
+    <button type="button" class="x" title="Remove medicine" aria-label="Remove medicine" data-rm>×</button>
+    <label class="mf mf-notes notes"><span class="ml">Notes</span><input type="text" class="m-notes" placeholder="Notes / instructions (optional)" value="${esc(m.notes)}" /></label>
   </div>`;
 }
 function addMedRow(m) { $("#g-meds").insertAdjacentHTML("beforeend", medRowHTML(m)); }
-$("#g-addmed").onclick = () => { addMedRow(); $("#g-meds").lastElementChild.querySelector(".m-name").focus(); };
+
+/* Medicine name autocomplete. A custom list instead of <datalist> so it works the same on iOS, Android and desktop,
+   and shows strength/form so "Paracetamol 500" and "Paracetamol 650" can be told apart. */
+const AC = { box: null, input: null, items: [], i: -1 };
+function acClose() { if (AC.box) AC.box.remove(); AC.box = null; AC.input = null; AC.items = []; AC.i = -1; }
+function acOpen(input) {
+  const q = input.value.trim().toLowerCase();
+  if (!q) return acClose();
+  const starts = [], has = [];
+  for (const m of S.medicines) { const n = m.name.toLowerCase(); if (n.startsWith(q)) starts.push(m); else if (n.includes(q)) has.push(m); }
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  AC.items = [...starts.sort(byName), ...has.sort(byName)].slice(0, 8);
+  if (!AC.items.length || (AC.items.length === 1 && AC.items[0].name.toLowerCase() === q && !AC.items[0].strength)) return acClose();
+  if (AC.input !== input) { acClose(); AC.box = document.createElement("div"); AC.box.className = "ac"; AC.box.setAttribute("role", "listbox"); input.parentElement.appendChild(AC.box); AC.input = input; }
+  AC.i = -1;
+  const hl = n => { const i = n.toLowerCase().indexOf(q); return i < 0 ? esc(n) : esc(n.slice(0, i)) + "<b>" + esc(n.slice(i, i + q.length)) + "</b>" + esc(n.slice(i + q.length)); };
+  AC.box.innerHTML = AC.items.map((m, i) => `<button type="button" role="option" data-ac="${i}"><span>${hl(m.name)}</span><span class="s">${esc([m.strength, m.form].filter(Boolean).join(" · "))}</span></button>`).join("");
+}
+function acPick(i) {
+  const m = AC.items[i], input = AC.input; if (!m || !input) return;
+  const row = input.closest(".medrow"), set = (cls, val, force) => { const el = row.querySelector(cls); if (val && (force || !el.value)) el.value = val; };
+  input.value = m.name; set(".m-strength", m.strength, true); set(".m-form", m.form, true);
+  set(".m-dose", m.dose); set(".m-timing", m.timing); set(".m-dur", m.duration); set(".m-notes", m.notes);
+  acClose(); schedulePreview();
+  const next = row.querySelector(".m-dose"); if (next && !next.value) next.focus();
+}
+$("#g-meds").addEventListener("input", e => { if (e.target.matches(".m-name")) acOpen(e.target); });
+$("#g-meds").addEventListener("keydown", e => {
+  if (!AC.box || e.target !== AC.input) return;
+  const btns = [...AC.box.children];
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); AC.i = (AC.i + (e.key === "ArrowDown" ? 1 : -1) + btns.length) % btns.length; btns.forEach((b, k) => b.classList.toggle("on", k === AC.i)); btns[AC.i].scrollIntoView({ block: "nearest" }); }
+  else if (e.key === "Enter" && AC.i >= 0) { e.preventDefault(); acPick(AC.i); }
+  else if (e.key === "Escape") acClose();
+});
+// pointerdown (not click) so the pick happens before the input loses focus and the keyboard re-layouts the page
+document.addEventListener("pointerdown", e => {
+  const b = e.target.closest(".ac [data-ac]");
+  if (b) { e.preventDefault(); acPick(+b.dataset.ac); return; }
+  if (AC.box && e.target !== AC.input) acClose();
+});
+$("#g-meds").addEventListener("focusout", e => { if (e.target === AC.input) setTimeout(() => { if (AC.input && document.activeElement !== AC.input) acClose(); }, 150); });
+$("#g-addmed").onclick = () => { addMedRow(); const inp = $("#g-meds").lastElementChild.querySelector(".m-name"); inp.focus({ preventScroll: true }); inp.scrollIntoView({ block: "center", behavior: "smooth" }); };
 $("#g-meds").addEventListener("click", e => {
   if (e.target.matches("[data-rm]")) { e.target.closest(".medrow").remove(); if (!$("#g-meds").children.length) addMedRow(); schedulePreview(); }
 });
@@ -901,10 +1044,14 @@ function newPrescription() {
 $("#g-new").onclick = () => { newPrescription(); $("#g-name").focus(); toast("New prescription started"); };
 
 let renderSeq = 0;
+const compactMQ = matchMedia("(max-width:1000px)");
+const previewHidden = () => compactMQ.matches && !document.body.classList.contains("pv-open");
 async function updatePreview() {
   const seq = ++renderSeq;
   const d = collect(), tpl = S.templates.find(t => t.id === d.templateId), doc = S.doctors.find(x => x.id === d.doctorId);
   const cv = $("#g-canvas"), empty = $("#g-pv-empty");
+  // on phones the preview is a closed sheet most of the time: skip the full-page canvas render, keep the checks
+  if (previewHidden()) { renderWarnings(d, tpl, doc, []); return; }
   if (!tpl) { cv.classList.add("hidden"); empty.classList.remove("hidden"); empty.textContent = S.templates.length ? "Pick a template to see the preview." : "Upload a template first (Templates tab)."; renderWarnings(d, null, doc, []); return; }
   $("#g-pv-status").textContent = "Rendering…";
   try {
@@ -961,13 +1108,44 @@ function renderWarnings(d, tpl, doc, renderWarns) {
   G.lastWarnings = renderWarns;
   const items = [...errs.map(t => `<li class="err">${esc(t)}</li>`), ...[...warns, ...renderWarns].map(t => `<li>${esc(t)}</li>`)];
   $("#g-warn").innerHTML = items.length ? items.join("") : `<li class="ok">Ready to generate.</li>`;
+  const nw = warns.length + renderWarns.length, bd = $("#mb-badge");
+  bd.textContent = errs.length ? errs.length : nw ? nw : "✓"; bd.className = "badge" + (errs.length ? "" : nw ? " warn" : " ok");
+  bd.title = errs.length ? `${errs.length} thing(s) to fix` : nw ? `${nw} warning(s)` : "Ready";
+}
+function openPreview() {
+  if (document.body.classList.contains("pv-open")) return;
+  document.body.classList.add("pv-open"); $("#mb-preview-lbl").textContent = "Edit";
+  history.pushState({ rxPreview: 1 }, ""); updatePreview();
+}
+function closePreview(fromPop) {
+  if (!document.body.classList.contains("pv-open")) return;
+  document.body.classList.remove("pv-open"); $("#pv-col").classList.remove("zoom"); $("#pv-zoom").textContent = "Zoom in"; $("#mb-preview-lbl").textContent = "Preview";
+  if (!fromPop && history.state && history.state.rxPreview) history.back();
+}
+window.addEventListener("popstate", () => closePreview(true)); // Android back button closes the sheet instead of leaving the app
+compactMQ.addEventListener("change", () => { if (!compactMQ.matches) closePreview(); schedulePreview(); });
+$("#mb-preview").onclick = () => document.body.classList.contains("pv-open") ? closePreview() : openPreview();
+$("#pv-close").onclick = () => closePreview();
+$("#pv-zoom").onclick = () => { const z = $("#pv-col").classList.toggle("zoom"); $("#pv-zoom").textContent = z ? "Fit width" : "Zoom in"; };
+$("#mb-pdf").onclick = () => $("#g-download").click();   // same click task, so share/download keep the user activation
+$("#mb-share").onclick = () => $("#g-share").click();
+const FIELD_FOR_ERR = [[/template/i, "#g-tpl"], [/doctor\b|registration/i, "#g-doc"], [/name/i, "#g-name"], [/age/i, "#g-age"], [/date/i, "#g-date"], [/gender/i, "#g-gender"], [/medicine/i, "#g-meds .m-name"]];
+function focusField(sel) {
+  const el = $(sel); if (!el) return;
+  closePreview();
+  el.scrollIntoView({ block: "center", behavior: "smooth" });
+  setTimeout(() => el.focus({ preventScroll: true }), 250);
 }
 
 async function finalize() {
   const d = collect(), tpl = S.templates.find(t => t.id === d.templateId), doc = S.doctors.find(x => x.id === d.doctorId);
   const { errs } = problems(d, tpl, doc);
-  if (errs.length) { toast(errs[0], true); renderWarnings(d, tpl, doc, G.lastWarnings); return null; }
-  if (!$("#g-attest").checked) { toast("Tick the consultation confirmation first.", true); $("#g-attest").focus(); return null; }
+  if (errs.length) {
+    toast(errs[0], true); renderWarnings(d, tpl, doc, G.lastWarnings);
+    const hit = FIELD_FOR_ERR.find(([re]) => re.test(errs[0])); if (hit) focusField(hit[1]);
+    return null;
+  }
+  if (!$("#g-attest").checked) { toast("Tick the consultation confirmation first.", true); focusField("#g-attest"); return null; }
   if (!window.jspdf) { toast("PDF engine failed to load. Check your internet connection.", true); return null; }
   const out = await buildPDF(tpl, doc, d);
   if (out.warnings.length && !confirm("Some text was too long for its box and may be cut off:\n\n• " + out.warnings.join("\n• ") + "\n\nGenerate anyway?")) return null;
@@ -1072,11 +1250,11 @@ function renderHistory() {
   const rows = S.history.filter(h => !q || [h.id, h.data.patient.name, h.data.patient.phone, h.doctorName].join(" ").toLowerCase().includes(q));
   $("#h-empty").classList.toggle("hidden", !!S.history.length);
   $("#h-body").innerHTML = rows.map(h => `<tr>
-    <td class="mono small">${esc(fmtDate(h.data.date))}</td><td class="mono small">${esc(h.id)}${h.versions > 1 ? ` <span class="chip" title="Re-issued after edits">v${h.versions}</span>` : ""}</td>
-    <td><strong>${esc(h.data.patient.name)}</strong> <span class="muted small">${esc(h.data.patient.age)}${esc(AGEU[h.data.patient.ageUnit] || "")} ${esc((h.data.patient.gender || "")[0] || "")}</span></td>
-    <td class="small">${esc(h.data.patient.phone)}</td><td class="small">${esc(h.doctorName)}</td>
-    <td class="small muted">${esc(h.data.meds.map(m => m.name).join(", ").slice(0, 80))}</td>
-    <td style="white-space:nowrap"><button type="button" class="btn sm" data-h-pdf="${esc(h.id)}">PDF</button> <button type="button" class="btn sm" data-h-open="${esc(h.id)}">Open</button> <button type="button" class="btn sm" data-h-copy="${esc(h.id)}" title="New prescription with the same details">Repeat</button> <button type="button" class="x" data-h-del="${esc(h.id)}" title="Delete">×</button></td></tr>`).join("");
+    <td class="mono small" data-label="Date">${esc(fmtDate(h.data.date))}</td><td class="mono small" data-label="Rx ID">${esc(h.id)}${h.versions > 1 ? ` <span class="chip" title="Re-issued after edits">v${h.versions}</span>` : ""}</td>
+    <td class="lead"><strong>${esc(h.data.patient.name)}</strong> <span class="muted small">${esc(h.data.patient.age)}${esc(AGEU[h.data.patient.ageUnit] || "")} ${esc((h.data.patient.gender || "")[0] || "")}</span></td>
+    <td class="small" data-label="Phone">${esc(h.data.patient.phone)}</td><td class="small" data-label="Doctor">${esc(h.doctorName)}</td>
+    <td class="small muted" data-label="Medicines">${esc(h.data.meds.map(m => m.name).join(", ").slice(0, 80))}</td>
+    <td class="act" style="white-space:nowrap"><button type="button" class="btn sm" data-h-pdf="${esc(h.id)}">PDF</button> <button type="button" class="btn sm" data-h-open="${esc(h.id)}">Open</button> <button type="button" class="btn sm" data-h-copy="${esc(h.id)}" title="New prescription with the same details">Repeat</button> <button type="button" class="x" data-h-del="${esc(h.id)}" title="Delete">×</button></td></tr>`).join("");
 }
 $("#h-search").oninput = renderHistory;
 $("#h-body").addEventListener("click", async e => {
@@ -1144,10 +1322,13 @@ function openEditor(id) {
   $("#tpl-list-view").classList.add("hidden"); $("#tpl-editor-view").classList.remove("hidden");
   $("#ed-name").value = E.tpl.name; $("#ed-overlay").checked = false; $("#ed-stage").classList.remove("overlay");
   $("#ed-img").src = E.tpl.img;
+  const z = localStorage.getItem("rx.edZoom") || (matchMedia("(max-width:640px)").matches ? "2" : "1");
+  $("#ed-zoom").value = z; $("#ed-stage").style.width = (+z * 100) + "%";
   $("#ed-copy").innerHTML = `<option value="">Copy layout from…</option>` + S.templates.filter(t => t !== E.tpl).map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
   drawEditor();
 }
-function closeEditor() { E.tpl = null; $("#tpl-editor-view").classList.add("hidden"); $("#tpl-list-view").classList.remove("hidden"); renderTemplates(); }
+$("#ed-zoom").onchange = e => { localStorage.setItem("rx.edZoom", e.target.value); $("#ed-stage").style.width = (+e.target.value * 100) + "%"; };
+function closeEditor() { E.tpl = null; E.sel = null; $("#ed-mtool").classList.remove("show"); $("#tpl-editor-view").classList.add("hidden"); $("#tpl-list-view").classList.remove("hidden"); renderTemplates(); }
 $("#ed-back").onclick = closeEditor;
 const saveTpl = debounce(() => { save("templates"); if ($("#ed-overlay").checked) refreshOverlay(); }, 300);
 $("#ed-name").oninput = () => { E.tpl.name = $("#ed-name").value.trim() || "Untitled"; saveTpl(); };
@@ -1166,6 +1347,7 @@ function drawEditor() {
 }
 function drawProps() {
   const P = $("#ed-props"), f = E.tpl.fields[E.sel];
+  drawMobileTool(f);
   if (!f) { P.innerHTML = `<p class="muted small" style="margin:0">Select a field to edit its style.</p>`; return; }
   const d = FIELDS[f.key];
   const txt = d.kind !== "image";
@@ -1188,6 +1370,25 @@ function drawProps() {
   bind("#p-rx", el => f.rxSymbol = el.checked);
   $("#p-del").onclick = () => removeSel();
 }
+const ALIGNS = ["left", "center", "right"], ALIGN_ICON = { left: "⇤", center: "↔", right: "⇥" };
+function drawMobileTool(f) {
+  const T = $("#ed-mtool"); T.classList.toggle("show", !!f); if (!f) return;
+  const img = FIELDS[f.key].kind === "image";
+  $("#mt-lbl").textContent = FIELDS[f.key].label + (img ? "" : ` · ${f.size}pt`);
+  $("#mt-align").textContent = ALIGN_ICON[f.align] || "⇤";
+  T.querySelectorAll('[data-mt="smaller"],[data-mt="bigger"],[data-mt="bold"]').forEach(b => b.style.display = img ? "none" : "");
+  T.querySelector('[data-mt="bold"]').style.opacity = f.bold ? "1" : ".55";
+}
+$("#ed-mtool").onclick = e => {
+  const a = e.target.closest("[data-mt]")?.dataset.mt, f = E.tpl?.fields[E.sel]; if (!a || !f) return;
+  if (a === "done") { E.sel = null; drawEditor(); return; }
+  if (a === "del") return removeSel();
+  if (a === "smaller") f.size = clamp(+(f.size - 0.5).toFixed(1), 5, 40);
+  if (a === "bigger") f.size = clamp(+(f.size + 0.5).toFixed(1), 5, 40);
+  if (a === "align") f.align = ALIGNS[(ALIGNS.indexOf(f.align) + 1) % 3];
+  if (a === "bold") f.bold = !f.bold;
+  drawProps(); saveTpl();
+};
 function removeSel() { if (E.sel == null) return; E.tpl.fields.splice(E.sel, 1); E.sel = null; drawEditor(); saveTpl(); }
 $("#ed-palette").onclick = e => {
   const k = e.target.closest("button")?.dataset.k; if (!k) return;
@@ -1211,10 +1412,11 @@ async function refreshOverlay() {
 $("#ed-overlay").onchange = refreshOverlay;
 // drag / resize
 (() => {
-  const st = $("#ed-stage"); let drag = null;
+  const st = $("#ed-stage"); let drag = null, downOnBox = false;
   st.addEventListener("pointerdown", e => {
     const box = e.target.closest(".fbox");
-    if (!box) { E.sel = null; drawEditor(); return; }
+    downOnBox = !!box;
+    if (!box) return; // background taps deselect on click (below), so panning the zoomed template doesn't
     const i = +box.dataset.i; if (E.sel !== i) { E.sel = i; st.querySelectorAll(".fbox").forEach(n => n.classList.toggle("sel", +n.dataset.i === i)); drawProps(); }
     const r = st.getBoundingClientRect(), f = E.tpl.fields[i];
     drag = { i, box, rz: e.target.classList.contains("rz"), sx: e.clientX, sy: e.clientY, r, o: { ...f } };
@@ -1226,6 +1428,8 @@ $("#ed-overlay").onchange = refreshOverlay;
     else { f.x = clamp(drag.o.x + dx, 0, 1 - f.w); f.y = clamp(drag.o.y + dy, 0, 1 - f.h); }
     drag.box.style.left = f.x * 100 + "%"; drag.box.style.top = f.y * 100 + "%"; drag.box.style.width = f.w * 100 + "%"; drag.box.style.height = f.h * 100 + "%";
   });
+  // pointer capture retargets the follow-up click to the stage, so decide from where the press started
+  st.addEventListener("click", () => { if (!downOnBox && E.sel != null) { E.sel = null; drawEditor(); } });
   const end = () => { if (drag) { drag = null; saveTpl(); } };
   st.addEventListener("pointerup", end); st.addEventListener("pointercancel", end);
   document.addEventListener("keydown", e => {
@@ -1317,8 +1521,8 @@ function renderMeds() {
   const q = $("#m-search").value.trim().toLowerCase();
   const list = S.medicines.filter(m => !q || (m.name + " " + m.strength).toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
   $("#m-count").textContent = `${S.medicines.length} medicines`;
-  $("#m-body").innerHTML = list.slice(0, 500).map(m => `<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.strength)}</td><td>${esc(m.form)}</td><td>${esc(m.dose)}</td><td>${esc(m.timing)}</td><td>${esc(m.duration)}</td>
-    <td style="white-space:nowrap"><button type="button" class="btn sm" data-m-edit="${esc(m.id)}">Edit</button> <button type="button" class="x" data-m-del="${esc(m.id)}">×</button></td></tr>`).join("")
+  $("#m-body").innerHTML = list.slice(0, 500).map(m => `<tr><td class="lead"><strong>${esc(m.name)}</strong></td><td data-label="Strength">${esc(m.strength)}</td><td data-label="Form">${esc(m.form)}</td><td data-label="Dose">${esc(m.dose)}</td><td data-label="Timing">${esc(m.timing)}</td><td data-label="Duration">${esc(m.duration)}</td>
+    <td class="act" style="white-space:nowrap"><button type="button" class="btn sm" data-m-edit="${esc(m.id)}">Edit</button> <button type="button" class="x" data-m-del="${esc(m.id)}">×</button></td></tr>`).join("")
     + (list.length > 500 ? `<tr><td colspan="7" class="muted small">Showing 500 of ${list.length}. Search to narrow down.</td></tr>` : "");
 }
 $("#m-search").oninput = renderMeds;
