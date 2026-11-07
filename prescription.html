@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rx Studio · Mediseller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --paper:#F4F7FC;--white:#FFFFFF;--soft:#EEF3FB;
+    --navy:#15294B;--blue:#1F57B5;--blue-deep:#12386F;--blue-bright:#2E6BC6;
+    --red:#C8102E;--red-soft:#FBE9EC;--green:#1E7F4F;--green-soft:#E6F4EC;--amber:#9A6200;--amber-soft:#FFF4DC;
+    --ink:#1B2A44;--muted:#5E6E88;--line:#E1E8F2;
+    --radius:14px;--maxw:1320px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;font-size:14px;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:18px 18px 80px;}
+  h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.15;margin:0;color:var(--navy);}
+  h2{font-size:24px;} h3{font-size:17px;}
+  .mono{font-family:"IBM Plex Mono",monospace;}
+  .muted{color:var(--muted);}
+  .small{font-size:12px;}
+  .hidden{display:none!important;}
+
+  /* top bar */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding-bottom:14px;border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+  .capsule{width:32px;height:14px;border-radius:14px;flex:none;
+    background:linear-gradient(90deg,var(--blue) 0 50%, var(--red) 50% 100%);box-shadow:0 0 0 3px rgba(31,87,181,.10);}
+  .wordmark{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;letter-spacing:.28em;color:var(--navy);text-transform:uppercase;}
+  .byline{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    padding-left:11px;border-left:1px solid var(--line);}
+  .org{font-size:13px;color:var(--muted);}
+  nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 18px;}
+  nav.tabs button{font:500 13px "IBM Plex Sans",sans-serif;border:1px solid transparent;background:none;color:var(--muted);
+    padding:8px 14px;border-radius:30px;cursor:pointer;}
+  nav.tabs button:hover{color:var(--navy);background:var(--soft);}
+  nav.tabs button.active{background:var(--navy);color:#fff;}
+  nav.tabs .count{font-family:"IBM Plex Mono",monospace;font-size:11px;opacity:.7;margin-left:4px;}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;
+    box-shadow:0 1px 2px rgba(21,41,75,.04);}
+  .card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+  .card h3{margin-bottom:12px;} .card-h h3{margin-bottom:0;}
+  label.f{display:block;font-size:12px;font-weight:500;color:var(--muted);min-width:0;}
+  label.f>input,label.f>select,label.f>textarea{display:block;margin-top:4px;}
+  label.row{flex-wrap:nowrap;align-items:flex-start;} label.row input{margin-top:2px;}
+  label.f .req{color:var(--red);}
+  input,select,textarea{font:400 14px "IBM Plex Sans",sans-serif;color:var(--ink);border:1px solid var(--line);border-radius:9px;
+    padding:8px 10px;background:#fff;width:100%;min-width:0;}
+  input:focus,select:focus,textarea:focus{outline:2px solid rgba(31,87,181,.25);border-color:var(--blue);}
+  textarea{resize:vertical;min-height:62px;}
+  input[type=checkbox]{width:auto;}
+  .grid{display:grid;gap:12px;}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr));} .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr));}
+  .span2{grid-column:span 2;} .span3{grid-column:span 3;} .span4{grid-column:1/-1;}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .btn{font:500 13px "IBM Plex Sans",sans-serif;border:1px solid var(--line);background:#fff;color:var(--navy);padding:8px 14px;
+    border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;}
+  .btn:hover{border-color:var(--blue);color:var(--blue);}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .btn.primary:hover{background:var(--blue-deep);color:#fff;}
+  .btn.wa{background:#1E7F4F;border-color:#1E7F4F;color:#fff;}
+  .btn.danger{color:var(--red);} .btn.danger:hover{border-color:var(--red);}
+  .btn.sm{padding:5px 10px;font-size:12px;}
+  .btn.ghost{border-color:transparent;background:none;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 9px;border-radius:20px;background:var(--soft);color:var(--blue-deep);}
+  .note{font-size:12px;color:var(--muted);background:var(--soft);border-radius:10px;padding:10px 12px;}
+  .note.amber{background:var(--amber-soft);color:var(--amber);}
+  table.list{width:100%;border-collapse:collapse;font-size:13px;}
+  table.list th{text-align:left;font-weight:500;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line);padding:8px 6px;}
+  table.list td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:middle;}
+  .scroll-x{overflow-x:auto;}
+
+  /* generate */
+  .gen-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);gap:16px;align-items:start;}
+  .sticky{position:sticky;top:12px;}
+  .rxid{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue-deep);background:var(--soft);padding:4px 10px;border-radius:20px;}
+  .medrow{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,.9fr) minmax(0,1.2fr) minmax(0,1fr) 30px;
+    gap:6px;padding:8px 0;border-bottom:1px dashed var(--line);align-items:center;}
+  .medrow .notes{grid-column:1/-2;}
+  .medrow input,.medrow select{padding:6px 8px;font-size:13px;}
+  .medhead{font-size:11px;padding-bottom:2px;color:var(--muted);font-weight:500;}
+  .medidx{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);}
+  .x{border:none;background:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:4px;}
+  .x:hover{color:var(--red);}
+  .pv-wrap{position:relative;background:var(--soft);border-radius:10px;overflow:hidden;min-height:300px;display:flex;align-items:center;justify-content:center;}
+  .pv-wrap canvas{width:100%;height:auto;display:block;box-shadow:0 2px 12px rgba(21,41,75,.12);}
+  .pv-empty{padding:40px 20px;text-align:center;color:var(--muted);}
+  ul.warn{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px;}
+  ul.warn li{font-size:12px;padding:7px 10px;border-radius:8px;background:var(--amber-soft);color:var(--amber);}
+  ul.warn li.err{background:var(--red-soft);color:var(--red);}
+  ul.warn li.ok{background:var(--green-soft);color:var(--green);}
+  .attest{display:flex;gap:10px;align-items:flex-start;font-size:13px;padding:10px 12px;background:var(--soft);border-radius:10px;margin-bottom:12px;}
+  .attest input{margin-top:3px;}
+  .onboard ol{margin:8px 0 14px;padding-left:20px;} .onboard li{margin:4px 0;}
+  .onboard li.done{color:var(--green);text-decoration:line-through;}
+
+  /* templates */
+  .tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+  .tpl-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column;}
+  .tpl-card .thumb{aspect-ratio:1/1.3;background:var(--soft);overflow:hidden;display:flex;align-items:flex-start;justify-content:center;}
+  .tpl-card .thumb img{width:100%;}
+  .tpl-card .meta{padding:10px;display:flex;flex-direction:column;gap:6px;}
+  .tpl-card .name{font-weight:600;font-size:13px;color:var(--navy);word-break:break-word;}
+  .drop{border:2px dashed #C8D5EA;border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;background:#FAFCFF;}
+  .drop.over{border-color:var(--blue);background:var(--soft);}
+  .editor{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;}
+  .stage{position:relative;user-select:none;touch-action:none;box-shadow:0 2px 14px rgba(21,41,75,.14);background:#fff;}
+  .stage img{width:100%;display:block;pointer-events:none;}
+  .fbox{position:absolute;border:1.5px solid rgba(31,87,181,.85);background:rgba(31,87,181,.10);cursor:move;
+    font:600 10px "IBM Plex Mono",monospace;color:var(--blue-deep);overflow:hidden;padding:1px 4px;line-height:1.3;}
+  .fbox.img{border-color:rgba(200,16,46,.85);background:rgba(200,16,46,.08);color:var(--red);}
+  .fbox.sel{border-style:solid;border-width:2px;box-shadow:0 0 0 3px rgba(31,87,181,.25);background:rgba(31,87,181,.18);z-index:5;}
+  .stage.overlay .fbox{background:transparent;color:transparent;border-style:dashed;}
+  .stage.overlay .fbox.sel{color:transparent;background:rgba(31,87,181,.06);}
+  .fbox .rz{position:absolute;right:0;bottom:0;width:12px;height:12px;background:var(--blue);cursor:nwse-resize;}
+  .fbox.img .rz{background:var(--red);}
+  .palette{display:flex;flex-wrap:wrap;gap:6px;}
+  .palette button{font:500 12px "IBM Plex Sans",sans-serif;border:1px dashed #B9C8E2;background:#fff;border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--blue-deep);}
+  .palette button:hover{border-style:solid;border-color:var(--blue);}
+  .palette button.placed{border-style:solid;background:var(--soft);color:var(--muted);}
+
+  /* doctors */
+  .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+  .doc-card{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;}
+  .doc-card .imgs{display:flex;gap:8px;margin:8px 0;}
+  .doc-card .imgs img{height:46px;max-width:120px;object-fit:contain;background:repeating-conic-gradient(#f2f4f8 0 25%,#fff 0 50%) 0 0/12px 12px;border:1px solid var(--line);border-radius:6px;}
+  .imgslot{display:flex;flex-direction:column;gap:6px;}
+  .imgslot .pv{height:70px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;
+    background:repeating-conic-gradient(#f2f4f8 0 25%,#fff 0 50%) 0 0/14px 14px;color:var(--muted);font-size:12px;overflow:hidden;}
+  .imgslot .pv img{max-height:66px;max-width:100%;}
+  .sigpad{border:1px solid var(--line);border-radius:8px;background:#fff;touch-action:none;width:100%;height:160px;cursor:crosshair;}
+
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 18px;
+    border-radius:30px;font-size:13px;opacity:0;transition:all .25s;z-index:100;pointer-events:none;max-width:90vw;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{background:var(--red);}
+  .modal{position:fixed;inset:0;background:rgba(21,41,75,.45);display:flex;align-items:center;justify-content:center;z-index:90;padding:16px;}
+  .modal .card{max-width:560px;width:100%;margin:0;}
+  footer.foot{margin-top:30px;font-size:11px;color:var(--muted);text-align:center;}
+
+  @media (max-width:1000px){
+    .gen-grid,.editor{grid-template-columns:1fr;}
+    .sticky{position:static;}
+  }
+  @media (max-width:640px){
+    .wrap{padding:14px 12px 70px;}
+    .g2,.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .medrow{grid-template-columns:repeat(2,minmax(0,1fr));position:relative;padding-right:30px;}
+    .medrow .m-name,.medrow .notes{grid-column:1/-1;}
+    .medrow .x{position:absolute;right:0;top:10px;}
+    .medhead{display:none;}
+    .byline{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="capsule"></span>
+      <span class="wordmark">Rx Studio</span>
+      <span class="byline">Powered by Mediseller</span>
+      <span class="org" id="hdr-org"></span>
+    </div>
+    <span class="chip" id="hdr-storage">Saved on this device</span>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="generate" class="active">Generate</button>
+    <button data-tab="history">History <span class="count" id="c-history"></span></button>
+    <button data-tab="templates">Templates <span class="count" id="c-templates"></span></button>
+    <button data-tab="doctors">Doctors <span class="count" id="c-doctors"></span></button>
+    <button data-tab="medicines">Medicines <span class="count" id="c-medicines"></span></button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+
+  <!-- ===================== GENERATE ===================== -->
+  <section class="tab" id="tab-generate">
+    <div class="card onboard hidden" id="onboard">
+      <h3>Get started</h3>
+      <ol>
+        <li id="ob-tpl">Upload at least one blank prescription template and map its fields <a href="#" data-goto="templates">→ Templates</a></li>
+        <li id="ob-doc">Add a doctor with their registration number and signature <a href="#" data-goto="doctors">→ Doctors</a></li>
+        <li id="ob-med">Optional: import your medicine list as a CSV <a href="#" data-goto="medicines">→ Medicines</a></li>
+      </ol>
+      <div class="row">
+        <button class="btn" id="ob-demo">Load demo data (sample letterhead, doctor and medicines)</button>
+      </div>
+    </div>
+
+    <div class="gen-grid">
+      <div>
+        <div class="card">
+          <div class="card-h"><h3>Consultation</h3><span class="rxid" id="g-rxid">—</span></div>
+          <div class="grid g4">
+            <label class="f span2">Template <span class="req">*</span><select id="g-tpl"></select></label>
+            <label class="f span2">Doctor <span class="req">*</span><select id="g-doc"></select></label>
+            <label class="f span2">Date<input type="date" id="g-date" /></label>
+            <label class="f span2">Consultation mode
+              <select id="g-mode"><option>Video</option><option>Audio</option><option>Chat</option><option>In-person</option></select></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Patient</h3>
+          <div class="grid g4">
+            <label class="f span2">Full name <span class="req">*</span><input id="g-name" autocomplete="off" /></label>
+            <label class="f">Age <span class="req">*</span><input id="g-age" inputmode="numeric" /></label>
+            <label class="f">Unit<select id="g-ageunit"><option value="Y">Years</option><option value="M">Months</option><option value="D">Days</option></select></label>
+            <label class="f">Gender <span class="req">*</span><select id="g-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
+            <label class="f">Phone<input id="g-phone" inputmode="tel" placeholder="10-digit mobile" /></label>
+            <label class="f span2">Email<input id="g-email" type="email" /></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3>Medicines <span class="req" style="color:var(--red)">*</span></h3>
+            <button class="btn sm" id="g-addmed">+ Add medicine</button></div>
+          <div class="medrow medhead"><span>Medicine</span><span>Strength</span><span>Form</span><span>Dose</span><span>Timing</span><span>Duration</span><span></span></div>
+          <div id="g-meds"></div>
+          <p class="muted small" style="margin:10px 0 0">Start typing a name to pick from your saved list. Saved defaults for strength, form and dose fill in automatically.</p>
+        </div>
+
+        <div class="card">
+          <h3>Advice &amp; follow-up</h3>
+          <div class="grid g2">
+            <label class="f">Investigations / tests advised<textarea id="g-inv" placeholder="e.g. CBC, Fasting blood sugar"></textarea></label>
+            <label class="f">Advice<textarea id="g-adv" placeholder="e.g. Plenty of fluids, rest for 3 days"></textarea></label>
+            <label class="f span2">Follow-up<input id="g-fu" list="dl-fu" placeholder="e.g. After 7 days, or a date" /></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <label class="attest"><input type="checkbox" id="g-attest" />
+            <span>I confirm that this prescription follows a consultation by the selected registered medical practitioner, as required by the Telemedicine Practice Guidelines, 2020.</span></label>
+          <div class="row">
+            <button class="btn primary" id="g-download">⬇ Download PDF</button>
+            <button class="btn" id="g-share">Share…</button>
+            <button class="btn wa" id="g-wa">WhatsApp</button>
+            <button class="btn" id="g-email-btn">Email</button>
+            <span style="flex:1"></span>
+            <button class="btn ghost" id="g-new">+ New prescription</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card sticky">
+          <div class="card-h"><h3>Live preview</h3><span class="muted small" id="g-pv-status"></span></div>
+          <div class="pv-wrap"><canvas id="g-canvas" class="hidden"></canvas><div class="pv-empty" id="g-pv-empty">Pick a template to see the preview.</div></div>
+          <ul class="warn" id="g-warn"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HISTORY ===================== -->
+  <section class="tab hidden" id="tab-history">
+    <div class="card">
+      <div class="card-h"><h3>Generated prescriptions</h3>
+        <div class="row"><input id="h-search" placeholder="Search by name, phone or Rx ID" style="width:260px" />
+          <button class="btn sm" id="h-export">Export CSV</button></div></div>
+      <div class="scroll-x"><table class="list"><thead><tr><th>Date</th><th>Rx ID</th><th>Patient</th><th>Phone</th><th>Doctor</th><th>Medicines</th><th></th></tr></thead>
+      <tbody id="h-body"></tbody></table></div>
+      <p class="muted small" id="h-empty">No prescriptions yet. The last 100 are kept on this device.</p>
+    </div>
+  </section>
+
+  <!-- ===================== TEMPLATES ===================== -->
+  <section class="tab hidden" id="tab-templates">
+    <div id="tpl-list-view">
+      <div class="card">
+        <div class="card-h"><h3>Prescription templates <span class="muted small" id="tpl-count"></span></h3></div>
+        <div class="drop" id="tpl-drop">
+          <strong>Drop blank letterheads here or click to upload</strong><br />
+          <span class="small">PDF (first page is used), JPG or PNG · up to 10 templates · Word files: use File → Save as PDF first</span>
+          <input type="file" id="tpl-file" accept=".pdf,image/png,image/jpeg,.docx,.doc" multiple hidden />
+        </div>
+        <div class="tpl-grid" id="tpl-grid" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+    <div id="tpl-editor-view" class="hidden">
+      <div class="card">
+        <div class="card-h">
+          <div class="row"><button class="btn sm" id="ed-back">← All templates</button>
+            <input id="ed-name" style="width:260px;font-weight:600" /></div>
+          <div class="row">
+            <label class="row small muted"><input type="checkbox" id="ed-overlay" /> Show sample data</label>
+          </div>
+        </div>
+        <div class="editor">
+          <div><div class="stage" id="ed-stage"><img id="ed-img" alt="template" /></div></div>
+          <div>
+            <div class="note" style="margin-bottom:12px">Click a field to place it on the template, then drag it into position. Drag the corner square to resize. Use the arrow keys to nudge and Delete to remove. Changes save automatically.</div>
+            <h4 style="font-size:14px;margin-bottom:8px">Fields</h4>
+            <div class="palette" id="ed-palette"></div>
+            <div class="row" style="margin:12px 0">
+              <button class="btn sm" id="ed-auto">Auto-place remaining</button>
+              <select id="ed-copy" style="width:auto;flex:1;font-size:12px;padding:5px"></select>
+              <button class="btn sm danger" id="ed-clear">Clear all</button>
+            </div>
+            <div class="card" id="ed-props" style="padding:14px;background:var(--soft)">
+              <p class="muted small" style="margin:0">Select a field to edit its style.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DOCTORS ===================== -->
+  <section class="tab hidden" id="tab-doctors">
+    <div class="card">
+      <div class="card-h"><h3 id="d-form-title">Add doctor</h3></div>
+      <div class="grid g4">
+        <label class="f span2">Full name <span class="req">*</span><input id="d-name" placeholder="Dr. Ananya Rao" /></label>
+        <label class="f span2">Qualification<input id="d-qual" placeholder="MBBS, MD (General Medicine)" /></label>
+        <label class="f">Registration no. <span class="req">*</span><input id="d-reg" placeholder="e.g. 12345" /></label>
+        <label class="f">Medical council<input id="d-council" placeholder="e.g. Karnataka Medical Council" /></label>
+        <label class="f">Specialisation<input id="d-spec" placeholder="General Physician" /></label>
+        <label class="f">Phone / email<input id="d-contact" /></label>
+        <div class="imgslot span2">
+          <span class="small muted" style="font-weight:500">Signature</span>
+          <div class="pv" id="d-sig-pv">None</div>
+          <div class="row"><button class="btn sm" id="d-sig-up">Upload image</button><button class="btn sm" id="d-sig-draw">Draw</button>
+            <button class="btn sm ghost danger" id="d-sig-rm">Remove</button></div>
+        </div>
+        <div class="imgslot span2">
+          <span class="small muted" style="font-weight:500">Stamp / seal (optional)</span>
+          <div class="pv" id="d-stamp-pv">None</div>
+          <div class="row"><button class="btn sm" id="d-stamp-up">Upload image</button><button class="btn sm ghost danger" id="d-stamp-rm">Remove</button></div>
+        </div>
+        <label class="row small muted span4"><input type="checkbox" id="d-whiten" checked /> Remove white background from uploaded signature and stamp images</label>
+      </div>
+      <input type="file" id="d-file" accept="image/*" hidden />
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="d-save">Save doctor</button>
+        <button class="btn ghost hidden" id="d-cancel">Cancel edit</button>
+      </div>
+    </div>
+    <div class="doc-grid" id="d-grid"></div>
+  </section>
+
+  <!-- ===================== MEDICINES ===================== -->
+  <section class="tab hidden" id="tab-medicines">
+    <div class="card">
+      <div class="card-h"><h3>Medicine list</h3>
+        <div class="row">
+          <button class="btn sm" id="m-import">Import CSV</button>
+          <button class="btn sm" id="m-export">Export CSV</button>
+          <button class="btn sm" id="m-sample">Sample CSV</button>
+          <button class="btn sm danger" id="m-clear">Clear list</button>
+          <input type="file" id="m-file" accept=".csv,text/csv" hidden />
+        </div></div>
+      <p class="muted small" style="margin-top:0">CSV columns: <span class="mono">name, strength, form, dose, timing, duration, notes</span>. Only <span class="mono">name</span> is required. Duplicates (same name and strength) are updated, not added again.</p>
+      <div class="grid g4" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto;align-items:end" id="m-form">
+        <label class="f">Name<input id="m-name" /></label>
+        <label class="f">Strength<input id="m-strength" placeholder="500 mg" /></label>
+        <label class="f">Form<input id="m-form-i" list="dl-form" /></label>
+        <label class="f">Dose<input id="m-dose" list="dl-dose" /></label>
+        <label class="f">Timing<select id="m-timing"></select></label>
+        <label class="f">Duration<input id="m-dur" list="dl-dur" /></label>
+        <button class="btn primary" id="m-add">Add</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><input id="m-search" placeholder="Search medicines" style="max-width:300px" /><span class="muted small" id="m-count"></span></div>
+      <div class="scroll-x"><table class="list"><thead><tr><th>Name</th><th>Strength</th><th>Form</th><th>Dose</th><th>Timing</th><th>Duration</th><th></th></tr></thead><tbody id="m-body"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ===================== SETTINGS ===================== -->
+  <section class="tab hidden" id="tab-settings">
+    <div class="card">
+      <h3>General</h3>
+      <div class="grid g3">
+        <label class="f">Organisation name (shown in the app header)<input id="s-org" placeholder="e.g. Acme Health" /></label>
+        <label class="f">Rx ID prefix<input id="s-prefix" maxlength="8" /></label>
+        <label class="f">Default country code for WhatsApp<input id="s-cc" inputmode="numeric" /></label>
+        <label class="f">Prescription font
+          <select id="s-font"><option value="sans">Sans-serif (IBM Plex Sans)</option><option value="helv">Helvetica / Arial</option><option value="serif">Serif (Georgia)</option></select></label>
+        <label class="f">Date format
+          <select id="s-datefmt"><option value="dmy">DD/MM/YYYY</option><option value="dmmy">07 Nov 2026</option><option value="ymd">YYYY-MM-DD</option></select></label>
+        <label class="f">PDF quality
+          <select id="s-quality"><option value="0.92">High (recommended)</option><option value="0.8">Standard (smaller file)</option></select></label>
+        <label class="f span3">Share message (placeholders: {patient} {doctor} {rx_id} {date} {org})<textarea id="s-msg"></textarea></label>
+        <label class="row small muted span3"><input type="checkbox" id="s-automed" /> Add new medicines typed on a prescription to the medicine list automatically</label>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="s-save">Save settings</button></div>
+    </div>
+    <div class="card">
+      <h3>Backup &amp; data</h3>
+      <p class="muted small" style="margin-top:0">Everything (templates, doctors, medicines, history) is stored only in this browser on this device. Export a backup regularly, and import it to move the setup to another computer.</p>
+      <div class="row">
+        <button class="btn" id="s-export">Export full backup (.json)</button>
+        <button class="btn" id="s-import">Import backup</button>
+        <input type="file" id="s-file" accept=".json,application/json" hidden />
+        <button class="btn danger" id="s-wipe">Delete all data</button>
+      </div>
+      <p class="muted small" id="s-usage"></p>
+    </div>
+  </section>
+
+  <footer class="foot">Rx Studio · Powered by Mediseller · Data stays in this browser</footer>
+</div>
+
+<datalist id="dl-meds"></datalist>
+<datalist id="dl-form"><option>Tab</option><option>Cap</option><option>Syp</option><option>Susp</option><option>Inj</option><option>Oint</option><option>Cream</option><option>Gel</option><option>Drops</option><option>Inhaler</option><option>Sachet</option><option>Lotion</option><option>Spray</option><option>Powder</option></datalist>
+<datalist id="dl-dose"><option>1-0-1</option><option>1-0-0</option><option>0-0-1</option><option>0-1-0</option><option>1-1-1</option><option>1-1-1-1</option><option>SOS</option><option>Once a week</option><option>5 ml 1-0-1</option><option>Apply locally</option></datalist>
+<datalist id="dl-dur"><option>1 day</option><option>3 days</option><option>5 days</option><option>7 days</option><option>10 days</option><option>14 days</option><option>1 month</option><option>3 months</option><option>Continue</option></datalist>
+<datalist id="dl-fu"><option>After 3 days</option><option>After 5 days</option><option>After 7 days</option><option>After 2 weeks</option><option>After 1 month</option><option>SOS / if symptoms persist</option></datalist>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   Storage (IndexedDB key-value)
+   ============================================================ */
+const DB = (() => {
+  let p;
+  const open = () => p || (p = new Promise((res, rej) => {
+    const r = indexedDB.open("mediseller-rx-studio", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("kv");
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  }));
+  const get = async k => { const db = await open(); return new Promise((res, rej) => { const q = db.transaction("kv").objectStore("kv").get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); };
+  const set = async (k, v) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction("kv", "readwrite"); t.objectStore("kv").put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); };
+  return { get, set };
+})();
+
+const KEYS = ["templates", "doctors", "medicines", "history", "settings", "counter"];
+const DEFAULT_SETTINGS = {
+  org: "", prefix: "RX", cc: "91", font: "sans", datefmt: "dmy", quality: "0.92", automed: true,
+  msg: "Hello {patient}, please find attached your prescription ({rx_id}) dated {date} from {doctor}.\n— {org}"
+};
+const S = { templates: [], doctors: [], medicines: [], history: [], settings: { ...DEFAULT_SETTINGS }, counter: { n: 0 } };
+const save = k => DB.set(k, S[k]).catch(e => toast("Could not save: " + e.message, true));
+const MAX_TEMPLATES = 10, MAX_HISTORY = 100;
+const TIMINGS = ["", "After food", "Before food", "With food", "Empty stomach", "At bedtime", "In the morning", "As directed"];
+
+/* ============================================================
+   Helpers
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+const todayISO = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+function toast(msg, err) { const t = $("#toast"); t.textContent = msg; t.className = "toast show" + (err ? " err" : ""); clearTimeout(t._h); t._h = setTimeout(() => t.className = "toast", 3200); }
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function fmtDate(iso) {
+  if (!iso) return ""; const [y, m, d] = iso.split("-");
+  const f = S.settings.datefmt;
+  if (f === "ymd") return iso;
+  if (f === "dmmy") return `${d} ${MONTHS[+m - 1]} ${y}`;
+  return `${d}/${m}/${y}`;
+}
+function readFile(file, as = "dataURL") {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error);
+    as === "text" ? r.readAsText(file) : as === "buffer" ? r.readAsArrayBuffer(file) : r.readAsDataURL(file); });
+}
+const imgCache = new Map();
+function loadImg(src) {
+  if (imgCache.has(src)) return imgCache.get(src);
+  const p = new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error("Image failed to load")); i.src = src; });
+  imgCache.set(src, p); return p;
+}
+function downloadBlob(blob, name) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function parseCSV(text) {
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cur); rows.push(row); row = []; cur = ""; }
+    else cur += c;
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim()));
+}
+const csvCell = v => /[",\n]/.test(String(v ?? "")) ? `"${String(v).replace(/"/g, '""')}"` : String(v ?? "");
+
+/* ============================================================
+   Field definitions (what can be placed on a template)
+   x,y,w,h are fractions of page width/height; size in pt on a 595pt-wide page
+   ============================================================ */
+const FIELDS = {
+  patient_name:   { label: "Patient name",     prefix: "Name: ",     size: 11, bold: true, rect: [.06, .150, .50, .028] },
+  age_gender:     { label: "Age / Gender",     prefix: "Age/Sex: ",  size: 11, rect: [.58, .150, .18, .028] },
+  date:           { label: "Date",             prefix: "Date: ",     size: 11, align: "right", rect: [.77, .150, .17, .028] },
+  patient_phone:  { label: "Phone",            prefix: "Ph: ",       size: 10, rect: [.06, .182, .30, .026] },
+  rx_id:          { label: "Rx ID",            prefix: "Rx ID: ",    size: 9,  align: "right", label_on: true, rect: [.58, .182, .36, .026] },
+  consult_mode:   { label: "Consult mode",     prefix: "Consultation: ", size: 9, label_on: true, rect: [.06, .212, .40, .024] },
+  patient_age:    { label: "Age only",         prefix: "Age: ",      size: 11, rect: [.58, .150, .10, .028], extra: true },
+  patient_gender: { label: "Gender only",      prefix: "Sex: ",      size: 11, rect: [.68, .150, .10, .028], extra: true },
+  medicines:      { label: "Medicines table",  kind: "meds",         size: 10.5, rect: [.06, .250, .88, .350] },
+  investigations: { label: "Investigations",   kind: "multi", prefix: "Investigations advised", size: 10, label_on: true, rect: [.06, .612, .88, .070] },
+  advice:         { label: "Advice",           kind: "multi", prefix: "Advice", size: 10, label_on: true, rect: [.06, .690, .88, .080] },
+  follow_up:      { label: "Follow-up",        prefix: "Follow-up: ", size: 10, bold: true, label_on: true, rect: [.06, .778, .50, .026] },
+  signature:      { label: "Signature",        kind: "image", rect: [.64, .795, .28, .060] },
+  stamp:          { label: "Stamp",            kind: "image", rect: [.44, .790, .17, .075] },
+  doctor_block:   { label: "Doctor block",     kind: "multi", size: 9.5, align: "right", rect: [.52, .860, .42, .065] },
+  doctor_name:    { label: "Doctor name",      prefix: "", size: 11, bold: true, rect: [.52, .860, .42, .024], extra: true },
+  doctor_qual:    { label: "Qualification",    prefix: "", size: 9.5, rect: [.52, .884, .42, .022], extra: true },
+  doctor_reg:     { label: "Reg. no.",         prefix: "Reg. No: ", size: 9.5, label_on: true, rect: [.52, .906, .42, .022], extra: true },
+};
+const FIELD_ORDER = Object.keys(FIELDS);
+function newField(key) {
+  const d = FIELDS[key]; const [x, y, w, h] = d.rect;
+  return { key, x, y, w, h, size: d.size || 10, bold: !!d.bold, align: d.align || (d.kind === "image" ? "center" : "left"),
+    label: !!d.label_on, color: "#111111", rxSymbol: false };
+}
+
+/* sample data used for the editor overlay */
+const SAMPLE = {
+  rxId: "RX-261107-0001", date: todayISO(), mode: "Video",
+  patient: { name: "Rahul Sharma", age: "34", ageUnit: "Y", gender: "Male", phone: "9876543210", email: "" },
+  meds: [
+    { name: "Paracetamol", strength: "650 mg", form: "Tab", dose: "1-0-1", timing: "After food", duration: "3 days", notes: "Only if fever above 100°F" },
+    { name: "Cetirizine", strength: "10 mg", form: "Tab", dose: "0-0-1", timing: "At bedtime", duration: "5 days", notes: "" },
+    { name: "Pantoprazole", strength: "40 mg", form: "Tab", dose: "1-0-0", timing: "Empty stomach", duration: "5 days", notes: "" },
+  ],
+  investigations: "CBC, CRP", advice: "Drink plenty of fluids. Steam inhalation twice a day.", followUp: "After 5 days"
+};
+const SAMPLE_DOC = { name: "Dr. Ananya Rao", qual: "MBBS, MD (General Medicine)", reg: "KMC 45678", council: "", spec: "Consultant Physician" };
+
+/* ============================================================
+   Rendering engine (same output for preview and PDF)
+   ============================================================ */
+function fontFamily() {
+  return { sans: '"IBM Plex Sans", Helvetica, Arial, sans-serif', helv: "Helvetica, Arial, sans-serif", serif: 'Georgia, "Times New Roman", serif' }[S.settings.font] || "sans-serif";
+}
+const fnt = (px, bold, italic) => `${italic ? "italic " : ""}${bold ? 600 : 400} ${px.toFixed(2)}px ${fontFamily()}`;
+let fontsReady = null;
+function ensureFonts() {
+  if (!fontsReady) fontsReady = Promise.all(["400 20px 'IBM Plex Sans'", "600 20px 'IBM Plex Sans'", "italic 400 20px 'IBM Plex Sans'"]
+    .map(f => document.fonts ? document.fonts.load(f).catch(() => {}) : null));
+  return fontsReady;
+}
+function wrapLines(ctx, text, maxW) {
+  const out = [];
+  for (const para of String(text).split("\n")) {
+    const words = para.split(/\s+/).filter(Boolean);
+    if (!words.length) { out.push(""); continue; }
+    let line = "";
+    for (let w of words) {
+      // hard-break very long words
+      while (ctx.measureText(w).width > maxW && w.length > 1) {
+        let i = w.length; while (i > 1 && ctx.measureText(w.slice(0, i)).width > maxW) i--;
+        if (line) { out.push(line); line = ""; }
+        out.push(w.slice(0, i)); w = w.slice(i);
+      }
+      const test = line ? line + " " + w : w;
+      if (!line || ctx.measureText(test).width <= maxW) line = test; else { out.push(line); line = w; }
+    }
+    out.push(line);
+  }
+  return out;
+}
+const AGEU = { Y: "Y", M: "M", D: "D" }, AGEL = { Y: "years", M: "months", D: "days" };
+function medTitle(m) { return [m.form ? m.form + "." : "", m.name, m.strength].filter(Boolean).join(" ").replace(/\.\./g, "."); }
+function fieldValue(key, d, doc) {
+  const p = d.patient || {};
+  switch (key) {
+    case "patient_name": return p.name;
+    case "age_gender": return [p.age ? `${p.age} ${AGEU[p.ageUnit] || "Y"}` : "", p.gender ? p.gender[0] : ""].filter(Boolean).join(" / ");
+    case "patient_age": return p.age ? `${p.age} ${AGEL[p.ageUnit] || "years"}` : "";
+    case "patient_gender": return p.gender;
+    case "patient_phone": return p.phone;
+    case "date": return fmtDate(d.date);
+    case "rx_id": return d.rxId;
+    case "consult_mode": return d.mode;
+    case "investigations": return d.investigations;
+    case "advice": return d.advice;
+    case "follow_up": return d.followUp;
+    case "doctor_name": return doc?.name;
+    case "doctor_qual": return [doc?.qual, doc?.spec].filter(Boolean).join(", ");
+    case "doctor_reg": return doc ? [doc.reg, doc.council ? `(${doc.council})` : ""].filter(Boolean).join(" ") : "";
+  }
+  return "";
+}
+
+function drawSingle(ctx, f, text, k, B) {
+  let size = f.size * k; const min = size * 0.6;
+  ctx.font = fnt(size, f.bold);
+  while (ctx.measureText(text).width > B.w && size > min) { size *= 0.94; ctx.font = fnt(size, f.bold); }
+  ctx.textBaseline = "middle"; ctx.fillStyle = f.color || "#111";
+  const x = f.align === "right" ? B.x + B.w : f.align === "center" ? B.x + B.w / 2 : B.x;
+  ctx.textAlign = f.align || "left";
+  ctx.fillText(text, x, B.y + B.h / 2);
+  return ctx.measureText(text).width <= B.w + 1;
+}
+/* lines: [{text, bold, italic, scale}] */
+function drawMulti(ctx, f, lines, k, B) {
+  let size = f.size * k; const min = size * 0.55; let laid;
+  const layout = sz => {
+    const res = []; let hgt = 0;
+    for (const L of lines) {
+      const s = sz * (L.scale || 1); ctx.font = fnt(s, L.bold, L.italic);
+      for (const t of wrapLines(ctx, L.text, B.w)) { res.push({ t, s, bold: L.bold, italic: L.italic }); hgt += s * 1.32; }
+    }
+    return { res, hgt };
+  };
+  for (;;) { laid = layout(size); if (laid.hgt <= B.h || size <= min) break; size *= 0.93; }
+  ctx.textBaseline = "top"; ctx.fillStyle = f.color || "#111"; ctx.textAlign = f.align || "left";
+  const x = f.align === "right" ? B.x + B.w : f.align === "center" ? B.x + B.w / 2 : B.x;
+  let y = B.y;
+  for (const r of laid.res) { ctx.font = fnt(r.s, r.bold, r.italic); ctx.fillText(r.t, x, y + r.s * 0.12); y += r.s * 1.32; }
+  return laid.hgt <= B.h + 1;
+}
+function drawMeds(ctx, f, meds, k, B) {
+  const cols = [["#", .05], ["Medicine", .41], ["Dose", .15], ["Timing", .20], ["Duration", .19]];
+  let size = f.size * k; const min = size * 0.55; let L;
+  const pad = () => size * 0.35;
+  const layout = sz => {
+    const rowsOut = []; let hgt = sz * 1.5 + (f.rxSymbol ? sz * 2.1 : 0);
+    meds.forEach((m, i) => {
+      const cells = [String(i + 1) + ".", medTitle(m), m.dose || "", m.timing || "", m.duration || ""];
+      let lines = 1; const wrapped = cells.map((c, ci) => {
+        ctx.font = fnt(sz, ci === 1); const w = wrapLines(ctx, c, B.w * cols[ci][1] - sz * 0.4);
+        lines = Math.max(lines, w.length); return w;
+      });
+      let noteLines = [];
+      if (m.notes) { ctx.font = fnt(sz * 0.86, false, true); noteLines = wrapLines(ctx, m.notes, B.w * (1 - cols[0][1]) - sz * 0.4); }
+      const h = lines * sz * 1.28 + noteLines.length * sz * 0.86 * 1.28 + sz * 0.7;
+      rowsOut.push({ wrapped, noteLines, h, lines }); hgt += h;
+    });
+    return { rowsOut, hgt };
+  };
+  for (;;) { L = layout(size); if (L.hgt <= B.h || size <= min) break; size *= 0.93; }
+  ctx.fillStyle = f.color || "#111"; ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.textBaseline = "top"; ctx.textAlign = "left";
+  let y = B.y;
+  if (f.rxSymbol) { ctx.font = fnt(size * 1.9, true); ctx.fillText("℞", B.x, y); y += size * 2.1; }
+  // header
+  let x = B.x; ctx.font = fnt(size * 0.9, true);
+  cols.forEach(([h, w]) => { ctx.fillText(h, x, y + size * 0.1); x += B.w * w; });
+  y += size * 1.3; ctx.lineWidth = Math.max(1, k * 0.6);
+  ctx.beginPath(); ctx.moveTo(B.x, y); ctx.lineTo(B.x + B.w, y); ctx.stroke(); y += size * 0.2;
+  ctx.lineWidth = Math.max(0.5, k * 0.3); ctx.strokeStyle = "rgba(0,0,0,.15)";
+  L.rowsOut.forEach((r, ri) => {
+    let cx = B.x; const top = y + size * 0.35;
+    r.wrapped.forEach((lines, ci) => {
+      ctx.font = fnt(size, ci === 1);
+      lines.forEach((t, li) => ctx.fillText(t, cx, top + li * size * 1.28));
+      cx += B.w * cols[ci][1];
+    });
+    if (r.noteLines.length) {
+      ctx.font = fnt(size * 0.86, false, true); ctx.fillStyle = "#444";
+      r.noteLines.forEach((t, li) => ctx.fillText(t, B.x + B.w * cols[0][1], top + r.lines * size * 1.28 + li * size * 0.86 * 1.28));
+      ctx.fillStyle = f.color || "#111";
+    }
+    y += r.h;
+    if (ri < L.rowsOut.length - 1) { ctx.beginPath(); ctx.moveTo(B.x, y); ctx.lineTo(B.x + B.w, y); ctx.stroke(); }
+  });
+  return L.hgt <= B.h + 1;
+}
+async function drawImageFit(ctx, src, f, B) {
+  if (!src) return;
+  const img = await loadImg(src);
+  const s = Math.min(B.w / img.naturalWidth, B.h / img.naturalHeight);
+  const w = img.naturalWidth * s, h = img.naturalHeight * s;
+  const x = f.align === "left" ? B.x : f.align === "right" ? B.x + B.w - w : B.x + (B.w - w) / 2;
+  ctx.drawImage(img, x, B.y + (B.h - h) / 2, w, h);
+}
+
+/* returns {canvas, warnings[]} */
+async function renderRx(tpl, doc, d, canvas) {
+  await ensureFonts();
+  const img = await loadImg(tpl.img);
+  canvas = canvas || document.createElement("canvas");
+  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  const k = canvas.width / tpl.wPt;
+  const warnings = [];
+  for (const f of tpl.fields) {
+    const def = FIELDS[f.key]; if (!def) continue;
+    const B = { x: f.x * canvas.width, y: f.y * canvas.height, w: f.w * canvas.width, h: f.h * canvas.height };
+    let ok = true;
+    if (def.kind === "image") {
+      await drawImageFit(ctx, f.key === "signature" ? doc?.signature : doc?.stamp, f, B);
+    } else if (def.kind === "meds") {
+      const meds = (d.meds || []).filter(m => m.name);
+      if (meds.length) ok = drawMeds(ctx, f, meds, k, B);
+    } else if (f.key === "doctor_block") {
+      if (doc) {
+        const lines = [{ text: doc.name, bold: true, scale: 1.12 }];
+        if (doc.qual) lines.push({ text: doc.qual });
+        if (doc.spec) lines.push({ text: doc.spec });
+        if (doc.reg) lines.push({ text: "Reg. No: " + doc.reg + (doc.council ? ` (${doc.council})` : "") });
+        ok = drawMulti(ctx, f, lines, k, B);
+      }
+    } else if (def.kind === "multi") {
+      const v = (fieldValue(f.key, d, doc) || "").trim();
+      if (v) ok = drawMulti(ctx, f, [...(f.label && def.prefix ? [{ text: def.prefix + ":", bold: true }] : []), { text: v }], k, B);
+    } else {
+      const v = (fieldValue(f.key, d, doc) || "").trim();
+      if (v) ok = drawSingle(ctx, f, (f.label ? def.prefix : "") + v, k, B);
+    }
+    if (!ok) warnings.push(`"${def.label}" text does not fully fit its box. Enlarge the box in Templates or shorten the text.`);
+  }
+  return { canvas, warnings };
+}
+
+async function buildPDF(tpl, doc, d) {
+  const { canvas, warnings } = await renderRx(tpl, doc, d);
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: tpl.wPt > tpl.hPt ? "l" : "p", unit: "pt", format: [tpl.wPt, tpl.hPt], compress: true });
+  pdf.addImage(canvas.toDataURL("image/jpeg", +S.settings.quality || 0.92), "JPEG", 0, 0, tpl.wPt, tpl.hPt, undefined, "FAST");
+  pdf.setProperties({ title: `Prescription ${d.rxId}`, subject: `Prescription for ${d.patient.name}`, author: doc?.name || "", creator: "Rx Studio by Mediseller" });
+  const blob = pdf.output("blob");
+  const safe = s => String(s || "").replace(/[^a-z0-9]+/gi, "_").replace(/^_|_$/g, "");
+  return { blob, name: `${safe(d.rxId)}_${safe(d.patient.name) || "patient"}.pdf`, warnings };
+}
+
+/* ============================================================
+   Template import (PDF / image) and sample letterhead
+   ============================================================ */
+const TARGET_W = 1800; // px — ~218 dpi on A4
+async function importTemplateFile(file) {
+  const ext = file.name.split(".").pop().toLowerCase();
+  if (ext === "docx" || ext === "doc") throw new Error(`${file.name}: Word files can't be read in the browser. Open it in Word and use File → Save as PDF, then upload the PDF.`);
+  let canvas, wPt, hPt, pages = 1;
+  if (ext === "pdf" || file.type === "application/pdf") {
+    if (!window.pdfjsLib) throw new Error("PDF engine failed to load. Check your internet connection.");
+    const buf = await readFile(file, "buffer");
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise; pages = pdf.numPages;
+    const page = await pdf.getPage(1);
+    const vp1 = page.getViewport({ scale: 1 }); wPt = vp1.width; hPt = vp1.height;
+    const vp = page.getViewport({ scale: TARGET_W / vp1.width });
+    canvas = document.createElement("canvas"); canvas.width = Math.round(vp.width); canvas.height = Math.round(vp.height);
+    const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+  } else if (/^image\//.test(file.type)) {
+    const img = await loadImg(await readFile(file));
+    const s = Math.min(1, 2400 / img.naturalWidth);
+    canvas = document.createElement("canvas"); canvas.width = Math.round(img.naturalWidth * s); canvas.height = Math.round(img.naturalHeight * s);
+    const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    wPt = 595.28; hPt = 595.28 * canvas.height / canvas.width;
+  } else throw new Error(`${file.name}: unsupported file type. Use PDF, JPG or PNG.`);
+  return { id: uid(), name: file.name.replace(/\.[^.]+$/, ""), img: canvas.toDataURL("image/jpeg", 0.9), wPt, hPt, fields: [], createdAt: Date.now(), pages };
+}
+function sampleLetterhead() {
+  const W = 1786, H = 2526, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+  x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
+  x.fillStyle = "#15294B"; x.font = "600 72px Georgia, serif"; x.fillText("Sunrise Teleclinic", 110, 150);
+  x.fillStyle = "#5E6E88"; x.font = "30px Helvetica, Arial"; x.fillText("Online consultations · 24×7 · Pan-India", 112, 205);
+  x.textAlign = "right"; x.font = "28px Helvetica, Arial";
+  ["+91 80 4000 0000", "care@sunrise-teleclinic.example", "12 MG Road, Bengaluru 560001"].forEach((t, i) => x.fillText(t, W - 110, 120 + i * 42));
+  x.textAlign = "left"; x.fillStyle = "#1F57B5"; x.fillRect(110, 270, W - 220, 6); x.fillStyle = "#C8102E"; x.fillRect(110, 270, 220, 6);
+  x.strokeStyle = "#C9D3E3"; x.lineWidth = 3; x.beginPath(); x.moveTo(110, H - 170); x.lineTo(W - 110, H - 170); x.stroke();
+  x.fillStyle = "#5E6E88"; x.font = "26px Helvetica, Arial"; x.textAlign = "center";
+  x.fillText("This prescription was issued after a teleconsultation in line with the Telemedicine Practice Guidelines, 2020.", W / 2, H - 120);
+  x.fillText("Not valid for Schedule X / narcotic drugs. Valid for dispensing at registered pharmacies.", W / 2, H - 80);
+  return { id: uid(), name: "Sample letterhead (demo)", img: c.toDataURL("image/jpeg", 0.9), wPt: 595.28, hPt: 841.89,
+    fields: FIELD_ORDER.filter(k => !FIELDS[k].extra).map(newField).map(f => f.key === "medicines" ? { ...f, rxSymbol: true } : f), createdAt: Date.now() };
+}
+function sampleSignature() {
+  const c = document.createElement("canvas"); c.width = 600; c.height = 200; const x = c.getContext("2d");
+  x.strokeStyle = "#1a2a7a"; x.lineWidth = 5; x.lineCap = "round"; x.beginPath();
+  x.moveTo(40, 140); x.bezierCurveTo(80, 20, 120, 40, 130, 130); x.bezierCurveTo(150, 60, 190, 50, 210, 120);
+  x.bezierCurveTo(230, 160, 260, 70, 300, 100); x.bezierCurveTo(340, 130, 380, 60, 420, 110); x.bezierCurveTo(450, 140, 500, 90, 560, 80);
+  x.stroke(); x.beginPath(); x.moveTo(60, 165); x.lineTo(520, 150); x.lineWidth = 3; x.stroke();
+  return c.toDataURL("image/png");
+}
+const STARTER_MEDS = [
+  ["Paracetamol", "650 mg", "Tab"], ["Paracetamol", "500 mg", "Tab"], ["Azithromycin", "500 mg", "Tab"], ["Amoxicillin + Clavulanic acid", "625 mg", "Tab"],
+  ["Cetirizine", "10 mg", "Tab"], ["Levocetirizine", "5 mg", "Tab"], ["Montelukast + Levocetirizine", "10/5 mg", "Tab"], ["Pantoprazole", "40 mg", "Tab"],
+  ["Omeprazole", "20 mg", "Cap"], ["Ondansetron", "4 mg", "Tab"], ["Domperidone", "10 mg", "Tab"], ["ORS", "", "Sachet"],
+  ["Ibuprofen", "400 mg", "Tab"], ["Diclofenac", "", "Gel"], ["Metformin", "500 mg", "Tab"], ["Amlodipine", "5 mg", "Tab"],
+  ["Telmisartan", "40 mg", "Tab"], ["Atorvastatin", "10 mg", "Tab"], ["Vitamin D3", "60000 IU", "Cap"], ["Multivitamin", "", "Tab"],
+  ["Dextromethorphan cough", "", "Syp"], ["Ambroxol", "30 mg/5 ml", "Syp"], ["Clotrimazole", "1%", "Cream"], ["Mupirocin", "2%", "Oint"],
+  ["Carboxymethylcellulose eye", "0.5%", "Drops"]
+].map(([name, strength, form]) => ({ id: uid(), name, strength, form, dose: "", timing: "", duration: "", notes: "" }));
+
+/* ============================================================
+   Tabs
+   ============================================================ */
+function showTab(name) {
+  $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+  $$(".tab").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + name));
+  if (name === "generate") { refreshGenSelects(); schedulePreview(); }
+  if (name === "history") renderHistory();
+  if (name === "templates") { closeEditor(); }
+  if (name === "doctors") renderDoctors();
+  if (name === "medicines") renderMeds();
+  if (name === "settings") loadSettingsForm();
+  window.scrollTo({ top: 0 });
+}
+$("#tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) showTab(b.dataset.tab); });
+document.addEventListener("click", e => { const a = e.target.closest("[data-goto]"); if (a) { e.preventDefault(); showTab(a.dataset.goto); } });
+function updateCounts() {
+  $("#c-history").textContent = S.history.length || "";
+  $("#c-templates").textContent = S.templates.length ? `${S.templates.length}/${MAX_TEMPLATES}` : "";
+  $("#c-doctors").textContent = S.doctors.length || "";
+  $("#c-medicines").textContent = S.medicines.length || "";
+  $("#hdr-org").textContent = S.settings.org ? "· " + S.settings.org : "";
+  const ob = !S.templates.length || !S.doctors.length;
+  $("#onboard").classList.toggle("hidden", !ob);
+  $("#ob-tpl").classList.toggle("done", !!S.templates.length);
+  $("#ob-doc").classList.toggle("done", !!S.doctors.length);
+  $("#ob-med").classList.toggle("done", !!S.medicines.length);
+  $("#dl-meds").innerHTML = S.medicines.map(m => `<option value="${esc(m.name)}">${esc([m.strength, m.form].filter(Boolean).join(" · "))}</option>`).join("");
+}
+
+/* ============================================================
+   GENERATE
+   ============================================================ */
+const G = { rxId: "", lastWarnings: [] };
+function nextRxId() {
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return `${(S.settings.prefix || "RX").toUpperCase()}-${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}-${String(S.counter.n + 1).padStart(4, "0")}`;
+}
+function refreshGenSelects() {
+  const tSel = $("#g-tpl"), dSel = $("#g-doc"), tv = tSel.value || localStorage.getItem("rx.lastTpl") || "", dv = dSel.value || localStorage.getItem("rx.lastDoc") || "";
+  tSel.innerHTML = `<option value="">${S.templates.length ? "Select template" : "No templates yet"}</option>` + S.templates.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
+  dSel.innerHTML = `<option value="">${S.doctors.length ? "Select doctor" : "No doctors yet"}</option>` + S.doctors.map(d => `<option value="${d.id}">${esc(d.name)}${d.reg ? " · " + esc(d.reg) : ""}</option>`).join("");
+  if (S.templates.some(t => t.id === tv)) tSel.value = tv; else if (S.templates.length === 1) tSel.value = S.templates[0].id;
+  if (S.doctors.some(d => d.id === dv)) dSel.value = dv; else if (S.doctors.length === 1) dSel.value = S.doctors[0].id;
+}
+function medRowHTML(m = {}) {
+  return `<div class="medrow">
+    <input class="m-name" list="dl-meds" placeholder="Medicine name" value="${esc(m.name)}" autocomplete="off" />
+    <input class="m-strength" placeholder="Strength" value="${esc(m.strength)}" />
+    <input class="m-form" list="dl-form" placeholder="Form" value="${esc(m.form)}" />
+    <input class="m-dose" list="dl-dose" placeholder="Dose" value="${esc(m.dose)}" />
+    <select class="m-timing">${TIMINGS.map(t => `<option ${t === m.timing ? "selected" : ""} value="${esc(t)}">${t || "Timing"}</option>`).join("")}</select>
+    <input class="m-dur" list="dl-dur" placeholder="Duration" value="${esc(m.duration)}" />
+    <button class="x" title="Remove" data-rm>×</button>
+    <input class="notes m-notes" placeholder="Notes / instructions (optional)" value="${esc(m.notes)}" />
+  </div>`;
+}
+function addMedRow(m) { $("#g-meds").insertAdjacentHTML("beforeend", medRowHTML(m)); }
+$("#g-addmed").onclick = () => { addMedRow(); $("#g-meds").lastElementChild.querySelector(".m-name").focus(); };
+$("#g-meds").addEventListener("click", e => {
+  if (e.target.matches("[data-rm]")) { e.target.closest(".medrow").remove(); if (!$("#g-meds").children.length) addMedRow(); schedulePreview(); }
+});
+$("#g-meds").addEventListener("change", e => {
+  if (!e.target.matches(".m-name")) return;
+  const row = e.target.closest(".medrow"), v = e.target.value.trim().toLowerCase();
+  const hit = S.medicines.find(m => m.name.toLowerCase() === v);
+  if (!hit) return;
+  const set = (cls, val) => { const el = row.querySelector(cls); if (val && !el.value) el.value = val; };
+  set(".m-strength", hit.strength); set(".m-form", hit.form); set(".m-dose", hit.dose); set(".m-timing", hit.timing); set(".m-dur", hit.duration); set(".m-notes", hit.notes);
+  schedulePreview();
+});
+function collect() {
+  const v = s => $(s).value.trim();
+  return {
+    rxId: G.rxId, templateId: $("#g-tpl").value, doctorId: $("#g-doc").value, date: $("#g-date").value, mode: $("#g-mode").value,
+    patient: { name: v("#g-name"), age: v("#g-age"), ageUnit: $("#g-ageunit").value, gender: $("#g-gender").value, phone: v("#g-phone"), email: v("#g-email") },
+    meds: $$("#g-meds .medrow").map(r => ({
+      name: r.querySelector(".m-name").value.trim(), strength: r.querySelector(".m-strength").value.trim(), form: r.querySelector(".m-form").value.trim(),
+      dose: r.querySelector(".m-dose").value.trim(), timing: r.querySelector(".m-timing").value, duration: r.querySelector(".m-dur").value.trim(),
+      notes: r.querySelector(".m-notes").value.trim() })).filter(m => m.name),
+    investigations: v("#g-inv"), advice: v("#g-adv"), followUp: v("#g-fu")
+  };
+}
+function fillForm(d) {
+  G.rxId = d.rxId; $("#g-rxid").textContent = d.rxId;
+  refreshGenSelects();
+  if (d.templateId && S.templates.some(t => t.id === d.templateId)) $("#g-tpl").value = d.templateId;
+  if (d.doctorId && S.doctors.some(x => x.id === d.doctorId)) $("#g-doc").value = d.doctorId;
+  $("#g-date").value = d.date || todayISO(); $("#g-mode").value = d.mode || "Video";
+  const p = d.patient || {};
+  $("#g-name").value = p.name || ""; $("#g-age").value = p.age || ""; $("#g-ageunit").value = p.ageUnit || "Y";
+  $("#g-gender").value = p.gender || ""; $("#g-phone").value = p.phone || ""; $("#g-email").value = p.email || "";
+  $("#g-meds").innerHTML = ""; (d.meds && d.meds.length ? d.meds : [{}]).forEach(addMedRow);
+  $("#g-inv").value = d.investigations || ""; $("#g-adv").value = d.advice || ""; $("#g-fu").value = d.followUp || "";
+  $("#g-attest").checked = false;
+  schedulePreview();
+}
+function newPrescription() {
+  fillForm({ rxId: nextRxId(), templateId: $("#g-tpl").value, doctorId: $("#g-doc").value, date: todayISO(), mode: $("#g-mode").value || "Video" });
+}
+$("#g-new").onclick = () => { newPrescription(); $("#g-name").focus(); toast("New prescription started"); };
+
+let renderSeq = 0;
+async function updatePreview() {
+  const seq = ++renderSeq;
+  const d = collect(), tpl = S.templates.find(t => t.id === d.templateId), doc = S.doctors.find(x => x.id === d.doctorId);
+  const cv = $("#g-canvas"), empty = $("#g-pv-empty");
+  if (!tpl) { cv.classList.add("hidden"); empty.classList.remove("hidden"); empty.textContent = S.templates.length ? "Pick a template to see the preview." : "Upload a template first (Templates tab)."; renderWarnings(d, null, doc, []); return; }
+  $("#g-pv-status").textContent = "Rendering…";
+  try {
+    const off = document.createElement("canvas");
+    const { canvas, warnings } = await renderRx(tpl, doc, d, off);
+    if (seq !== renderSeq) return;
+    cv.width = canvas.width; cv.height = canvas.height; cv.getContext("2d").drawImage(canvas, 0, 0);
+    cv.classList.remove("hidden"); empty.classList.add("hidden");
+    $("#g-pv-status").textContent = tpl.name;
+    renderWarnings(d, tpl, doc, warnings);
+  } catch (e) { $("#g-pv-status").textContent = "Preview error: " + e.message; }
+}
+const schedulePreview = debounce(updatePreview, 220);
+$("#tab-generate").addEventListener("input", e => { if (!e.target.matches("#g-attest")) schedulePreview(); });
+$("#tab-generate").addEventListener("change", e => {
+  if (e.target.id === "g-tpl") localStorage.setItem("rx.lastTpl", e.target.value);
+  if (e.target.id === "g-doc") localStorage.setItem("rx.lastDoc", e.target.value);
+  if (!e.target.matches("#g-attest")) schedulePreview();
+});
+
+function problems(d, tpl, doc) {
+  const errs = [], warns = [];
+  if (!tpl) errs.push("Select a template.");
+  if (!doc) errs.push("Select a doctor.");
+  else {
+    if (!doc.reg) errs.push(`${doc.name} has no registration number. It is required on every prescription (Doctors tab).`);
+    if (!doc.signature) warns.push(`${doc.name} has no signature saved.`);
+  }
+  if (!d.patient.name) errs.push("Enter the patient's name.");
+  if (!d.patient.age) errs.push("Enter the patient's age.");
+  if (!d.patient.gender) errs.push("Select the patient's gender.");
+  if (!d.meds.length) errs.push("Add at least one medicine.");
+  if (tpl) {
+    const has = k => tpl.fields.some(f => f.key === k);
+    if (!has("medicines")) errs.push(`Template "${tpl.name}" has no Medicines box. Map it in Templates.`);
+    if (!has("patient_name")) warns.push("This template has no Patient name box.");
+    if (!has("doctor_block") && !has("doctor_reg")) warns.push("This template has no Doctor block or Reg. no. box. Fine only if they are already printed on the letterhead.");
+    if (doc?.signature && !has("signature")) warns.push("This template has no Signature box, so the signature won't print.");
+    const unmapped = [["investigations", d.investigations], ["advice", d.advice], ["follow_up", d.followUp]].filter(([k, v]) => v && !has(k)).map(([k]) => FIELDS[k].label);
+    if (unmapped.length) warns.push(`Not on this template, so won't print: ${unmapped.join(", ")}.`);
+  }
+  return { errs, warns };
+}
+function renderWarnings(d, tpl, doc, renderWarns) {
+  const { errs, warns } = problems(d, tpl, doc);
+  G.lastWarnings = renderWarns;
+  const items = [...errs.map(t => `<li class="err">${esc(t)}</li>`), ...[...warns, ...renderWarns].map(t => `<li>${esc(t)}</li>`)];
+  $("#g-warn").innerHTML = items.length ? items.join("") : `<li class="ok">Ready to generate.</li>`;
+}
+
+async function finalize() {
+  const d = collect(), tpl = S.templates.find(t => t.id === d.templateId), doc = S.doctors.find(x => x.id === d.doctorId);
+  const { errs } = problems(d, tpl, doc);
+  if (errs.length) { toast(errs[0], true); renderWarnings(d, tpl, doc, G.lastWarnings); return null; }
+  if (!$("#g-attest").checked) { toast("Tick the consultation confirmation first.", true); $("#g-attest").focus(); return null; }
+  if (!window.jspdf) { toast("PDF engine failed to load. Check your internet connection.", true); return null; }
+  const out = await buildPDF(tpl, doc, d);
+  if (out.warnings.length && !confirm("Some text was too long for its box and may be cut off:\n\n• " + out.warnings.join("\n• ") + "\n\nGenerate anyway?")) return null;
+  // history
+  const entry = { id: d.rxId, createdAt: Date.now(), data: d, doctorName: doc.name, templateName: tpl.name };
+  const i = S.history.findIndex(h => h.id === d.rxId);
+  if (i >= 0) { entry.createdAt = S.history[i].createdAt; S.history[i] = entry; }
+  else { S.history.unshift(entry); S.history = S.history.slice(0, MAX_HISTORY); if (d.rxId === nextRxId()) { S.counter.n++; save("counter"); } }
+  save("history");
+  // auto-add meds
+  if (S.settings.automed) {
+    let added = 0;
+    d.meds.forEach(m => { if (!S.medicines.some(x => x.name.toLowerCase() === m.name.toLowerCase())) { S.medicines.push({ id: uid(), ...m }); added++; } });
+    if (added) { save("medicines"); }
+  }
+  updateCounts();
+  return { ...out, d, doc };
+}
+function shareText(d, doc) {
+  return (S.settings.msg || "").replace(/\{patient\}/g, d.patient.name).replace(/\{doctor\}/g, doc?.name || "").replace(/\{rx_id\}/g, d.rxId)
+    .replace(/\{date\}/g, fmtDate(d.date)).replace(/\{org\}/g, S.settings.org || "").replace(/\n—\s*$/, "").trim();
+}
+function busy(btn, on) { btn.disabled = on; }
+$("#g-download").onclick = async e => {
+  busy(e.target, true);
+  try { const r = await finalize(); if (r) { downloadBlob(r.blob, r.name); toast(`Saved ${r.name}`); } }
+  catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+};
+$("#g-share").onclick = async e => {
+  busy(e.target, true);
+  try {
+    const r = await finalize(); if (!r) return;
+    const file = new File([r.blob], r.name, { type: "application/pdf" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: `Prescription ${r.d.rxId}`, text: shareText(r.d, r.doc) }); }
+      catch (err) { if (err.name !== "AbortError") throw err; }
+    } else { downloadBlob(r.blob, r.name); toast("This browser can't share files directly. The PDF was downloaded; use WhatsApp or Email."); }
+  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+};
+$("#g-wa").onclick = async e => {
+  busy(e.target, true);
+  try {
+    const r = await finalize(); if (!r) return;
+    const file = new File([r.blob], r.name, { type: "application/pdf" });
+    const mobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (mobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], text: shareText(r.d, r.doc) }); return; } catch (err) { if (err.name === "AbortError") return; }
+    }
+    downloadBlob(r.blob, r.name);
+    let ph = (r.d.patient.phone || "").replace(/\D/g, "");
+    if (ph.length === 10) ph = (S.settings.cc || "91") + ph;
+    const url = `https://wa.me/${ph}?text=${encodeURIComponent(shareText(r.d, r.doc))}`;
+    window.open(url, "_blank", "noopener");
+    toast("PDF downloaded. Attach it in the WhatsApp chat that just opened.");
+  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+};
+$("#g-email-btn").onclick = async e => {
+  busy(e.target, true);
+  try {
+    const r = await finalize(); if (!r) return;
+    downloadBlob(r.blob, r.name);
+    const subj = `Prescription ${r.d.rxId} — ${r.d.patient.name}`;
+    location.href = `mailto:${encodeURIComponent(r.d.patient.email || "")}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(shareText(r.d, r.doc) + "\n\n(Prescription PDF attached)")}`;
+    toast("PDF downloaded. Attach it to the email draft.");
+  } catch (err) { toast("Failed: " + err.message, true); } finally { busy(e.target, false); }
+};
+
+/* ============================================================
+   HISTORY
+   ============================================================ */
+function renderHistory() {
+  const q = $("#h-search").value.trim().toLowerCase();
+  const rows = S.history.filter(h => !q || [h.id, h.data.patient.name, h.data.patient.phone, h.doctorName].join(" ").toLowerCase().includes(q));
+  $("#h-empty").classList.toggle("hidden", !!S.history.length);
+  $("#h-body").innerHTML = rows.map(h => `<tr>
+    <td class="mono small">${esc(fmtDate(h.data.date))}</td><td class="mono small">${esc(h.id)}</td>
+    <td><strong>${esc(h.data.patient.name)}</strong> <span class="muted small">${esc(h.data.patient.age)}${esc(AGEU[h.data.patient.ageUnit] || "")} ${esc((h.data.patient.gender || "")[0] || "")}</span></td>
+    <td class="small">${esc(h.data.patient.phone)}</td><td class="small">${esc(h.doctorName)}</td>
+    <td class="small muted">${esc(h.data.meds.map(m => m.name).join(", ")).slice(0, 80)}</td>
+    <td style="white-space:nowrap"><button class="btn sm" data-h-pdf="${esc(h.id)}">PDF</button> <button class="btn sm" data-h-open="${esc(h.id)}">Open</button> <button class="btn sm" data-h-copy="${esc(h.id)}" title="New prescription with the same details">Repeat</button> <button class="x" data-h-del="${esc(h.id)}" title="Delete">×</button></td></tr>`).join("");
+}
+$("#h-search").oninput = renderHistory;
+$("#h-body").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const id = b.dataset.hPdf || b.dataset.hOpen || b.dataset.hDel || b.dataset.hCopy; const h = S.history.find(x => x.id === id); if (!h) return;
+  if (b.dataset.hDel) { if (confirm(`Delete ${id} from history?`)) { S.history = S.history.filter(x => x.id !== id); save("history"); renderHistory(); updateCounts(); } return; }
+  if (b.dataset.hOpen) { showTab("generate"); fillForm(h.data); toast(`Opened ${id}`); return; }
+  if (b.dataset.hCopy) { showTab("generate"); fillForm({ ...h.data, rxId: nextRxId(), date: todayISO() }); toast("Copied into a new prescription"); return; }
+  const tpl = S.templates.find(t => t.id === h.data.templateId), doc = S.doctors.find(x => x.id === h.data.doctorId);
+  if (!tpl || !doc) { toast("The template or doctor used for this prescription was deleted.", true); return; }
+  try { const r = await buildPDF(tpl, doc, h.data); downloadBlob(r.blob, r.name); } catch (err) { toast(err.message, true); }
+});
+$("#h-export").onclick = () => {
+  const head = ["rx_id", "date", "patient", "age", "gender", "phone", "email", "doctor", "template", "medicines", "investigations", "advice", "follow_up"];
+  const lines = S.history.map(h => { const d = h.data; return [h.id, d.date, d.patient.name, d.patient.age + (AGEU[d.patient.ageUnit] || ""), d.patient.gender, d.patient.phone, d.patient.email, h.doctorName, h.templateName,
+    d.meds.map(m => `${medTitle(m)} ${m.dose} ${m.timing} ${m.duration}`.replace(/\s+/g, " ").trim()).join(" | "), d.investigations, d.advice, d.followUp].map(csvCell).join(","); });
+  downloadBlob(new Blob([[head.join(","), ...lines].join("\n")], { type: "text/csv" }), `rx-history-${todayISO()}.csv`);
+};
+
+/* ============================================================
+   TEMPLATES
+   ============================================================ */
+function renderTemplates() {
+  $("#tpl-count").textContent = `${S.templates.length} of ${MAX_TEMPLATES}`;
+  $("#tpl-drop").classList.toggle("hidden", S.templates.length >= MAX_TEMPLATES);
+  $("#tpl-grid").innerHTML = S.templates.map(t => `<div class="tpl-card">
+      <div class="thumb"><img src="${t.img}" alt="" /></div>
+      <div class="meta"><span class="name">${esc(t.name)}</span>
+        <span class="muted small">${t.fields.length} fields mapped${t.fields.some(f => f.key === "medicines") ? "" : ' · <span style="color:var(--red)">no medicines box</span>'}</span>
+        <div class="row"><button class="btn sm primary" data-t-edit="${t.id}">Map fields</button><button class="btn sm danger" data-t-del="${t.id}">Delete</button></div>
+      </div></div>`).join("") || `<p class="muted small">No templates yet.</p>`;
+}
+async function handleTemplateFiles(files) {
+  let added = 0;
+  for (const f of files) {
+    if (S.templates.length >= MAX_TEMPLATES) { toast(`Limit reached: up to ${MAX_TEMPLATES} templates.`, true); break; }
+    try {
+      toast(`Processing ${f.name}…`);
+      const t = await importTemplateFile(f);
+      t.fields = FIELD_ORDER.filter(k => !FIELDS[k].extra).map(newField);
+      S.templates.push(t); added++;
+      if (t.pages > 1) toast(`${f.name}: ${t.pages} pages found, using page 1.`);
+    } catch (e) { toast(e.message, true); await new Promise(r => setTimeout(r, 2500)); }
+  }
+  if (added) { await save("templates"); renderTemplates(); updateCounts(); toast(`${added} template${added > 1 ? "s" : ""} added. Fields were auto-placed; open "Map fields" to align them.`);
+    if (added === 1) openEditor(S.templates[S.templates.length - 1].id); }
+}
+const drop = $("#tpl-drop");
+drop.onclick = () => $("#tpl-file").click();
+$("#tpl-file").onchange = e => { handleTemplateFiles([...e.target.files]); e.target.value = ""; };
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => handleTemplateFiles([...e.dataTransfer.files]));
+$("#tpl-grid").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.tEdit) openEditor(b.dataset.tEdit);
+  if (b.dataset.tDel) { const t = S.templates.find(x => x.id === b.dataset.tDel);
+    if (confirm(`Delete template "${t.name}"? Prescriptions in history that used it can no longer be re-downloaded.`)) { S.templates = S.templates.filter(x => x !== t); save("templates"); renderTemplates(); updateCounts(); } }
+});
+
+/* --- field mapping editor --- */
+const E = { tpl: null, sel: null };
+function openEditor(id) {
+  E.tpl = S.templates.find(t => t.id === id); if (!E.tpl) return; E.sel = null;
+  $("#tpl-list-view").classList.add("hidden"); $("#tpl-editor-view").classList.remove("hidden");
+  $("#ed-name").value = E.tpl.name; $("#ed-overlay").checked = false; $("#ed-stage").classList.remove("overlay");
+  $("#ed-img").src = E.tpl.img;
+  $("#ed-copy").innerHTML = `<option value="">Copy layout from…</option>` + S.templates.filter(t => t !== E.tpl).map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
+  drawEditor();
+}
+function closeEditor() { E.tpl = null; $("#tpl-editor-view").classList.add("hidden"); $("#tpl-list-view").classList.remove("hidden"); renderTemplates(); }
+$("#ed-back").onclick = closeEditor;
+const saveTpl = debounce(() => { save("templates"); if ($("#ed-overlay").checked) refreshOverlay(); }, 300);
+$("#ed-name").oninput = () => { E.tpl.name = $("#ed-name").value.trim() || "Untitled"; saveTpl(); };
+function drawEditor() {
+  const st = $("#ed-stage"); st.querySelectorAll(".fbox").forEach(n => n.remove());
+  E.tpl.fields.forEach((f, i) => {
+    const d = FIELDS[f.key]; const el = document.createElement("div");
+    el.className = "fbox" + (d.kind === "image" ? " img" : "") + (E.sel === i ? " sel" : "");
+    el.style.cssText = `left:${f.x * 100}%;top:${f.y * 100}%;width:${f.w * 100}%;height:${f.h * 100}%`;
+    el.dataset.i = i; el.innerHTML = `${esc(d.label)}<span class="rz"></span>`;
+    st.appendChild(el);
+  });
+  const placed = new Set(E.tpl.fields.map(f => f.key));
+  $("#ed-palette").innerHTML = FIELD_ORDER.map(k => `<button data-k="${k}" class="${placed.has(k) ? "placed" : ""}" title="${placed.has(k) ? "Placed (click to select)" : "Click to add"}">${placed.has(k) ? "✓ " : "+ "}${esc(FIELDS[k].label)}</button>`).join("");
+  drawProps();
+}
+function drawProps() {
+  const P = $("#ed-props"), f = E.tpl.fields[E.sel];
+  if (!f) { P.innerHTML = `<p class="muted small" style="margin:0">Select a field to edit its style.</p>`; return; }
+  const d = FIELDS[f.key];
+  const txt = d.kind !== "image";
+  P.innerHTML = `<div class="card-h" style="margin-bottom:8px"><strong style="color:var(--navy)">${esc(d.label)}</strong><button class="btn sm danger" id="p-del">Remove</button></div>
+    <div class="grid g2">
+      ${txt ? `<label class="f">Font size (pt)<input type="number" step="0.5" min="5" max="40" id="p-size" value="${f.size}" /></label>
+      <label class="f">Colour<input type="color" id="p-color" value="${f.color || "#111111"}" style="height:36px;padding:2px" /></label>` : ""}
+      <label class="f">Align<select id="p-align">${["left", "center", "right"].map(a => `<option ${f.align === a ? "selected" : ""}>${a}</option>`).join("")}</select></label>
+      ${txt && d.kind !== "meds" && f.key !== "doctor_block" ? `<label class="f">Bold<select id="p-bold"><option value="0">No</option><option value="1" ${f.bold ? "selected" : ""}>Yes</option></select></label>` : ""}
+      ${d.prefix ? `<label class="row small span2" style="color:var(--ink)"><input type="checkbox" id="p-label" ${f.label ? "checked" : ""}/> Print label "${esc(d.prefix.trim())}" (untick if the letterhead already has it)</label>` : ""}
+      ${d.kind === "meds" ? `<label class="row small span2" style="color:var(--ink)"><input type="checkbox" id="p-rx" ${f.rxSymbol ? "checked" : ""}/> Print ℞ symbol above the table</label>` : ""}
+    </div>
+    <p class="muted small" style="margin:8px 0 0">Text shrinks automatically to fit the box.</p>`;
+  const bind = (id, fn) => { const el = $(id); if (el) el.oninput = el.onchange = () => { fn(el); saveTpl(); }; };
+  bind("#p-size", el => f.size = clamp(+el.value || 10, 5, 40));
+  bind("#p-color", el => f.color = el.value);
+  bind("#p-align", el => f.align = el.value);
+  bind("#p-bold", el => f.bold = el.value === "1");
+  bind("#p-label", el => f.label = el.checked);
+  bind("#p-rx", el => f.rxSymbol = el.checked);
+  $("#p-del").onclick = () => removeSel();
+}
+function removeSel() { if (E.sel == null) return; E.tpl.fields.splice(E.sel, 1); E.sel = null; drawEditor(); saveTpl(); }
+$("#ed-palette").onclick = e => {
+  const k = e.target.closest("button")?.dataset.k; if (!k) return;
+  const i = E.tpl.fields.findIndex(f => f.key === k);
+  if (i >= 0) E.sel = i; else { E.tpl.fields.push(newField(k)); E.sel = E.tpl.fields.length - 1; saveTpl(); }
+  drawEditor();
+};
+$("#ed-auto").onclick = () => { FIELD_ORDER.filter(k => !FIELDS[k].extra && !E.tpl.fields.some(f => f.key === k)).forEach(k => E.tpl.fields.push(newField(k))); drawEditor(); saveTpl(); };
+$("#ed-clear").onclick = () => { if (confirm("Remove all fields from this template?")) { E.tpl.fields = []; E.sel = null; drawEditor(); saveTpl(); } };
+$("#ed-copy").onchange = e => {
+  const src = S.templates.find(t => t.id === e.target.value); e.target.value = ""; if (!src) return;
+  if (confirm(`Replace this template's fields with the layout from "${src.name}"?`)) { E.tpl.fields = JSON.parse(JSON.stringify(src.fields)); E.sel = null; drawEditor(); saveTpl(); }
+};
+async function refreshOverlay() {
+  if (!E.tpl) return;
+  if (!$("#ed-overlay").checked) { $("#ed-img").src = E.tpl.img; $("#ed-stage").classList.remove("overlay"); return; }
+  const doc = S.doctors[0] ? S.doctors[0] : { ...SAMPLE_DOC, signature: sampleSignature() };
+  const { canvas } = await renderRx(E.tpl, doc, SAMPLE);
+  $("#ed-img").src = canvas.toDataURL("image/jpeg", 0.85); $("#ed-stage").classList.add("overlay");
+}
+$("#ed-overlay").onchange = refreshOverlay;
+// drag / resize
+(() => {
+  const st = $("#ed-stage"); let drag = null;
+  st.addEventListener("pointerdown", e => {
+    const box = e.target.closest(".fbox");
+    if (!box) { E.sel = null; drawEditor(); return; }
+    const i = +box.dataset.i; if (E.sel !== i) { E.sel = i; st.querySelectorAll(".fbox").forEach(n => n.classList.toggle("sel", +n.dataset.i === i)); drawProps(); }
+    const r = st.getBoundingClientRect(), f = E.tpl.fields[i];
+    drag = { i, box, rz: e.target.classList.contains("rz"), sx: e.clientX, sy: e.clientY, r, o: { ...f } };
+    st.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  st.addEventListener("pointermove", e => {
+    if (!drag) return; const f = E.tpl.fields[drag.i], dx = (e.clientX - drag.sx) / drag.r.width, dy = (e.clientY - drag.sy) / drag.r.height;
+    if (drag.rz) { f.w = clamp(drag.o.w + dx, 0.02, 1 - f.x); f.h = clamp(drag.o.h + dy, 0.008, 1 - f.y); }
+    else { f.x = clamp(drag.o.x + dx, 0, 1 - f.w); f.y = clamp(drag.o.y + dy, 0, 1 - f.h); }
+    drag.box.style.left = f.x * 100 + "%"; drag.box.style.top = f.y * 100 + "%"; drag.box.style.width = f.w * 100 + "%"; drag.box.style.height = f.h * 100 + "%";
+  });
+  const end = () => { if (drag) { drag = null; saveTpl(); } };
+  st.addEventListener("pointerup", end); st.addEventListener("pointercancel", end);
+  document.addEventListener("keydown", e => {
+    if (!E.tpl || E.sel == null || $("#tpl-editor-view").classList.contains("hidden") || e.target.matches("input,select,textarea")) return;
+    const f = E.tpl.fields[E.sel], s = e.shiftKey ? 0.01 : 0.002;
+    const mv = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] }[e.key];
+    if (mv) { e.preventDefault(); f.x = clamp(f.x + mv[0], 0, 1 - f.w); f.y = clamp(f.y + mv[1], 0, 1 - f.h); drawEditor(); saveTpl(); }
+    if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); removeSel(); }
+  });
+})();
+
+/* ============================================================
+   DOCTORS
+   ============================================================ */
+const D = { editId: null, signature: "", stamp: "", target: "" };
+function renderDoctors() {
+  $("#d-grid").innerHTML = S.doctors.map(d => `<div class="doc-card">
+    <strong style="color:var(--navy)">${esc(d.name)}</strong><div class="small muted">${esc([d.qual, d.spec].filter(Boolean).join(" · "))}</div>
+    <div class="small">${d.reg ? `Reg. No: <span class="mono">${esc(d.reg)}</span> ${esc(d.council)}` : `<span style="color:var(--red)">No registration number</span>`}</div>
+    <div class="imgs">${d.signature ? `<img src="${d.signature}" alt="signature" />` : `<span class="small" style="color:var(--amber)">No signature</span>`}${d.stamp ? `<img src="${d.stamp}" alt="stamp" />` : ""}</div>
+    <div class="row"><button class="btn sm" data-d-edit="${d.id}">Edit</button><button class="btn sm danger" data-d-del="${d.id}">Delete</button></div></div>`).join("");
+}
+function setSlot(which, src) {
+  D[which] = src || "";
+  $(`#d-${which === "signature" ? "sig" : "stamp"}-pv`).innerHTML = src ? `<img src="${src}" alt="" />` : "None";
+}
+function resetDoctorForm() {
+  D.editId = null; ["name", "qual", "reg", "council", "spec", "contact"].forEach(k => $("#d-" + k).value = "");
+  setSlot("signature", ""); setSlot("stamp", ""); $("#d-form-title").textContent = "Add doctor"; $("#d-cancel").classList.add("hidden");
+}
+async function processSignatureImage(file, whiten) {
+  const img = await loadImg(await readFile(file));
+  const s = Math.min(1, 900 / img.naturalWidth); const c = document.createElement("canvas");
+  c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+  const x = c.getContext("2d"); x.drawImage(img, 0, 0, c.width, c.height);
+  if (whiten) {
+    const id = x.getImageData(0, 0, c.width, c.height), p = id.data;
+    for (let i = 0; i < p.length; i += 4) { const l = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
+      if (l > 225) p[i + 3] = 0; else if (l > 170) p[i + 3] = Math.round(p[i + 3] * (225 - l) / 55); }
+    x.putImageData(id, 0, 0);
+  }
+  return c.toDataURL("image/png");
+}
+$("#d-sig-up").onclick = () => { D.target = "signature"; $("#d-file").click(); };
+$("#d-stamp-up").onclick = () => { D.target = "stamp"; $("#d-file").click(); };
+$("#d-sig-rm").onclick = () => setSlot("signature", "");
+$("#d-stamp-rm").onclick = () => setSlot("stamp", "");
+$("#d-file").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try { setSlot(D.target, await processSignatureImage(f, $("#d-whiten").checked)); } catch (err) { toast(err.message, true); } };
+$("#d-sig-draw").onclick = () => {
+  const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="card"><div class="card-h"><h3>Draw signature</h3></div><canvas class="sigpad" width="1000" height="320"></canvas>
+    <div class="row" style="margin-top:10px"><button class="btn" data-a="clear">Clear</button><span style="flex:1"></span><button class="btn ghost" data-a="cancel">Cancel</button><button class="btn primary" data-a="use">Use signature</button></div></div>`;
+  document.body.appendChild(m);
+  const c = m.querySelector("canvas"), x = c.getContext("2d"); x.lineWidth = 5; x.lineCap = x.lineJoin = "round"; x.strokeStyle = "#1a2a7a";
+  let down = false, drawn = false;
+  const pt = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
+  c.onpointerdown = e => { down = true; drawn = true; c.setPointerCapture(e.pointerId); x.beginPath(); x.moveTo(...pt(e)); };
+  c.onpointermove = e => { if (down) { x.lineTo(...pt(e)); x.stroke(); } };
+  c.onpointerup = () => down = false;
+  m.onclick = e => { const a = e.target.dataset.a; if (!a) return;
+    if (a === "clear") { x.clearRect(0, 0, c.width, c.height); drawn = false; }
+    if (a === "cancel") m.remove();
+    if (a === "use") { if (drawn) setSlot("signature", c.toDataURL("image/png")); m.remove(); } };
+};
+$("#d-save").onclick = () => {
+  const v = k => $("#d-" + k).value.trim();
+  if (!v("name")) return toast("Enter the doctor's name.", true);
+  if (!v("reg")) return toast("A registration number is mandatory on prescriptions.", true);
+  const rec = { id: D.editId || uid(), name: v("name"), qual: v("qual"), reg: v("reg"), council: v("council"), spec: v("spec"), contact: v("contact"), signature: D.signature, stamp: D.stamp };
+  const i = S.doctors.findIndex(d => d.id === rec.id); if (i >= 0) S.doctors[i] = rec; else S.doctors.push(rec);
+  save("doctors"); renderDoctors(); updateCounts(); toast(`Saved ${rec.name}`); resetDoctorForm();
+};
+$("#d-cancel").onclick = resetDoctorForm;
+$("#d-grid").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.dEdit) { const d = S.doctors.find(x => x.id === b.dataset.dEdit); D.editId = d.id;
+    ["name", "qual", "reg", "council", "spec", "contact"].forEach(k => $("#d-" + k).value = d[k] || "");
+    setSlot("signature", d.signature); setSlot("stamp", d.stamp); $("#d-form-title").textContent = "Edit doctor"; $("#d-cancel").classList.remove("hidden"); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  if (b.dataset.dDel) { const d = S.doctors.find(x => x.id === b.dataset.dDel);
+    if (confirm(`Delete ${d.name}?`)) { S.doctors = S.doctors.filter(x => x !== d); save("doctors"); renderDoctors(); updateCounts(); } }
+});
+
+/* ============================================================
+   MEDICINES
+   ============================================================ */
+$("#m-timing").innerHTML = TIMINGS.map(t => `<option value="${esc(t)}">${t || "—"}</option>`).join("");
+function renderMeds() {
+  const q = $("#m-search").value.trim().toLowerCase();
+  const list = S.medicines.filter(m => !q || (m.name + " " + m.strength).toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+  $("#m-count").textContent = `${S.medicines.length} medicines`;
+  $("#m-body").innerHTML = list.slice(0, 500).map(m => `<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.strength)}</td><td>${esc(m.form)}</td><td>${esc(m.dose)}</td><td>${esc(m.timing)}</td><td>${esc(m.duration)}</td>
+    <td style="white-space:nowrap"><button class="btn sm" data-m-edit="${m.id}">Edit</button> <button class="x" data-m-del="${m.id}">×</button></td></tr>`).join("")
+    + (list.length > 500 ? `<tr><td colspan="7" class="muted small">Showing 500 of ${list.length}. Search to narrow down.</td></tr>` : "");
+}
+$("#m-search").oninput = renderMeds;
+function upsertMed(m) {
+  const key = x => (x.name + "|" + (x.strength || "")).toLowerCase();
+  const i = S.medicines.findIndex(x => key(x) === key(m));
+  if (i >= 0) { S.medicines[i] = { ...S.medicines[i], ...m, id: S.medicines[i].id }; return false; }
+  S.medicines.push({ id: uid(), ...m }); return true;
+}
+$("#m-add").onclick = () => {
+  const m = { name: $("#m-name").value.trim(), strength: $("#m-strength").value.trim(), form: $("#m-form-i").value.trim(), dose: $("#m-dose").value.trim(), timing: $("#m-timing").value, duration: $("#m-dur").value.trim(), notes: "" };
+  if (!m.name) return toast("Enter a medicine name.", true);
+  upsertMed(m); save("medicines"); renderMeds(); updateCounts();
+  ["#m-name", "#m-strength", "#m-form-i", "#m-dose", "#m-dur"].forEach(s => $(s).value = ""); $("#m-timing").value = ""; $("#m-name").focus(); $("#m-add").textContent = "Add";
+};
+$("#m-body").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.mDel) { S.medicines = S.medicines.filter(m => m.id !== b.dataset.mDel); save("medicines"); renderMeds(); updateCounts(); }
+  if (b.dataset.mEdit) { const m = S.medicines.find(x => x.id === b.dataset.mEdit);
+    $("#m-name").value = m.name; $("#m-strength").value = m.strength || ""; $("#m-form-i").value = m.form || ""; $("#m-dose").value = m.dose || ""; $("#m-timing").value = m.timing || ""; $("#m-dur").value = m.duration || "";
+    $("#m-add").textContent = "Update"; window.scrollTo({ top: 0, behavior: "smooth" }); }
+});
+$("#m-import").onclick = () => $("#m-file").click();
+$("#m-file").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  const rows = parseCSV((await readFile(f, "text")).replace(/^﻿/, ""));
+  if (!rows.length) return toast("The CSV is empty.", true);
+  const head = rows[0].map(h => h.trim().toLowerCase());
+  const col = names => head.findIndex(h => names.includes(h));
+  const ix = { name: col(["name", "medicine", "medicine name", "drug", "product"]), strength: col(["strength", "dosage strength", "mg"]), form: col(["form", "type", "dosage form"]),
+    dose: col(["dose", "frequency"]), timing: col(["timing", "when"]), duration: col(["duration", "days"]), notes: col(["notes", "instructions", "remarks"]) };
+  const hasHeader = ix.name >= 0; if (!hasHeader) { ix.name = 0; ix.strength = 1; ix.form = 2; ix.dose = 3; ix.timing = 4; ix.duration = 5; ix.notes = 6; }
+  let added = 0, updated = 0;
+  rows.slice(hasHeader ? 1 : 0).forEach(r => {
+    const g = k => ix[k] >= 0 ? (r[ix[k]] || "").trim() : "";
+    if (!g("name")) return;
+    upsertMed({ name: g("name"), strength: g("strength"), form: g("form"), dose: g("dose"), timing: g("timing"), duration: g("duration"), notes: g("notes") }) ? added++ : updated++;
+  });
+  save("medicines"); renderMeds(); updateCounts(); toast(`Imported: ${added} added, ${updated} updated.`);
+};
+const MED_HEAD = ["name", "strength", "form", "dose", "timing", "duration", "notes"];
+$("#m-export").onclick = () => downloadBlob(new Blob([[MED_HEAD.join(","), ...S.medicines.map(m => MED_HEAD.map(k => csvCell(m[k])).join(","))].join("\n")], { type: "text/csv" }), "medicines.csv");
+$("#m-sample").onclick = () => downloadBlob(new Blob([MED_HEAD.join(",") + "\nParacetamol,650 mg,Tab,1-0-1,After food,3 days,\nAzithromycin,500 mg,Tab,1-0-0,Before food,3 days,\"Complete the full course\"\n"], { type: "text/csv" }), "medicines-sample.csv");
+$("#m-clear").onclick = () => { if (confirm("Delete the entire medicine list?")) { S.medicines = []; save("medicines"); renderMeds(); updateCounts(); } };
+
+/* ============================================================
+   SETTINGS & BACKUP
+   ============================================================ */
+function loadSettingsForm() {
+  const s = S.settings;
+  $("#s-org").value = s.org; $("#s-prefix").value = s.prefix; $("#s-cc").value = s.cc; $("#s-font").value = s.font; $("#s-datefmt").value = s.datefmt;
+  $("#s-quality").value = s.quality; $("#s-msg").value = s.msg; $("#s-automed").checked = !!s.automed;
+  if (navigator.storage?.estimate) navigator.storage.estimate().then(e => $("#s-usage").textContent = `Storage used: ${(e.usage / 1048576).toFixed(1)} MB of about ${(e.quota / 1048576).toFixed(0)} MB available.`);
+}
+$("#s-save").onclick = () => {
+  Object.assign(S.settings, { org: $("#s-org").value.trim(), prefix: ($("#s-prefix").value.trim() || "RX").replace(/[^a-z0-9]/gi, "").toUpperCase(), cc: $("#s-cc").value.replace(/\D/g, "") || "91",
+    font: $("#s-font").value, datefmt: $("#s-datefmt").value, quality: $("#s-quality").value, msg: $("#s-msg").value, automed: $("#s-automed").checked });
+  save("settings"); updateCounts(); loadSettingsForm();
+  if (!S.history.some(h => h.id === G.rxId)) { G.rxId = nextRxId(); $("#g-rxid").textContent = G.rxId; }
+  toast("Settings saved");
+};
+$("#s-export").onclick = () => {
+  const data = { app: "mediseller-rx-studio", version: 1, exportedAt: new Date().toISOString() }; KEYS.forEach(k => data[k] = S[k]);
+  downloadBlob(new Blob([JSON.stringify(data)], { type: "application/json" }), `rx-studio-backup-${todayISO()}.json`);
+};
+$("#s-import").onclick = () => $("#s-file").click();
+$("#s-file").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const data = JSON.parse(await readFile(f, "text"));
+    if (data.app !== "mediseller-rx-studio") throw new Error("This is not an Rx Studio backup file.");
+    if (!confirm("Importing replaces ALL current data on this device. Continue?")) return;
+    for (const k of KEYS) if (data[k] !== undefined) { S[k] = k === "settings" ? { ...DEFAULT_SETTINGS, ...data[k] } : data[k]; await save(k); }
+    toast("Backup restored"); boot();
+  } catch (err) { toast(err.message, true); }
+};
+$("#s-wipe").onclick = async () => {
+  if (!confirm("Delete ALL templates, doctors, medicines, history and settings from this device? This cannot be undone.")) return;
+  if (prompt('Type DELETE to confirm') !== "DELETE") return;
+  S.templates = []; S.doctors = []; S.medicines = []; S.history = []; S.settings = { ...DEFAULT_SETTINGS }; S.counter = { n: 0 };
+  for (const k of KEYS) await save(k);
+  toast("All data deleted"); boot();
+};
+
+/* ============================================================
+   Demo data
+   ============================================================ */
+$("#ob-demo").onclick = async () => {
+  if (S.templates.length < MAX_TEMPLATES && !S.templates.some(t => t.name.includes("(demo)"))) S.templates.push(sampleLetterhead());
+  if (!S.doctors.some(d => d.name === SAMPLE_DOC.name)) S.doctors.push({ id: uid(), ...SAMPLE_DOC, contact: "", signature: sampleSignature(), stamp: "" });
+  STARTER_MEDS.forEach(upsertMed);
+  await Promise.all(["templates", "doctors", "medicines"].map(save));
+  updateCounts(); refreshGenSelects();
+  $("#g-tpl").value = S.templates.find(t => t.name.includes("(demo)")).id; $("#g-doc").value = S.doctors.find(d => d.name === SAMPLE_DOC.name).id;
+  localStorage.setItem("rx.lastTpl", $("#g-tpl").value); localStorage.setItem("rx.lastDoc", $("#g-doc").value);
+  if (!$("#g-name").value) fillForm({ ...SAMPLE, rxId: G.rxId || nextRxId(), templateId: $("#g-tpl").value, doctorId: $("#g-doc").value });
+  toast("Demo data loaded. Replace it with your own templates and doctors.");
+};
+
+/* ============================================================
+   Boot
+   ============================================================ */
+async function boot() {
+  try {
+    for (const k of KEYS) { const v = await DB.get(k); if (v !== undefined) S[k] = k === "settings" ? { ...DEFAULT_SETTINGS, ...v } : v; }
+  } catch (e) { toast("Storage unavailable (private window?). Data will not be kept.", true); }
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+  updateCounts(); renderTemplates();
+  newPrescription();
+  showTab("generate");
+}
+boot();
+</script>
+</body>
+</html>
