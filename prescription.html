@@ -157,6 +157,20 @@
   .toast.err{background:var(--red);}
   .modal{position:fixed;inset:0;background:rgba(21,41,75,.45);display:flex;align-items:center;justify-content:center;z-index:90;padding:16px;}
   .modal .card{max-width:560px;width:100%;margin:0;}
+  /* login */
+  .login{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;
+    background:radial-gradient(900px 500px at 80% -10%, rgba(31,87,181,.10), transparent 60%),radial-gradient(700px 400px at -10% 110%, rgba(200,16,46,.07), transparent 55%),var(--paper);}
+  .login .card{width:100%;max-width:380px;padding:26px 24px;margin:0;}
+  .login .brand{margin-bottom:18px;}
+  .login .err{color:var(--red);font-size:13px;min-height:20px;margin:8px 0 0;}
+  .login .hint{font-size:12px;margin-top:14px;}
+  .pw{position:relative;} .pw input{padding-right:64px;}
+  .pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;color:var(--blue);font:500 12px "IBM Plex Sans",sans-serif;cursor:pointer;padding:6px;min-height:0;}
+  body.locked .wrap{display:none;}
+  body.booting .login{visibility:hidden;} /* until saved setup is read: avoids flashing the login at signed-in users */
+  body:not(.locked) .login{display:none;}
+  .hdr-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+  .warnchip{border:1px solid rgba(154,98,0,.35);background:var(--amber-soft);color:var(--amber);cursor:pointer;}
   footer.foot{margin-top:30px;font-size:11px;color:var(--muted);text-align:center;}
 
   /* shared mobile helpers (hidden on desktop) */
@@ -191,6 +205,7 @@
       background:rgba(244,247,252,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
     nav.tabs::-webkit-scrollbar{display:none;}
     nav.tabs button{flex:none;min-height:40px;}
+    .warnchip,#hdr-logout{min-height:40px;}
     .top{border-bottom:none;padding-bottom:4px;}
     /* generate: sticky action bar + full-screen preview sheet */
     #tab-generate{padding-bottom:76px;}
@@ -240,7 +255,7 @@
     .attest{font-size:14px;}
     .tpl-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
     .doc-grid{grid-template-columns:1fr;}
-    #h-search,#m-search{width:100%!important;max-width:none!important;}
+    #m-search{width:100%!important;max-width:none!important;}
     #ed-name{width:100%!important;}
     .editor .note{display:none;}
     /* tables become cards */
@@ -256,7 +271,21 @@
   }
 </style>
 </head>
-<body>
+<body class="locked booting">
+<div class="login" id="login">
+  <form class="card" id="login-form" autocomplete="on">
+    <div class="brand"><span class="capsule"></span><span class="wordmark">Rx Studio</span></div>
+    <h2 style="margin-bottom:4px">Sign in</h2>
+    <p class="muted small" style="margin:0 0 16px">Prescription generator · Powered by Mediseller</p>
+    <label class="f">Username<input type="text" id="lg-user" autocomplete="username" autocapitalize="off" spellcheck="false" required /></label>
+    <label class="f" for="lg-pass" style="margin-top:12px">Password</label>
+    <span class="pw" style="display:block;margin-top:4px"><input type="password" id="lg-pass" autocomplete="current-password" required /><button type="button" id="lg-show" aria-label="Show password">Show</button></span>
+    <p class="err" id="lg-err" role="alert"></p>
+    <button type="submit" class="btn primary" id="lg-btn" style="width:100%;justify-content:center;margin-top:4px">Sign in</button>
+    <p class="hint muted hidden" id="lg-hint">First time? Default login: <span class="mono">admin</span> / <span class="mono">Mediseller@123</span>. Change it in Settings after signing in.</p>
+    <p class="hint"><a href="#" id="lg-forgot">Forgot password?</a></p>
+  </form>
+</div>
 <div class="wrap">
   <header class="top">
     <div class="brand">
@@ -265,12 +294,13 @@
       <span class="byline">Powered by Mediseller</span>
       <span class="org" id="hdr-org"></span>
     </div>
-    <span class="chip" id="hdr-storage">Saved on this device</span>
+    <div class="hdr-r"><button type="button" class="chip warnchip hidden" id="hdr-defpw" data-goto="settings">Default password · change it</button>
+      <span class="chip" id="hdr-storage">No patient data stored</span>
+      <button type="button" class="btn sm" id="hdr-logout" title="Sign out">Sign out</button></div>
   </header>
 
   <nav class="tabs" id="tabs">
     <button type="button" data-tab="generate" class="active">Generate</button>
-    <button type="button" data-tab="history">History <span class="count" id="c-history"></span></button>
     <button type="button" data-tab="templates">Templates <span class="count" id="c-templates"></span></button>
     <button type="button" data-tab="doctors">Doctors <span class="count" id="c-doctors"></span></button>
     <button type="button" data-tab="medicines">Medicines <span class="count" id="c-medicines"></span></button>
@@ -361,18 +391,6 @@
       <button type="button" class="btn" id="mb-preview"><span id="mb-preview-lbl">Preview</span> <span class="badge" id="mb-badge"></span></button>
       <button type="button" class="btn" id="mb-pdf">⬇ PDF</button>
       <button type="button" class="btn primary" id="mb-share">Share</button>
-    </div>
-  </section>
-
-  <!-- ===================== HISTORY ===================== -->
-  <section class="tab hidden" id="tab-history">
-    <div class="card">
-      <div class="card-h"><h3>Generated prescriptions</h3>
-        <div class="row"><input type="text" id="h-search" placeholder="Search by name, phone or Rx ID" style="width:260px" />
-          <button type="button" class="btn sm" id="h-export">Export CSV</button></div></div>
-      <div class="scroll-x"><table class="list cards"><thead><tr><th scope="col">Date</th><th scope="col">Rx ID</th><th scope="col">Patient</th><th scope="col">Phone</th><th scope="col">Doctor</th><th scope="col">Medicines</th><th scope="col"></th></tr></thead>
-      <tbody id="h-body"></tbody></table></div>
-      <p class="muted small" id="h-empty">No prescriptions yet. The last 100 are kept on this device.</p>
     </div>
   </section>
 
@@ -501,19 +519,31 @@
       <div class="row" style="margin-top:12px"><button type="button" class="btn primary" id="s-save">Save settings</button></div>
     </div>
     <div class="card">
-      <h3>Backup &amp; data</h3>
-      <p class="muted small" style="margin-top:0">Everything (templates, doctors, medicines, history) is stored only in this browser on this device. Export a backup regularly, and import it to move the setup to another computer.</p>
+      <h3>Login</h3>
+      <p class="note amber hidden" id="s-defpw" style="margin-top:0">You are using the default password. Change it before sharing this tool.</p>
+      <div class="grid g4">
+        <label class="f">Username<input type="text" id="s-user" autocomplete="username" autocapitalize="off" spellcheck="false" /></label>
+        <label class="f">Current password<input type="password" id="s-pw-cur" autocomplete="current-password" /></label>
+        <label class="f">New password (min. 8 characters)<input type="password" id="s-pw-new" autocomplete="new-password" /></label>
+        <label class="f">Confirm new password<input type="password" id="s-pw-new2" autocomplete="new-password" /></label>
+      </div>
+      <div class="row" style="margin-top:12px"><button type="button" class="btn primary" id="s-login-save">Update login</button>
+        <span class="muted small">Signs you out after 30 minutes without activity.</span></div>
+    </div>
+    <div class="card">
+      <h3>Setup backup &amp; data</h3>
+      <p class="muted small" style="margin-top:0">Patient details are never saved: each prescription exists only until you download or share it. The setup (templates and field positions, doctors, medicine list, settings, login) is kept in this browser so you don't redo it. Export a backup to move the setup to another computer.</p>
       <div class="row">
-        <button type="button" class="btn" id="s-export">Export full backup (.json)</button>
+        <button type="button" class="btn" id="s-export">Export setup backup (.json)</button>
         <button type="button" class="btn" id="s-import">Import backup</button>
         <input type="file" id="s-file" accept=".json,application/json" hidden />
-        <button type="button" class="btn danger" id="s-wipe">Delete all data</button>
+        <button type="button" class="btn danger" id="s-wipe">Delete all setup data</button>
       </div>
       <p class="muted small" id="s-usage"></p>
     </div>
   </section>
 
-  <footer class="foot">Rx Studio · Powered by Mediseller · Data stays in this browser</footer>
+  <footer class="foot">Rx Studio · Powered by Mediseller · No patient data is stored</footer>
 </div>
 
 <datalist id="dl-form"><option>Tab</option><option>Cap</option><option>Syp</option><option>Susp</option><option>Inj</option><option>Oint</option><option>Cream</option><option>Gel</option><option>Drops</option><option>Inhaler</option><option>Sachet</option><option>Lotion</option><option>Spray</option><option>Powder</option></datalist>
@@ -544,17 +574,18 @@ const DB = (() => {
   }));
   const get = async k => { const db = await open(); return new Promise((res, rej) => { const q = db.transaction("kv").objectStore("kv").get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); };
   const set = async (k, v) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction("kv", "readwrite"); t.objectStore("kv").put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); };
-  return { get, set };
+  const del = async k => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction("kv", "readwrite"); t.objectStore("kv").delete(k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); };
+  return { get, set, del };
 })();
 
-const KEYS = ["templates", "doctors", "medicines", "history", "settings", "counter"];
+const KEYS = ["templates", "doctors", "medicines", "settings", "counter"]; // setup only: patient data is never stored
 const DEFAULT_SETTINGS = {
   org: "", prefix: "RX", cc: "91", font: "sans", datefmt: "dmy", quality: "0.92", automed: true,
   msg: "Hello {patient}, please find attached your prescription ({rx_id}) dated {date} from {doctor}.\n— {org}"
 };
-const S = { templates: [], doctors: [], medicines: [], history: [], settings: { ...DEFAULT_SETTINGS }, counter: { n: 0 } };
+const S = { templates: [], doctors: [], medicines: [], settings: { ...DEFAULT_SETTINGS }, counter: { n: 0 } };
 const save = k => DB.set(k, S[k]).catch(e => toast("Could not save: " + e.message, true));
-const MAX_TEMPLATES = 10, MAX_HISTORY = 100;
+const MAX_TEMPLATES = 10;
 const TIMINGS = ["", "After food", "Before food", "With food", "Empty stomach", "At bedtime", "In the morning", "As directed"];
 
 /* ============================================================
@@ -908,7 +939,6 @@ function showTab(name) {
   $$("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
   $$(".tab").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + name));
   if (name === "generate") { refreshGenSelects(); schedulePreview(); }
-  if (name === "history") renderHistory();
   if (name === "templates") renderTemplates();
   if (name === "doctors") renderDoctors();
   if (name === "medicines") renderMeds();
@@ -918,11 +948,11 @@ function showTab(name) {
 $("#tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) showTab(b.dataset.tab); });
 document.addEventListener("click", e => { const a = e.target.closest("[data-goto]"); if (a) { e.preventDefault(); showTab(a.dataset.goto); } });
 function updateCounts() {
-  $("#c-history").textContent = S.history.length || "";
   $("#c-templates").textContent = S.templates.length ? `${S.templates.length}/${MAX_TEMPLATES}` : "";
   $("#c-doctors").textContent = S.doctors.length || "";
   $("#c-medicines").textContent = S.medicines.length || "";
   $("#hdr-org").textContent = S.settings.org ? "· " + S.settings.org : "";
+  $("#hdr-defpw").classList.toggle("hidden", !!S.settings.auth); // persistent reminder instead of a toast that could hide other messages
   const ob = !S.templates.length || !S.doctors.length;
   $("#onboard").classList.toggle("hidden", !ob);
   $("#ob-tpl").classList.toggle("done", !!S.templates.length);
@@ -933,7 +963,8 @@ function updateCounts() {
 /* ============================================================
    GENERATE
    ============================================================ */
-const G = { rxId: "", lastWarnings: [] };
+const G = { rxId: "", lastWarnings: [], issued: null };
+const patientKey = d => [d.patient.name, d.patient.phone].join("|").toLowerCase();
 function nextRxId() {
   const d = new Date(), p = n => String(n).padStart(2, "0");
   return `${(S.settings.prefix || "RX").toUpperCase()}-${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}-${String(S.counter.n + 1).padStart(4, "0")}`;
@@ -1025,7 +1056,7 @@ function collect() {
   };
 }
 function fillForm(d) {
-  G.rxId = d.rxId; $("#g-rxid").textContent = d.rxId;
+  G.rxId = d.rxId; G.issued = null; $("#g-rxid").textContent = d.rxId;
   refreshGenSelects();
   if (d.templateId && S.templates.some(t => t.id === d.templateId)) $("#g-tpl").value = d.templateId;
   if (d.doctorId && S.doctors.some(x => x.id === d.doctorId)) $("#g-doc").value = d.doctorId;
@@ -1065,7 +1096,14 @@ async function updatePreview() {
   } catch (e) { $("#g-pv-status").textContent = "Preview error: " + e.message; }
 }
 const schedulePreview = debounce(updatePreview, 220);
-$("#tab-generate").addEventListener("input", e => { if (!e.target.matches("#g-attest")) schedulePreview(); });
+$("#tab-generate").addEventListener("input", e => {
+  // an Rx ID belongs to one patient: if the form is reused for someone else after output, give it a fresh number
+  if (G.issued && (e.target.id === "g-name" || e.target.id === "g-phone") && patientKey(collect()) !== G.issued) {
+    G.rxId = nextRxId(); G.issued = null; $("#g-rxid").textContent = G.rxId; $("#g-attest").checked = false;
+    toast(`Different patient: new Rx ID ${G.rxId}`);
+  }
+  if (!e.target.matches("#g-attest")) schedulePreview();
+});
 $("#tab-generate").addEventListener("change", e => {
   if (e.target.id === "g-tpl") localStorage.setItem("rx.lastTpl", e.target.value);
   if (e.target.id === "g-doc") localStorage.setItem("rx.lastDoc", e.target.value);
@@ -1149,16 +1187,10 @@ async function finalize() {
   if (!window.jspdf) { toast("PDF engine failed to load. Check your internet connection.", true); return null; }
   const out = await buildPDF(tpl, doc, d);
   if (out.warnings.length && !confirm("Some text was too long for its box and may be cut off:\n\n• " + out.warnings.join("\n• ") + "\n\nGenerate anyway?")) return null;
-  // history
-  const entry = { id: d.rxId, createdAt: Date.now(), data: d, doctorName: doc.name, templateName: tpl.name };
-  const i = S.history.findIndex(h => h.id === d.rxId);
-  if (i >= 0) { entry.createdAt = S.history[i].createdAt; entry.updatedAt = Date.now(); entry.versions = (S.history[i].versions || 1) + 1; S.history[i] = entry; }
-  else {
-    S.history.unshift(entry); S.history = S.history.slice(0, MAX_HISTORY);
-    const n = +(String(d.rxId).match(/-(\d+)$/) || [])[1] || 0;
-    if (n > S.counter.n) { S.counter.n = n; save("counter"); }
-  }
-  save("history");
+  // nothing about the patient is stored: only the Rx counter moves on, so the next prescription gets a new number
+  const n = +(String(d.rxId).match(/-(\d+)$/) || [])[1] || 0;
+  if (n > S.counter.n) { S.counter.n = n; save("counter"); }
+  G.issued = patientKey(d);
   // auto-add meds
   if (S.settings.automed) {
     let added = 0;
@@ -1243,38 +1275,6 @@ $("#g-email-btn").onclick = async e => {
 };
 
 /* ============================================================
-   HISTORY
-   ============================================================ */
-function renderHistory() {
-  const q = $("#h-search").value.trim().toLowerCase();
-  const rows = S.history.filter(h => !q || [h.id, h.data.patient.name, h.data.patient.phone, h.doctorName].join(" ").toLowerCase().includes(q));
-  $("#h-empty").classList.toggle("hidden", !!S.history.length);
-  $("#h-body").innerHTML = rows.map(h => `<tr>
-    <td class="mono small" data-label="Date">${esc(fmtDate(h.data.date))}</td><td class="mono small" data-label="Rx ID">${esc(h.id)}${h.versions > 1 ? ` <span class="chip" title="Re-issued after edits">v${h.versions}</span>` : ""}</td>
-    <td class="lead"><strong>${esc(h.data.patient.name)}</strong> <span class="muted small">${esc(h.data.patient.age)}${esc(AGEU[h.data.patient.ageUnit] || "")} ${esc((h.data.patient.gender || "")[0] || "")}</span></td>
-    <td class="small" data-label="Phone">${esc(h.data.patient.phone)}</td><td class="small" data-label="Doctor">${esc(h.doctorName)}</td>
-    <td class="small muted" data-label="Medicines">${esc(h.data.meds.map(m => m.name).join(", ").slice(0, 80))}</td>
-    <td class="act" style="white-space:nowrap"><button type="button" class="btn sm" data-h-pdf="${esc(h.id)}">PDF</button> <button type="button" class="btn sm" data-h-open="${esc(h.id)}">Open</button> <button type="button" class="btn sm" data-h-copy="${esc(h.id)}" title="New prescription with the same details">Repeat</button> <button type="button" class="x" data-h-del="${esc(h.id)}" title="Delete">×</button></td></tr>`).join("");
-}
-$("#h-search").oninput = renderHistory;
-$("#h-body").addEventListener("click", async e => {
-  const b = e.target.closest("button"); if (!b) return;
-  const id = b.dataset.hPdf || b.dataset.hOpen || b.dataset.hDel || b.dataset.hCopy; const h = S.history.find(x => x.id === id); if (!h) return;
-  if (b.dataset.hDel) { if (confirm(`Delete ${id} from history?`)) { S.history = S.history.filter(x => x.id !== id); save("history"); renderHistory(); updateCounts(); } return; }
-  if (b.dataset.hOpen) { showTab("generate"); fillForm(h.data); toast(`Opened ${id}`); return; }
-  if (b.dataset.hCopy) { showTab("generate"); fillForm({ ...h.data, rxId: nextRxId(), date: todayISO() }); toast("Copied into a new prescription"); return; }
-  const tpl = S.templates.find(t => t.id === h.data.templateId), doc = S.doctors.find(x => x.id === h.data.doctorId);
-  if (!tpl || !doc) { toast("The template or doctor used for this prescription was deleted.", true); return; }
-  try { const r = await buildPDF(tpl, doc, h.data); downloadBlob(r.blob, r.name); } catch (err) { toast(err.message, true); }
-});
-$("#h-export").onclick = () => {
-  const head = ["rx_id", "date", "patient", "age", "gender", "phone", "email", "doctor", "template", "medicines", "investigations", "advice", "follow_up"];
-  const lines = S.history.map(h => { const d = h.data; return [h.id, d.date, d.patient.name, d.patient.age + (AGEU[d.patient.ageUnit] || ""), d.patient.gender, d.patient.phone, d.patient.email, h.doctorName, h.templateName,
-    d.meds.map(m => `${medTitle(m)} ${m.dose} ${m.timing} ${m.duration}`.replace(/\s+/g, " ").trim()).join(" | "), d.investigations, d.advice, d.followUp].map(csvCell).join(","); });
-  downloadBlob(new Blob([[head.join(","), ...lines].join("\n")], { type: "text/csv" }), `rx-history-${todayISO()}.csv`);
-};
-
-/* ============================================================
    TEMPLATES
    ============================================================ */
 function renderTemplates() {
@@ -1312,7 +1312,7 @@ $("#tpl-grid").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.tEdit) openEditor(b.dataset.tEdit);
   if (b.dataset.tDel) { const t = S.templates.find(x => x.id === b.dataset.tDel);
-    if (confirm(`Delete template "${t.name}"? Prescriptions in history that used it can no longer be re-downloaded.`)) { S.templates = S.templates.filter(x => x !== t); save("templates"); renderTemplates(); updateCounts(); } }
+    if (confirm(`Delete template "${t.name}"?`)) { S.templates = S.templates.filter(x => x !== t); save("templates"); renderTemplates(); updateCounts(); } }
 });
 
 /* --- field mapping editor --- */
@@ -1579,13 +1579,14 @@ function loadSettingsForm() {
   const s = S.settings;
   $("#s-org").value = s.org; $("#s-prefix").value = s.prefix; $("#s-cc").value = s.cc; $("#s-font").value = s.font; $("#s-datefmt").value = s.datefmt;
   $("#s-quality").value = s.quality; $("#s-msg").value = s.msg; $("#s-automed").checked = !!s.automed;
+  $("#s-user").value = s.auth ? s.auth.user : DEFAULT_LOGIN.user; $("#s-defpw").classList.toggle("hidden", !!s.auth);
   if (navigator.storage?.estimate) navigator.storage.estimate().then(e => $("#s-usage").textContent = `Storage used: ${(e.usage / 1048576).toFixed(1)} MB of about ${(e.quota / 1048576).toFixed(0)} MB available.`);
 }
 $("#s-save").onclick = () => {
   Object.assign(S.settings, { org: $("#s-org").value.trim(), prefix: ($("#s-prefix").value.trim() || "RX").replace(/[^a-z0-9]/gi, "").toUpperCase(), cc: $("#s-cc").value.replace(/\D/g, "") || "91",
     font: $("#s-font").value, datefmt: $("#s-datefmt").value, quality: $("#s-quality").value, msg: $("#s-msg").value, automed: $("#s-automed").checked });
   save("settings"); updateCounts(); loadSettingsForm();
-  if (!S.history.some(h => h.id === G.rxId)) { G.rxId = nextRxId(); $("#g-rxid").textContent = G.rxId; }
+  if (!G.issued) { G.rxId = nextRxId(); $("#g-rxid").textContent = G.rxId; }
   toast("Settings saved");
 };
 $("#s-export").onclick = () => {
@@ -1595,7 +1596,8 @@ $("#s-export").onclick = () => {
 const isImg = v => v === "" || v === undefined || (typeof v === "string" && /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(v));
 function validateBackup(data) {
   const arr = k => { if (data[k] !== undefined && !Array.isArray(data[k])) throw new Error(`Backup is damaged: "${k}" is not a list.`); };
-  ["templates", "doctors", "medicines", "history"].forEach(arr);
+  ["templates", "doctors", "medicines"].forEach(arr);
+  delete data.history; // older backups may contain patient history: never import it
   (data.templates || []).forEach(t => {
     if (!t || !isImg(t.img) || !t.img || !Array.isArray(t.fields) || !(t.wPt > 0) || !(t.hPt > 0)) throw new Error("Backup is damaged: a template is invalid.");
     t.fields = t.fields.filter(f => f && FIELDS[f.key]).map(f => ({ ...newField(f.key), ...f, x: clamp(+f.x || 0, 0, 1), y: clamp(+f.y || 0, 0, 1), w: clamp(+f.w || .1, .005, 1), h: clamp(+f.h || .02, .005, 1), size: clamp(+f.size || 10, 5, 40) }));
@@ -1610,17 +1612,16 @@ $("#s-file").onchange = async e => {
     const data = JSON.parse(await readFile(f, "text"));
     if (data.app !== "mediseller-rx-studio") throw new Error("This is not an Rx Studio backup file.");
     validateBackup(data);
-    if (!confirm("Importing replaces ALL current data on this device. Continue?")) return;
+    if (!confirm("Importing replaces the current setup on this device (templates, doctors, medicines, settings and login). Continue?")) return;
     for (const k of KEYS) if (data[k] !== undefined) { S[k] = k === "settings" ? { ...DEFAULT_SETTINGS, ...data[k] } : data[k]; await save(k); }
-    toast("Backup restored"); boot();
+    toast("Backup restored"); startApp();
   } catch (err) { toast(err.message, true); }
 };
 $("#s-wipe").onclick = async () => {
-  if (!confirm("Delete ALL templates, doctors, medicines, history and settings from this device? This cannot be undone.")) return;
+  if (!confirm("Delete ALL templates, doctors, medicines, settings and the login from this device? This cannot be undone.")) return;
   if (prompt('Type DELETE to confirm') !== "DELETE") return;
-  S.templates = []; S.doctors = []; S.medicines = []; S.history = []; S.settings = { ...DEFAULT_SETTINGS }; S.counter = { n: 0 };
-  for (const k of KEYS) await save(k);
-  toast("All data deleted"); boot();
+  await wipeAll();
+  toast("All data deleted"); logout();
 };
 
 /* ============================================================
@@ -1639,19 +1640,123 @@ $("#ob-demo").onclick = async () => {
 };
 
 /* ============================================================
-   Boot
+   Login (single account)
+   This is a browser-only tool, so the login keeps casual users out of the app on a shared
+   computer; it is not server-side security. The password is stored only as a salted,
+   iterated SHA-256 hash.
    ============================================================ */
-async function boot() {
+function sha256(str) { // compact pure-JS SHA-256 (works on file:// and plain http, where crypto.subtle is unavailable)
+  const rr = (v, a) => (v >>> a) | (v << (32 - a));
+  const maxWord = 2 ** 32; let ascii = unescape(encodeURIComponent(str)); const bitLen = ascii.length * 8;
+  if (!sha256.k) { sha256.h = []; sha256.k = []; const comp = {}; let n = 0;
+    for (let c = 2; n < 64; c++) if (!comp[c]) { for (let i = 0; i < 313; i += c) comp[i] = c; sha256.h[n] = (c ** .5 * maxWord) | 0; sha256.k[n++] = (c ** (1 / 3) * maxWord) | 0; } }
+  let hash = sha256.h.slice(0, 8); const k = sha256.k, words = [];
+  ascii += "\x80"; while (ascii.length % 64 - 56) ascii += "\x00";
+  for (let i = 0; i < ascii.length; i++) words[i >> 2] |= ascii.charCodeAt(i) << ((3 - i) % 4) * 8;
+  words[words.length] = (bitLen / maxWord) | 0; words[words.length] = bitLen;
+  for (let j = 0; j < words.length;) {
+    const w = words.slice(j, j += 16), old = hash; hash = hash.slice(0, 8);
+    for (let i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2], a = hash[0], e = hash[4];
+      const t1 = hash[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[i]
+        + (w[i] = i < 16 ? w[i] : (w[i - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0);
+      const t2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(t1 + t2) | 0].concat(hash); hash[4] = (hash[4] + t1) | 0;
+    }
+    for (let i = 0; i < 8; i++) hash[i] = (hash[i] + old[i]) | 0;
+  }
+  return hash.slice(0, 8).map(v => (v >>> 0).toString(16).padStart(8, "0")).join("");
+}
+const DEFAULT_LOGIN = { user: "admin", pass: "Mediseller@123" };
+const PW_ROUNDS = 5000;
+function pwHash(pass, salt) { let h = salt + ":" + pass; for (let i = 0; i < PW_ROUNDS; i++) h = sha256(h + salt); return h; }
+function checkLogin(user, pass) {
+  const a = S.settings.auth;
+  if (!a) return user === DEFAULT_LOGIN.user && pass === DEFAULT_LOGIN.pass;
+  return user.toLowerCase() === a.user.toLowerCase() && pwHash(pass, a.salt) === a.hash;
+}
+let IDLE_MS = 30 * 60 * 1000;
+const L = { fails: 0, lockUntil: 0, idleT: null };
+function loggedIn() { return !document.body.classList.contains("locked"); }
+function touchSession() {
+  if (!loggedIn()) return;
+  sessionStorage.setItem("rx.session", String(Date.now() + IDLE_MS));
+  clearTimeout(L.idleT); L.idleT = setTimeout(() => { logout(); toast("Signed out after 30 minutes without activity."); }, IDLE_MS);
+}
+["pointerdown", "keydown", "scroll"].forEach(ev => document.addEventListener(ev, debounce(touchSession, 1000), { passive: true, capture: true }));
+function showLogin() {
+  document.body.classList.add("locked"); clearTimeout(L.idleT);
+  $("#lg-hint").classList.toggle("hidden", !!S.settings.auth);
+  $("#lg-pass").value = ""; $("#lg-err").textContent = "";
+  setTimeout(() => ($("#lg-user").value ? $("#lg-pass") : $("#lg-user")).focus(), 50);
+}
+function logout() {
+  sessionStorage.removeItem("rx.session");
+  closePreview(); acClose();
+  newPrescription(); // drop whatever patient details were on screen
+  showLogin();
+}
+async function loadSetup() {
   try {
     for (const k of KEYS) { const v = await DB.get(k); if (v !== undefined) S[k] = k === "settings" ? { ...DEFAULT_SETTINGS, ...v } : v; }
-  } catch (e) { toast("Storage unavailable (private window?). Data will not be kept.", true); }
-  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-  if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+    await DB.del("history"); // purge patient history kept by earlier versions of the tool
+  } catch (e) { toast("Storage unavailable (private window?). Setup will not be kept.", true); }
+}
+async function wipeAll() {
+  S.templates = []; S.doctors = []; S.medicines = []; S.settings = { ...DEFAULT_SETTINGS }; S.counter = { n: 0 };
+  for (const k of KEYS) await save(k);
+  ["rx.lastTpl", "rx.lastDoc", "rx.edZoom"].forEach(k => localStorage.removeItem(k));
+}
+function startApp() {
+  document.body.classList.remove("locked");
   updateCounts(); renderTemplates();
   newPrescription();
   showTab("generate");
+  touchSession();
 }
-boot();
+$("#login-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const err = $("#lg-err"), wait = Math.ceil((L.lockUntil - Date.now()) / 1000);
+  if (wait > 0) { err.textContent = `Too many attempts. Try again in ${wait} s.`; return; }
+  const user = $("#lg-user").value.trim(), pass = $("#lg-pass").value;
+  if (checkLogin(user, pass)) { L.fails = 0; startApp(); return; }
+  L.fails++; $("#lg-pass").value = "";
+  if (L.fails >= 5) { L.fails = 0; L.lockUntil = Date.now() + 60000; err.textContent = "Too many attempts. Try again in 60 s."; }
+  else err.textContent = "Wrong username or password.";
+});
+$("#lg-show").onclick = () => { const i = $("#lg-pass"), show = i.type === "password"; i.type = show ? "text" : "password"; $("#lg-show").textContent = show ? "Hide" : "Show"; };
+$("#lg-forgot").onclick = async e => {
+  e.preventDefault();
+  const typed = prompt("The password can't be recovered (nothing is stored on a server).\n\nTo reset the login you must delete this tool's setup on this device (templates, doctors, medicines, settings). Restore it afterwards from a setup backup if you have one.\n\nType RESET to continue.");
+  if (typed !== "RESET") return;
+  await wipeAll(); showLogin(); toast("Setup deleted. Sign in with the default login.");
+};
+$("#hdr-logout").onclick = () => logout();
+$("#s-login-save").onclick = () => {
+  const user = $("#s-user").value.trim(), cur = $("#s-pw-cur").value, n1 = $("#s-pw-new").value, n2 = $("#s-pw-new2").value;
+  const curUser = S.settings.auth ? S.settings.auth.user : DEFAULT_LOGIN.user;
+  if (!checkLogin(curUser, cur)) return toast("Current password is wrong.", true);
+  if (!/^[a-z0-9._@-]{3,40}$/i.test(user)) return toast("Username: 3–40 letters, numbers or . _ @ -", true);
+  if (n1.length < 8) return toast("New password must be at least 8 characters.", true);
+  if (n1 !== n2) return toast("New passwords don't match.", true);
+  if (n1 === DEFAULT_LOGIN.pass) return toast("Choose a password different from the default.", true);
+  const salt = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join("");
+  S.settings.auth = { user, salt, hash: pwHash(n1, salt) }; save("settings");
+  ["#s-pw-cur", "#s-pw-new", "#s-pw-new2"].forEach(id => $(id).value = "");
+  loadSettingsForm(); updateCounts(); toast("Login updated.");
+};
+
+/* ============================================================
+   Boot
+   ============================================================ */
+if (window.pdfjsLib && !window.pdfjsWorker) // the standalone build ships the worker inline (window.pdfjsWorker) and needs no URL
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+(async () => {
+  await loadSetup();
+  if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+  if (+sessionStorage.getItem("rx.session") > Date.now()) startApp(); else showLogin();
+  document.body.classList.remove("booting");
+})();
 </script>
 </body>
 </html>

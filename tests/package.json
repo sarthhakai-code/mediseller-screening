@@ -1,7 +1,17 @@
 {
   "name": "rx-studio-tests",
   "private": true,
-  "description": "End-to-end mock tests for prescription.html (Rx Studio)",
-  "scripts": { "test": "node rx-studio.mock-test.js" },
-  "devDependencies": { "jspdf": "2.5.1", "pdfjs-dist": "3.11.174" }
+  "description": "Smoke and end-to-end mock tests for Rx Studio",
+  "scripts": {
+    "test": "node rx-studio.mock-test.js",
+    "smoke": "node smoke-test.js",
+    "build": "python3 ../tools/build-standalone.py"
+  },
+  "devDependencies": {
+    "@fontsource/fraunces": "5.1.1",
+    "@fontsource/ibm-plex-mono": "5.1.1",
+    "@fontsource/ibm-plex-sans": "5.1.1",
+    "jspdf": "2.5.1",
+    "pdfjs-dist": "3.11.174"
+  }
 }
