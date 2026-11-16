@@ -53,12 +53,12 @@ function label(d, txt, x, y, size = 9, color = "#475569", style = "normal", font
     field(W, H, "rx_id", 380, 156, 176, 16, { size: 9.5 }),
     field(W, H, "consult_mode", 40, 186, 250, 14, { size: 9, label: true }),
     field(W, H, "medicines", 70, 236, 486, 330, { size: 10.5 }),
-    field(W, H, "investigations", 40, 578, 516, 44, { label: true }),
-    field(W, H, "advice", 40, 626, 516, 48, { label: true }),
-    field(W, H, "follow_up", 40, 680, 300, 16, { bold: true, label: true }),
-    field(W, H, "stamp", 262, 672, 96, 72, { align: "center" }),
-    field(W, H, "signature", 380, 662, 176, 44, { align: "center" }),
-    field(W, H, "doctor_block", 336, 708, 220, 48, { size: 9, align: "right" }),
+    field(W, H, "investigations", 40, 578, 516, 38, { label: true }),
+    field(W, H, "advice", 40, 620, 516, 40, { label: true }),
+    field(W, H, "follow_up", 40, 666, 280, 16, { bold: true, label: true }),
+    field(W, H, "stamp", 40, 690, 90, 70, { align: "center" }),
+    field(W, H, "signature", 390, 664, 166, 40, { align: "center" }),
+    field(W, H, "doctor_block", 360, 708, 196, 48, { size: 9, align: "right" }),
   ] };
 }
 
@@ -141,7 +141,7 @@ function label(d, txt, x, y, size = 9, color = "#475569", style = "normal", font
     field(W, H, "investigations", 40, 528, 516, 46, { label: true }),
     field(W, H, "advice", 40, 578, 516, 52, { label: true }),
     field(W, H, "follow_up", 40, 636, 300, 16, { bold: true, label: true }),
-    field(W, H, "stamp", 290, 650, 90, 70),
+    field(W, H, "stamp", 40, 660, 90, 70),
     field(W, H, "signature", 390, 654, 166, 44, { align: "right" }),
     field(W, H, "doctor_block", 316, 702, 240, 54, { size: 9, align: "right" }),
   ] };
