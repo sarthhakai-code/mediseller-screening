@@ -24,7 +24,7 @@ try { ({ chromium, devices } = require("playwright")); } catch { console.error("
 
 const ROOT = path.resolve(__dirname, "..");
 const NM = path.join(__dirname, "node_modules");
-const OUT = path.join(__dirname, "output");
+const OUT = process.env.OUT ? path.resolve(process.env.OUT) : path.join(__dirname, "output");
 const BULK = +process.env.BULK || 30;
 const APP = process.env.APP || "prescription.html"; // path relative to the repo root
 fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(OUT, { recursive: true });
